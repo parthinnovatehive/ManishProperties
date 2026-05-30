@@ -27,11 +27,11 @@ export function ListingPage({ properties }: { properties: Property[] }) {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filters, setFilters] = useState<ListingFilters>({
     ...blankFilters,
-    type: searchParams.get("type") ?? "",
-    status: searchParams.get("status") ?? "",
-    city: searchParams.get("city") ?? "",
+    type: searchParams?.get("type") ?? "",
+    status: searchParams?.get("status") ?? "",
+    city: searchParams?.get("city") ?? "",
   });
-  const query = searchParams.get("q")?.toLowerCase() ?? "";
+  const query = searchParams?.get("q")?.toLowerCase() ?? "";
 
   const cities = useMemo(() => uniqueValues(properties.map((property) => property.city)), [properties]);
   const types = useMemo(() => uniqueValues(properties.map((property) => property.type)), [properties]);
