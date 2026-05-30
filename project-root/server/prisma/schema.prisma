@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  role         String
+  city         String? @default("")
+  name         String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  appointments Appointment[]
+  agents       Agent[]
+  complaints   Complaint[]
+  notifications Notification[]
+}
+
+model Property {
+
+  id          String   @id @default(cuid())
+  assignedAgentId String?
+
+  title       String
+  assignedAgent Agent? @relation("AgentProperties", fields: [assignedAgentId], references: [id])
+  subtitle    String
+  description String
+
+  price       String
+  priceNum    Int
+
+  city        String
+  location    String
+  pincode     String?
+
+  latitude    Float?
+  longitude   Float?
+
+  type        String
+  listingType String?
+
+  beds        Int
+  bathrooms   Int
+  area        Int
+
+  furnishing  String?
+
+  amenities   String[]
+
+  image       String?
+  images      String[]
+
+  builder     String?
+
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+
+  featured    Boolean  @default(false)
+  isNew       Boolean  @default(true)
+
+  status      String   @default("PENDING")
+
+  createdAt   DateTime @default(now())
+
+}
+
+// New models
+model Appointment {
+  id        String   @id @default(uuid())
+  date      DateTime
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+}
+
+model Agent {
+  id        String   @id @default(uuid())
+  name      String
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  properties Property[] @relation("AgentProperties")
+}
+
+model Complaint {
+  id        String   @id @default(uuid())
+  message   String
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  content   String
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  createdAt DateTime @default(now())
+}
