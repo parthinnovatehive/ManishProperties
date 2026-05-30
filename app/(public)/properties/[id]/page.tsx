@@ -81,7 +81,7 @@ export default function PropertyDetailsPage() {
     const fetchProperty = async () => {
       try {
         const data = await apiClient.get<PropertyResponse>(
-          API_ENDPOINTS.PUBLIC.PROPERTIES_DETAIL(params.id),
+          API_ENDPOINTS.PUBLIC.PROPERTIES_DETAIL(params?.id || ""),
           { cache: "no-store" },
         );
         setProperty(data.property ?? null);
@@ -92,10 +92,10 @@ export default function PropertyDetailsPage() {
       }
     };
 
-    if (params.id) {
+    if (params?.id) {
       fetchProperty();
     }
-  }, [params.id]);
+  }, [params?.id]);
 
   const derived = useMemo(() => {
     if (!property) return null;
