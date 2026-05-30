@@ -201,7 +201,7 @@ export function AuthPage() {
           </p>
           <div className="flex gap-5">
             {[
-              ["2M+", "Happy Clients"],
+              ["2M+", "Happy Users"],
               ["85K+", "Properties"],
               ["100%", "Verified"],
             ].map(([value, label]) => (
@@ -256,7 +256,7 @@ export function AuthPage() {
             </span>
             <div className="flex rounded-xl bg-estate-bg p-1">
               {[
-                ["CLIENT", "Client"],
+                ["CLIENT", "User"],
                 ["AGENT", "Agent"],
                 ["ADMIN", "Admin"],
               ].map(([val, label]) => (
