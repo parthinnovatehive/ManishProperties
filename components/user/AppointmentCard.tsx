@@ -12,20 +12,22 @@ export default function AppointmentCard({
   status,
 }: AppointmentCardProps) {
   return (
-    <div className="bg-white p-4 rounded-xl shadow border">
-      <h3 className="font-semibold">
+    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition duration-300">
+      <h3 className="text-lg font-semibold text-gray-800">
         {property}
       </h3>
 
-      <p className="text-sm text-gray-500">
-        Date: {date}
-      </p>
+      <div className="mt-3 space-y-1">
+        <p className="text-sm text-gray-500">
+          📅 {date}
+        </p>
 
-      <p className="text-sm text-gray-500">
-        Agent: {agent}
-      </p>
+        <p className="text-sm text-gray-500">
+          👤 {agent}
+        </p>
+      </div>
 
-      <span className="inline-block mt-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs">
+      <span className="inline-block mt-4 px-3 py-1 rounded-full bg-green-100 text-[#164a34] text-sm font-medium">
         {status}
       </span>
     </div>

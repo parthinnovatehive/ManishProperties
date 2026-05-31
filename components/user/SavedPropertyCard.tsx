@@ -10,16 +10,16 @@ export default function SavedPropertyCard({
   price,
 }: SavedPropertyCardProps) {
   return (
-    <div className="bg-white p-4 rounded-xl shadow border">
-      <h3 className="font-semibold">
+    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition duration-300">
+      <h3 className="text-lg font-semibold text-gray-800">
         {title}
       </h3>
 
-      <p className="text-gray-500 text-sm">
-        {location}
+      <p className="mt-2 text-sm text-gray-500">
+        📍 {location}
       </p>
 
-      <p className="text-green-600 font-bold mt-2">
+      <p className="mt-4 text-xl font-bold text-[#164a34]">
         {price}
       </p>
     </div>
