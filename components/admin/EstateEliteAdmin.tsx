@@ -19,6 +19,7 @@ import { useAdminProperties } from "@/hooks/useAdminProperties";
 import { useToast } from "@/lib/utils/toast";
 import { ToastContainer } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
+import { users as MOCK_USERS } from "@/data/users";
 
 /* ============================================================
    DESIGN SYSTEM — matches EstateElite frontend
@@ -46,417 +47,16 @@ const serif = { fontFamily: "'Playfair Display', Georgia, serif" };
 const sans = { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" };
 
 /* ============================================================
-   MOCK DATA — Realistic admin property moderation data
+  MOCK DATA — Realistic admin property moderation data
+  (mock data omitted in this refactor)
 ============================================================ */
-/*
-const MOCK_PROPERTIES = [
-  {
-    id: 1, title: "Luxury Sea-View 3BHK Apartment", location: "Worli, Mumbai",
-    price: "₹2.85 Cr", priceNum: 28500000, type: "Apartment", beds: 3, baths: 3, area: 1850,
-    status: "PENDING", featured: false, submittedBy: "Rahul Sharma", submitterEmail: "rahul@example.com",
-    createdAt: "2025-05-14T09:22:00Z", updatedAt: "2025-05-14T09:22:00Z",
-    img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&auto=format&q=70",
-    rera: "P51800047XXX", views: 0, inquiries: 0,
-  },
-  {
-    id: 2, title: "Modern 4BHK Independent Villa", location: "Whitefield, Bangalore",
-    price: "₹1.95 Cr", priceNum: 19500000, type: "Villa", beds: 4, baths: 4, area: 3200,
-    status: "APPROVED", featured: true, submittedBy: "Priya Mehta", submitterEmail: "priya@example.com",
-    createdAt: "2025-05-12T14:10:00Z", updatedAt: "2025-05-13T10:30:00Z",
-    img: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=200&auto=format&q=70",
-    rera: "PRM/KA/RERA/XXX", views: 342, inquiries: 18,
-  },
-  {
-    id: 3, title: "Premium 2BHK in Koregaon Park", location: "Koregaon Park, Pune",
-    price: "₹42,000/mo", priceNum: 42000, type: "Apartment", beds: 2, baths: 2, area: 1200,
-    status: "PENDING", featured: false, submittedBy: "Amit Kulkarni", submitterEmail: "amit@example.com",
-    createdAt: "2025-05-15T07:55:00Z", updatedAt: "2025-05-15T07:55:00Z",
-    img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=200&auto=format&q=70",
-    rera: "P52100032XXX", views: 0, inquiries: 0,
-  },
-  {
-    id: 4, title: "Ultra-Luxury Penthouse, DLF Phase 5", location: "Gurugram, Delhi NCR",
-    price: "₹8.50 Cr", priceNum: 85000000, type: "Penthouse", beds: 5, baths: 6, area: 6500,
-    status: "APPROVED", featured: true, submittedBy: "Vikram Singh", submitterEmail: "vikram@example.com",
-    createdAt: "2025-05-10T11:00:00Z", updatedAt: "2025-05-11T15:20:00Z",
-    img: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=200&auto=format&q=70",
-    rera: "GGM/RERA/XXX", views: 891, inquiries: 45,
-  },
-  {
-    id: 5, title: "Smart Studio near HITEC City", location: "Gachibowli, Hyderabad",
-    price: "₹18,000/mo", priceNum: 18000, type: "Studio", beds: 1, baths: 1, area: 550,
-    status: "REJECTED", featured: false, submittedBy: "Sneha Reddy", submitterEmail: "sneha@example.com",
-    createdAt: "2025-05-13T16:40:00Z", updatedAt: "2025-05-14T09:00:00Z",
-    img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&auto=format&q=70",
-    rera: "P01400006XXX", views: 0, inquiries: 0, rejectReason: "Incomplete documentation — RERA certificate missing",
-  },
-  {
-    id: 6, title: "Grade A Commercial Office — BKC", location: "Bandra Kurla Complex, Mumbai",
-    price: "₹1.20 L/mo", priceNum: 120000, type: "Commercial", beds: 0, baths: 4, area: 4500,
-    status: "APPROVED", featured: false, submittedBy: "Rohan Malhotra", submitterEmail: "rohan@example.com",
-    createdAt: "2025-05-09T13:30:00Z", updatedAt: "2025-05-10T11:00:00Z",
-    img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&auto=format&q=70",
-    rera: "P51900000XXX", views: 214, inquiries: 11,
-  },
-  {
-    id: 7, title: "Farmhouse with Private Pool", location: "Alibag, Maharashtra",
-    price: "₹4.20 Cr", priceNum: 42000000, type: "Farmhouse", beds: 6, baths: 5, area: 8500,
-    status: "PENDING", featured: false, submittedBy: "Kavya Nair", submitterEmail: "kavya@example.com",
-    createdAt: "2025-05-15T10:15:00Z", updatedAt: "2025-05-15T10:15:00Z",
-    img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=200&auto=format&q=70",
-    rera: "P99800001XXX", views: 0, inquiries: 0,
-  },
-  {
-    id: 8, title: "Luxury 3BHK in Jubilee Hills", location: "Jubilee Hills, Hyderabad",
-    price: "₹1.80 Cr", priceNum: 18000000, type: "Apartment", beds: 3, baths: 3, area: 2100,
-    status: "APPROVED", featured: false, submittedBy: "Arjun Reddy", submitterEmail: "arjun@example.com",
-    createdAt: "2025-05-08T09:00:00Z", updatedAt: "2025-05-09T14:30:00Z",
-    img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200&auto=format&q=70",
-    rera: "P01400022XXX", views: 178, inquiries: 9,
-  },
-  {
-    id: 9, title: "Commercial Plot — IT Corridor", location: "OMR, Chennai",
-    price: "₹3.50 Cr", priceNum: 35000000, type: "Plot", beds: 0, baths: 0, area: 7200,
-    status: "REJECTED", featured: false, submittedBy: "Sundar Krishnan", submitterEmail: "sundar@example.com",
-    createdAt: "2025-05-11T08:20:00Z", updatedAt: "2025-05-12T10:00:00Z",
-    img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&auto=format&q=70",
-    rera: null, views: 0, inquiries: 0, rejectReason: "Fraudulent ownership documents detected — flagged for legal review",
-  },
-  {
-    id: 10, title: "Row House in Premium Township", location: "Hinjewadi, Pune",
-    price: "₹95 L", priceNum: 9500000, type: "Row House", beds: 3, baths: 2, area: 1650,
-    status: "PENDING", featured: false, submittedBy: "Meera Joshi", submitterEmail: "meera@example.com",
-    createdAt: "2025-05-15T12:00:00Z", updatedAt: "2025-05-15T12:00:00Z",
-    img: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=200&auto=format&q=70",
-    rera: "P52200044XXX", views: 0, inquiries: 0,
-  },
-  {
-    id: 11, title: "Sea-Facing Duplex Penthouse", location: "Bandra West, Mumbai",
-    price: "₹12.50 Cr", priceNum: 125000000, type: "Penthouse", beds: 4, baths: 5, area: 5800,
-    status: "APPROVED", featured: true, submittedBy: "Kiran Shah", submitterEmail: "kiran@example.com",
-    createdAt: "2025-05-07T16:00:00Z", updatedAt: "2025-05-08T10:00:00Z",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&auto=format&q=70",
-    rera: "P51800099XXX", views: 1240, inquiries: 67,
-  },
-  {
-    id: 12, title: "Gated Villa Community — 4 BHK", location: "Sarjapur Road, Bangalore",
-    price: "₹2.40 Cr", priceNum: 24000000, type: "Villa", beds: 4, baths: 4, area: 3800,
-    status: "PENDING", featured: false, submittedBy: "Deepika Rao", submitterEmail: "deepika@example.com",
-    createdAt: "2025-05-15T14:30:00Z", updatedAt: "2025-05-15T14:30:00Z",
-    img: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=200&auto=format&q=70",
-    rera: "PRM/KA/RERA/5678/XXX", views: 0, inquiries: 0,
-  },
-];
+
+/* NOTE: Sidebar/TopBar removed from this file.
+  The application now uses app/admin/layout.tsx which
+  renders AdminSidebar and AdminNavbar centrally.
+  EstateEliteAdmin provides dashboard content only:
+  stats, filters, tables, drawers, and widgets.
 */
-
-const MOCK_USERS = [
-  { id: 1, name: "Rahul Sharma", email: "rahul@example.com", role: "AGENT", listings: 8, joined: "2024-11-15", verified: true, status: "ACTIVE" },
-  { id: 2, name: "Priya Mehta", email: "priya@example.com", role: "AGENT", listings: 12, joined: "2024-09-22", verified: true, status: "ACTIVE" },
-  { id: 3, name: "Arjun Kapoor", email: "arjun@example.com", role: "BUYER", listings: 0, joined: "2025-01-10", verified: true, status: "ACTIVE" },
-  { id: 4, name: "Vikram Singh", email: "vikram@example.com", role: "AGENT", listings: 5, joined: "2024-12-01", verified: false, status: "PENDING" },
-  { id: 5, name: "Sneha Reddy", email: "sneha@example.com", role: "AGENT", listings: 3, joined: "2025-02-18", verified: true, status: "SUSPENDED" },
-];
-
-const LOCATION_HIERARCHY = {
-  Maharashtra: {
-    Mumbai: ["Worli", "Bandra West", "Bandra Kurla Complex", "Powai", "Andheri West"],
-    Pune: ["Baner", "Koregaon Park", "Hinjewadi", "Kalyani Nagar"],
-    Alibag: ["Alibag", "Mandwa", "Nagaon"],
-  },
-  Karnataka: {
-    Bangalore: ["Whitefield", "Sarjapur Road", "Indiranagar", "Hebbal"],
-  },
-  Telangana: {
-    Hyderabad: ["Gachibowli", "Jubilee Hills", "HITEC City", "Banjara Hills"],
-  },
-  "Delhi NCR": {
-    Gurugram: ["DLF Phase 5", "Golf Course Road", "Cyber City"],
-    "Delhi NCR": ["Noida", "Greater Noida", "Dwarka"],
-  },
-  "Tamil Nadu": {
-    Chennai: ["OMR", "Adyar", "Anna Nagar"],
-  },
-};
-
-const LOCATION_INDEX = Object.entries(LOCATION_HIERARCHY).flatMap(([state, cities]) =>
-  Object.entries(cities).flatMap(([city, areas]) => areas.map((area) => ({ state, city, area }))),
-);
-
-/* ============================================================
-   UTILITY FUNCTIONS
-============================================================ */
-const formatDate = (iso) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-};
-const timeAgo = (iso) => {
-  const diff = (Date.now() - new Date(iso)) / 1000;
-  if (diff < 3600) return `${Math.round(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.round(diff / 3600)}h ago`;
-  return `${Math.round(diff / 86400)}d ago`;
-};
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-const getPropertyLocationMeta = (property) => {
-  const haystack = `${property.location} ${property.title}`.toLowerCase();
-  const match = LOCATION_INDEX.find(({ city, area }) =>
-    haystack.includes(area.toLowerCase()) || haystack.includes(city.toLowerCase()),
-  );
-
-  if (match) return match;
-
-  const stateMatch = Object.keys(LOCATION_HIERARCHY).find((state) => haystack.includes(state.toLowerCase()));
-  return { state: stateMatch || "", city: "", area: "" };
-};
-
-/* ============================================================
-   SHARED UI COMPONENTS
-============================================================ */
-function StatusBadge({ status }) {
-  const cfg = {
-    PENDING: { bg: C.warningLight, color: C.warning, icon: <Clock size={11}/>, label: "Pending" },
-    APPROVED: { bg: C.successLight, color: C.success, icon: <CheckCircle size={11}/>, label: "Approved" },
-    REJECTED: { bg: C.dangerLight, color: C.danger, icon: <XCircle size={11}/>, label: "Rejected" },
-  }[status] || { bg: C.border, color: C.muted, icon: null, label: status };
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: cfg.bg, color: cfg.color, padding: "4px 10px", borderRadius: 99, fontSize: 12, fontWeight: 700, letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
-      {cfg.icon} {cfg.label}
-    </span>
-  );
-}
-
-function FeaturedBadge() {
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: C.amberPale, color: C.amberDark, padding: "3px 8px", borderRadius: 99, fontSize: 11, fontWeight: 700 }}>
-      <Star size={10} fill={C.amberDark}/> Featured
-    </span>
-  );
-}
-
-
-function ConfirmModal({ modal, onConfirm, onClose }) {
-  if (!modal) return null;
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-      <div style={{ background: "#fff", borderRadius: 20, padding: 32, maxWidth: 420, width: "100%", boxShadow: C.shadowLg }}>
-        <div style={{ width: 52, height: 52, borderRadius: 14, background: modal.type === "danger" ? C.dangerBg : C.warningBg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
-          {modal.type === "danger" ? <Trash2 size={24} color={C.danger}/> : <AlertTriangle size={24} color={C.warning}/>}
-        </div>
-        <h3 style={{ fontWeight: 800, fontSize: 18, color: C.navy, marginBottom: 8 }}>{modal.title}</h3>
-        <p style={{ fontSize: 14, color: C.textSec, lineHeight: 1.65, marginBottom: 24 }}>{modal.message}</p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-          <button onClick={onClose} style={{ padding: "10px 20px", border: `1.5px solid ${C.border}`, borderRadius: 9, background: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600, color: C.textSec }}>Cancel</button>
-          <button onClick={onConfirm} style={{ padding: "10px 20px", border: "none", borderRadius: 9, background: modal.type === "danger" ? C.danger : C.warning, color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
-            {modal.confirmLabel || "Confirm"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   SIDEBAR
-============================================================ */
-const NAV_ITEMS = [
-  { id: "overview", label: "Dashboard", icon: LayoutDashboard, section: "main" },
-  { id: "moderation", label: "All Properties", icon: Building2, section: "properties", badge: null },
-  { id: "pending", label: "Pending Review", icon: Clock, section: "properties", badge: "pending" },
-  { id: "approved", label: "Approved", icon: CheckCircle, section: "properties" },
-  { id: "rejected", label: "Rejected", icon: XCircle, section: "properties" },
-  { id: "featured", label: "Featured", icon: Star, section: "properties" },
-  { id: "users", label: "Users", icon: Users, section: "people" },
-  { id: "agents", label: "Agents", icon: UserCheck, section: "people" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, section: "system" },
-  { id: "settings", label: "Settings", icon: Settings, section: "system" },
-];
-
-function Sidebar({ active, setActive, collapsed, setCollapsed, pendingCount }) {
-  const sections = [
-    { key: "main", label: null },
-    { key: "properties", label: "Properties" },
-    { key: "people", label: "People" },
-    { key: "system", label: "System" },
-  ];
-
-  const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-
-    router.push("/auth");
-  };
-
-  return (
-    <aside style={{ width: collapsed ? 76 : 260, background: C.sidebar, display: "flex", flexDirection: "column", flexShrink: 0, transition: "width 0.25s ease", overflow: "hidden", position: "relative", zIndex: 100, boxShadow: "8px 0 30px rgba(18,56,38,0.18)" }}>
-      {/* Logo */}
-      <div style={{ padding: collapsed ? "20px 16px" : "20px 22px", borderBottom: `1px solid ${C.sidebarBorder}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-        <div style={{ width: 40, height: 40, background: C.blue, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Building2 size={18} color="#fff"/>
-        </div>
-        {!collapsed && (
-          <div style={{ overflow: "hidden" }}>
-            <div style={{ ...serif, fontWeight: 700, fontSize: 17, color: "#fff", whiteSpace: "nowrap" }}>EstateElite</div>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>Admin Console</div>
-          </div>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <nav style={{ flex: 1, padding: "12px 10px", overflowY: "auto", overflowX: "hidden" }}>
-        {sections.map(sec => {
-          const items = NAV_ITEMS.filter(n => n.section === sec.key);
-          return (
-            <div key={sec.key} style={{ marginBottom: 4 }}>
-              {sec.label && !collapsed && (
-                <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", textTransform: "uppercase", padding: "12px 10px 6px" }}>{sec.label}</div>
-              )}
-              {items.map(item => {
-                const isActive = active === item.id;
-                const count = item.badge === "pending" ? pendingCount : null;
-                return (
-                  <button key={item.id} onClick={() => setActive(item.id)}
-                    title={collapsed ? item.label : undefined}
-                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: collapsed ? "11px 14px" : "11px 12px", borderRadius: 12, border: "none", cursor: "pointer", marginBottom: 4, transition: "all 0.18s", background: isActive ? C.sidebarActive : "transparent", color: isActive ? "#fff" : "rgba(255,255,255,0.64)", borderLeft: isActive ? `3px solid ${C.amber}` : "3px solid transparent", justifyContent: collapsed ? "center" : "flex-start" }}>
-                    <item.icon size={17} style={{ flexShrink: 0 }}/>
-                    {!collapsed && (
-                      <>
-                        <span style={{ flex: 1, fontSize: 13.5, fontWeight: isActive ? 700 : 500, whiteSpace: "nowrap", textAlign: "left" }}>{item.label}</span>
-                        {count > 0 && <span style={{ background: C.amber, color: C.navy, fontSize: 10, fontWeight: 800, padding: "2px 7px", borderRadius: 99, flexShrink: 0 }}>{count}</span>}
-                      </>
-                    )}
-                  </button>
-                );
-              })}
-              {sec.key !== "system" && <div style={{ height: 1, background: C.sidebarBorder, margin: "8px 4px" }}/>}
-            </div>
-          );
-        })}
-      </nav>
-
-      {/* Admin Profile */}
-      <div style={{ padding: collapsed ? "14px 12px" : "14px 16px", borderTop: `1px solid ${C.sidebarBorder}`, display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 34, height: 34, borderRadius: "50%", background: C.navyLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700, fontSize: 13, color: "#fff" }}>SA</div>
-        {!collapsed && (
-          <div style={{ flex: 1, overflow: "hidden" }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Super Admin</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>admin@estateelite.in</div>
-          </div>
-        )}
-        {!collapsed && <button
-          onClick={handleLogout}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-          }}
-        >
-          <LogOut
-            size={16}
-            color="rgba(255,255,255,0.35)"
-            style={{ flexShrink: 0 }}
-          />
-        </button>}
-      </div>
-    </aside>
-  );
-}
-
-/* ============================================================
-   TOP BAR
-============================================================ */
-function TopBar({ active, collapsed, setCollapsed, searchQuery, setSearchQuery, properties }) {
-  const [showNotif, setShowNotif] = useState(false);
-  const pending = properties.filter(p => p.status === "PENDING");
-  const breadcrumbs = {
-    overview: ["Dashboard"],
-    moderation: ["Dashboard", "All Properties"],
-    pending: ["Dashboard", "Pending Review"],
-    approved: ["Dashboard", "Approved"],
-    rejected: ["Dashboard", "Rejected"],
-    featured: ["Dashboard", "Featured"],
-    users: ["Dashboard", "Users"],
-    agents: ["Dashboard", "Agents"],
-    analytics: ["Dashboard", "Analytics"],
-    settings: ["Dashboard", "Settings"],
-  };
-
-  return (
-    <header style={{ height: 72, background: "rgba(255,255,255,0.94)", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 28px", gap: 16, flexShrink: 0, position: "sticky", top: 0, zIndex: 50, boxShadow: "0 10px 30px rgba(22,74,52,0.05)", backdropFilter: "blur(18px)" }}>
-      {/* Collapse toggle */}
-      <button onClick={() => setCollapsed(c => !c)} style={{ width: 38, height: 38, border: `1.5px solid ${C.border}`, borderRadius: 12, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: C.shadow }}>
-        <Menu size={16} color={C.textSec}/>
-      </button>
-
-      {/* Breadcrumb */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "0 0 auto" }}>
-        {(breadcrumbs[active] || ["Dashboard"]).map((crumb, i, arr) => (
-          <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: i === arr.length - 1 ? 700 : 500, color: i === arr.length - 1 ? C.navy : C.muted }}>{crumb}</span>
-            {i < arr.length - 1 && <ChevronRight size={14} color={C.muted}/>}
-          </span>
-        ))}
-      </div>
-
-      {/* Spacer */}
-      <div style={{ flex: 1 }}/>
-
-      {/* Search */}
-      {["moderation", "pending", "approved", "rejected", "featured"].includes(active) && (
-        <div style={{ position: "relative", width: 300 }}>
-          <Search size={15} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: C.muted }}/>
-          <input placeholder="Search properties…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            style={{ width: "100%", padding: "10px 14px 10px 38px", border: `1.5px solid ${C.border}`, borderRadius: 14, fontSize: 13, color: C.text, outline: "none", background: C.bg }}
-            onFocus={e => e.target.style.borderColor = C.blue}
-            onBlur={e => e.target.style.borderColor = C.border}
-          />
-        </div>
-      )}
-
-      {/* Notifications */}
-      <div style={{ position: "relative" }}>
-        <button onClick={() => setShowNotif(v => !v)} style={{ width: 38, height: 38, border: `1.5px solid ${C.border}`, borderRadius: 12, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", boxShadow: C.shadow }}>
-          <Bell size={16} color={C.textSec}/>
-          {pending.length > 0 && <span style={{ position: "absolute", top: -4, right: -4, width: 17, height: 17, background: C.danger, borderRadius: "50%", fontSize: 10, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{pending.length}</span>}
-        </button>
-        {showNotif && (
-          <div style={{ position: "absolute", top: 44, right: 0, background: "#fff", border: `1px solid ${C.border}`, borderRadius: 14, boxShadow: C.shadowLg, width: 320, zIndex: 200 }}>
-            <div style={{ padding: "14px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: 14, color: C.navy }}>Notifications</div>
-              <span style={{ fontSize: 12, color: C.blue, cursor: "pointer", fontWeight: 600 }}>Mark all read</span>
-            </div>
-            {pending.slice(0, 4).map(p => (
-              <div key={p.id} style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", gap: 12, cursor: "pointer", transition: "background 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.background = C.bg}
-                onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.amber, flexShrink: 0, marginTop: 5 }}/>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 2 }}>New listing pending review</div>
-                  <div style={{ fontSize: 12, color: C.textSec }}>{p.title}</div>
-                  <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>{timeAgo(p.createdAt)}</div>
-                </div>
-              </div>
-            ))}
-            <div style={{ padding: "10px 16px", textAlign: "center", fontSize: 13, color: C.blue, cursor: "pointer", fontWeight: 600 }}>View all notifications</div>
-          </div>
-        )}
-      </div>
-
-      {/* Role badge */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 13px", background: C.bluePale, borderRadius: 14, border: `1px solid ${C.blue}22` }}>
-        <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>SA</div>
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.navy }}>Super Admin</div>
-          <div style={{ fontSize: 10, color: C.blue, fontWeight: 600 }}>● Online</div>
-        </div>
-        <ChevronDown size={13} color={C.blue}/>
-      </div>
-    </header>
-  );
-}
 
 /* ============================================================
    LOCATION FILTERS
@@ -1070,10 +670,27 @@ function PlaceholderPage({ title, icon, description }) {
   );
 }
 
+/* Simple Confirm Modal used by the admin dashboard */
+function ConfirmModal({ modal, onConfirm, onClose }) {
+  if (!modal) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 480, background: "#fff", borderRadius: 12, padding: 20, boxShadow: C.shadowLg }}>
+        <div style={{ fontWeight: 800, fontSize: 16, color: C.navy, marginBottom: 8 }}>{modal.title}</div>
+        <div style={{ fontSize: 13, color: C.text, marginBottom: 18 }}>{modal.message}</div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <button onClick={onClose} style={{ padding: "8px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "#fff" }}>Cancel</button>
+          <button onClick={async () => { await modal.onConfirm?.(); onConfirm?.(); }} style={{ padding: "8px 12px", borderRadius: 8, background: C.danger, color: "#fff" }}>{modal.confirmLabel || "Confirm"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============================================================
    MAIN APP
 ============================================================ */
-export default function AdminDashboard() {
+export default function EstateEliteAdmin() {
   const [active, setActive] = useState("overview");
   const { properties, loading, error, mutationState, approveProperty, rejectProperty, featureProperty, deleteProperty } = useAdminProperties();
   const toast = useToast();
@@ -1084,14 +701,7 @@ export default function AdminDashboard() {
   const [modal, setModal] = useState(null);
   const [drawer, setDrawer] = useState(null);
 
-  // Check authentication on mount
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-
-    if (!token) {
-      router.push("/auth");
-    }
-  }, []);
+  // Authentication is handled by app/admin/layout.tsx via useRedirectIfUnauthenticated
 
   // Handle initial errors
   useEffect(() => {
@@ -1214,12 +824,10 @@ export default function AdminDashboard() {
     featured: { title: "Featured Properties", sub: `${filteredProperties.length} premium slots` },
   };
 
+  // Render only dashboard content — layout (sidebar/navbar/auth) is provided by app/admin/layout.tsx
   return (
-    <div style={{ ...sans, display: "flex", height: "100vh", overflow: "hidden", background: C.bg }}>
+    <div>
       <style>{`
-        *, *::before, *::after { box-sizing: border-box; }
-        body, #root { margin: 0; padding: 0; }
-        button, input, select { font-family: inherit; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -1230,71 +838,57 @@ export default function AdminDashboard() {
 
       <ToastContainer />
 
-      <Sidebar active={active} setActive={setActive} collapsed={collapsed} setCollapsed={setCollapsed} pendingCount={pendingCount}/>
-
-      {/* Main area */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <TopBar active={active} collapsed={collapsed} setCollapsed={setCollapsed} searchQuery={search} setSearchQuery={setSearch} properties={properties}/>
-
-        <main style={{ flex: 1, overflowY: "auto", padding: "32px" }}>
-          {/* Section header for table pages */}
-          {isTablePage && (
-            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 20 }}>
-              <div>
-                <h1 style={{ ...serif, fontWeight: 700, fontSize: 30, color: C.navy, marginBottom: 5 }}>{sectionTitles[active]?.title}</h1>
-                <div style={{ fontSize: 13, color: C.muted }}>{sectionTitles[active]?.sub}</div>
-              </div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <button style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", border: `1.5px solid ${C.border}`, borderRadius: 12, background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700, color: C.textSec, boxShadow: C.shadow }}>
-                  <Download size={14}/> Export
-                </button>
-                {active === "pending" && pendingCount > 0 && (
-                  <button onClick={() => {
-                    toast.info("Approve All feature is coming soon");
-                  }} style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", border: "none", borderRadius: 12, background: C.success, color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700, boxShadow: C.shadow }}>
-                    <CheckCircle size={14}/> Approve All Pending ({pendingCount})
-                  </button>
-                )}
-              </div>
+      <div style={{ minHeight: 360 }}>
+        {/* Section header for table pages */}
+        {isTablePage && (
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 20 }}>
+            <div>
+              <h1 style={{ ...serif, fontWeight: 700, fontSize: 30, color: C.navy, marginBottom: 5 }}>{sectionTitles[active]?.title}</h1>
+              <div style={{ fontSize: 13, color: C.muted }}>{sectionTitles[active]?.sub}</div>
             </div>
-          )}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", border: `1.5px solid ${C.border}`, borderRadius: 12, background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700, color: C.textSec, boxShadow: C.shadow }}>
+                <Download size={14}/> Export
+              </button>
+            </div>
+          </div>
+        )}
 
-          {isTablePage && (
-            <LocationFilterPanel
-              value={locationFilters}
-              onChange={setLocationFilters}
-              onClear={() => setLocationFilters({ state: "", city: "", area: "" })}
-              resultCount={filteredProperties.length}
-            />
-          )}
+        {isTablePage && (
+          <LocationFilterPanel
+            value={locationFilters}
+            onChange={setLocationFilters}
+            onClear={() => setLocationFilters({ state: "", city: "", area: "" })}
+            resultCount={filteredProperties.length}
+          />
+        )}
 
-          {/* CONTENT */}
-          {active === "overview" && <OverviewPage properties={properties} onSetActive={setActive}/>}
+        {/* CONTENT */}
+        {active === "overview" && <OverviewPage properties={properties} onSetActive={setActive}/>}
 
-          {isTablePage && (
-            <PropertyTable
-              properties={filteredProperties}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              onFeature={handleFeature}
-              onDelete={handleDelete}
-              onView={handleView}
-              loading={loading}
-              filterStatus={currentFilter}
-              mutationState={mutationState}
-            />
-          )}
+        {isTablePage && (
+          <PropertyTable
+            properties={filteredProperties}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            onFeature={handleFeature}
+            onDelete={handleDelete}
+            onView={handleView}
+            loading={loading}
+            filterStatus={currentFilter}
+            mutationState={mutationState}
+          />
+        )}
 
-          {active === "users" && <UsersPage users={users}/>}
-          {active === "agents" && <UsersPage users={users.filter(u => u.role === "AGENT")}/>}
+        {active === "users" && <UsersPage users={users}/>} 
+        {active === "agents" && <UsersPage users={users.filter(u => u.role === "AGENT")}/>}
 
-          {active === "analytics" && (
-            <PlaceholderPage title="Analytics & Reports" icon={<BarChart3 size={32}/>} description="Advanced analytics including property views, conversion rates, city-wise demand, and revenue insights are coming soon." />
-          )}
-          {active === "settings" && (
-            <PlaceholderPage title="Platform Settings" icon={<Settings size={32}/>} description="Configure RERA validation rules, featured slot pricing, moderation workflows, email templates, and more." />
-          )}
-        </main>
+        {active === "analytics" && (
+          <PlaceholderPage title="Analytics & Reports" icon={<BarChart3 size={32}/>} description="Advanced analytics including property views, conversion rates, city-wise demand, and revenue insights are coming soon." />
+        )}
+        {active === "settings" && (
+          <PlaceholderPage title="Platform Settings" icon={<Settings size={32}/>} description="Configure RERA validation rules, featured slot pricing, moderation workflows, email templates, and more." />
+        )}
       </div>
 
       {/* Overlays */}

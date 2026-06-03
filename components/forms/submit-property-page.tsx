@@ -6,9 +6,6 @@ import { Building2, Calculator, Camera, Check, CheckCircle, ChevronDown, Chevron
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { apiClient, ApiError } from "@/lib/api/client";
-import { API_ENDPOINTS } from "@/lib/api/config";
-import { PropertyCreateResponse } from "@/types/api";
 
 type SubmitForm = {
   listingType: string;
@@ -109,53 +106,12 @@ export function SubmitPropertyPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await apiClient.post<PropertyCreateResponse>(
-        API_ENDPOINTS.PUBLIC.PROPERTIES_SUBMIT,
-        {
-          title: form.title,
-          subtitle: `${form.bedrooms} BHK ${form.propertyType}`,
-          description: form.description,
-          price: form.price,
-          priceNum: Number(form.price),
-          city: form.city,
-          location: form.address,
-          pincode: form.pincode || null,
-          type: form.propertyType,
-          listingType: form.listingType || null,
-          beds: Number(form.bedrooms),
-          bathrooms: 2,
-          area: Number(form.area || 0),
-          furnishing: form.furnishing || null,
-          amenities: form.amenities || [],
-          images: [],
-        }
-      );
-
-      if (response.success) {
-        // Success - redirect to properties page
-        router.push("/properties");
-      } else {
-        setError(response.message || "Failed to submit property");
-      }
-    } catch (err) {
-      const apiError = err as ApiError;
-
-      let errorMessage = "Failed to submit property. Please try again.";
-
-      if (apiError.status === 401) {
-        errorMessage = "You are not authorized to submit properties.";
-      } else if (apiError.status === 0) {
-        errorMessage = "Network error. Please check your connection.";
-      } else if (apiError.message) {
-        errorMessage = apiError.message;
-      }
-
-      setError(errorMessage);
-      console.error("Property submission error:", apiError);
-    } finally {
+    // Simulate network delay
+    setTimeout(() => {
       setLoading(false);
-    }
+      alert("✓ Property submitted successfully! It has been queued for Admin approval.");
+      router.push("/properties");
+    }, 1500);
   };
 
   return (

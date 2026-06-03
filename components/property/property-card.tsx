@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { Bath, Bed, Heart, MapPin, Maximize2, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { Bath, Bed, Heart, MapPin, Maximize2, ShieldCheck } from "lucide-react";
 import type { Property } from "@/types";
 import { useSavedProperties } from "@/lib/saved-properties-context";
 import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
+
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
@@ -30,12 +30,6 @@ export function PropertyCard({ property, compact }: PropertyCardProps) {
       property.image ||
       "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75";
 
-    const agent = property.agent || {
-      name: "EstateElite Agent",
-      avatar: "",
-      deals: 0,
-    };
-
     const beds = property.beds || 0;
 
     const baths =
@@ -58,7 +52,7 @@ export function PropertyCard({ property, compact }: PropertyCardProps) {
       property.price || "Price on Request";
 
   return (
-    <Card className="group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg">
+    <Card className="group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg flex flex-col h-full">
       <div className="relative overflow-hidden bg-estate-navy">
         <Link href={`/properties/${property.id}`} aria-label={`View ${property.title}`} className="block">
           <img
@@ -179,31 +173,7 @@ export function PropertyCard({ property, compact }: PropertyCardProps) {
           </div>
 
         )}
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Avatar initials={agent.avatar || "EA"} size="sm" />
-            <div>
-              <div className="text-xs font-semibold text-estate-text">{agent.name}</div>
-              <div className="text-[11px] text-estate-muted">{agent.deals} deals</div>
-            </div>
-          </div>
-          <div className="flex gap-1.5">
-            {[Phone, MessageCircle].map((Icon, index) => (
-              <button
-                key={index}
-                aria-label={index === 0 ? "Call agent" : "Message agent"}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border-[1.5px] border-estate-border bg-white text-estate-blue shadow-sm transition hover:-translate-y-px hover:border-estate-blue hover:bg-estate-blue-pale active:translate-y-0"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
-              >
-                <Icon size={14} aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        </div>
+    
       </Link>
     </Card>
   );

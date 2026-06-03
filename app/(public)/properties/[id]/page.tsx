@@ -13,8 +13,7 @@ import { PropertySidebar } from "@/components/property/property-sidebar";
 import { PropertySimilar } from "@/components/property/property-similar";
 import { PropertyTabs, type PropertyDetailRow } from "@/components/property/property-tabs";
 import { PropertyTrust } from "@/components/property/property-trust";
-import { apiClient } from "@/lib/api/client";
-import { API_ENDPOINTS } from "@/lib/api/config";
+import { properties } from "@/data/properties";
 import type { Property } from "@/types";
 
 type PropertyResponse = {
@@ -78,23 +77,15 @@ export default function PropertyDetailsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      try {
-        const data = await apiClient.get<PropertyResponse>(
-          API_ENDPOINTS.PUBLIC.PROPERTIES_DETAIL(params?.id || ""),
-          { cache: "no-store" },
-        );
-        setProperty(data.property ?? null);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
+    const fetchProperty = () => {
+      if (params?.id) {
+        const found = properties.find((p) => p.id.toString() === params.id);
+        setProperty(found || null);
       }
+      setLoading(false);
     };
 
-    if (params?.id) {
-      fetchProperty();
-    }
+    fetchProperty();
   }, [params?.id]);
 
   const derived = useMemo(() => {
