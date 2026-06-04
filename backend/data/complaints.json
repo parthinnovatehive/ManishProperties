@@ -1,0 +1,13 @@
+[
+  {
+    "id": "comp1",
+    "userId": "user_1",
+    "userName": "John Doe",
+    "userEmail": "user@estateelite.com",
+    "subject": "Incorrect location on Worli property page",
+    "description": "The pin location needs review.",
+    "status": "In Progress",
+    "priority": "Medium",
+    "date": "01 Jun 2026"
+  }
+]

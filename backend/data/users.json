@@ -1,0 +1,11 @@
+[
+  {
+    "id": "user_1",
+    "username": "user@estateelite.com",
+    "name": "John Doe",
+    "email": "user@estateelite.com",
+    "phone": "+91 90000 00001",
+    "role": "USER",
+    "savedProperties": ["1"]
+  }
+]

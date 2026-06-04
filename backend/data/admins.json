@@ -1,0 +1,10 @@
+[
+  {
+    "id": "admin_084516d1225c4d8a9c737c1db856bdba",
+    "username": "rootadmin",
+    "passwordHash": "scrypt:32768:8:1$Em0i7ZCyQ462N0A8$7d310ac1c4fc34283a695e56a2571b8ff97ea62c465115d86068ad7fbfd823e6d4ce3999551023e4711e7e6833620baba5c56f0cfc43bdd10206dda81e13a63b",
+    "role": "SUPER_ADMIN",
+    "name": "Root Admin",
+    "phone": null
+  }
+]
