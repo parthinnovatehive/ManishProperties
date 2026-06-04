@@ -1,19 +1,43 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { agentChats as initialChats, ChatContact, ChatMessage } from "@/data/agent-messages";
-import { ContactItem, MessageBubble } from "@/components/agent/MessageCard";
+import { ContactItem, MessageBubble, type ChatContact, type ChatMessage } from "@/components/agent/MessageCard";
+import { estateApi } from "@/lib/api";
 import { Search, Send, Phone, Mail, User, Info, ArrowLeft } from "lucide-react";
 
 export default function AgentMessagesPage() {
-  const [chats, setChats] = useState<ChatContact[]>(initialChats);
-  const [activeChatId, setActiveChatId] = useState<string>(initialChats[0].id);
+  const [chats, setChats] = useState<ChatContact[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [inputMessage, setInputMessage] = useState("");
 
   const [mobileShowChat, setMobileShowChat] = useState(false); // Mobile toggle
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    estateApi.messages.list<any>().then((items) => {
+      const normalized = items.map((item) => ({
+        id: item.id,
+        name: item.name || item.userName,
+        email: item.email || item.userEmail,
+        phone: item.phone || item.userPhone,
+        avatar: item.avatar || (item.userName || "U").slice(0, 2).toUpperCase(),
+        online: item.online || false,
+        lastMessage: item.lastMessage || "",
+        lastMessageTime: item.lastMessageTime || "",
+        unreadCount: item.unreadCount || 0,
+        messages: (item.messages || []).map((message: any) => ({
+          id: message.id,
+          sender: message.isAgent ? "agent" : message.sender || "client",
+          text: message.text || message.content,
+          timestamp: message.timestamp,
+        })),
+      }));
+      setChats(normalized);
+      setActiveChatId(normalized[0]?.id || "");
+    });
+  }, []);
 
   // Active chat calculation
   const activeChat = chats.find((c) => c.id === activeChatId) || chats[0];
@@ -34,9 +58,9 @@ export default function AgentMessagesPage() {
   }, [activeChatId, chats]);
 
   // Send Message Handler
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || !activeChat) return;
 
     const newMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
@@ -50,51 +74,35 @@ export default function AgentMessagesPage() {
     };
 
     // Update active chat messages
-    setChats((prevChats) =>
-      prevChats.map((chat) => {
-        if (chat.id === activeChatId) {
-          return {
-            ...chat,
-            lastMessage: newMessage.text,
-            lastMessageTime: newMessage.timestamp,
-            unreadCount: 0,
-            messages: [...chat.messages, newMessage],
-          };
-        }
-        return chat;
-      })
-    );
+    const nextChats = chats.map((chat) => {
+      if (chat.id === activeChatId) {
+        return {
+          ...chat,
+          lastMessage: newMessage.text,
+          lastMessageTime: newMessage.timestamp,
+          unreadCount: 0,
+          messages: [...chat.messages, newMessage],
+        };
+      }
+      return chat;
+    });
+    setChats(nextChats);
+    const updatedChat = nextChats.find((chat) => chat.id === activeChatId);
+    if (updatedChat) {
+      await estateApi.messages.update(activeChatId, updatedChat);
+    }
 
     setInputMessage("");
 
-    // Simulate client automated reply after 1.5 seconds
-    setTimeout(() => {
-      const clientReply: ChatMessage = {
-        id: `msg-${Date.now() + 1}`,
-        sender: "client",
-        text: `Thanks for details. I will review it shortly.`,
-        timestamp: new Date().toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      };
-
-      setChats((prevChats) =>
-        prevChats.map((chat) => {
-          if (chat.id === activeChatId) {
-            return {
-              ...chat,
-              lastMessage: clientReply.text,
-              lastMessageTime: clientReply.timestamp,
-              messages: [...chat.messages, clientReply],
-            };
-          }
-          return chat;
-        })
-      );
-    }, 1500);
   };
+
+  if (!activeChat) {
+    return (
+      <div className="bg-white border border-estate-border/80 rounded-[20px] shadow-estate h-[calc(100vh-180px)] min-h-[500px] flex items-center justify-center text-sm font-semibold text-estate-muted">
+        Loading conversations...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-estate-border/80 rounded-[20px] shadow-estate h-[calc(100vh-180px)] min-h-[500px] flex overflow-hidden animate-fade-up">

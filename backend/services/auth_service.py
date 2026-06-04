@@ -15,9 +15,11 @@ MAX_VERIFY_ATTEMPTS = 5
 
 
 def _public_account(account):
+    email = account.get("email") or account.get("username")
     return {
         "id": account["id"],
         "username": account["username"],
+        "email": email,
         "role": account["role"],
         "name": account.get("name"),
         "phone": account.get("phone"),
@@ -55,19 +57,22 @@ def authenticate(username, password, requested_role=None):
 
 def register_account(payload, default_role="USER"):
     ensure_default_admin()
-    username = str(payload.get("username", "")).strip()
+    username = str(payload.get("email") or payload.get("username") or "").strip()
     password = str(payload.get("password", ""))
     role = normalize_role(payload.get("role") or default_role)
 
     if not username or not password or not role:
-        return None, "Username, password, and role are required"
+        return None, "Email, password, and role are required"
+    if role in {"ADMIN", "SUPER_ADMIN"}:
+        return None, "Admin registration is not publicly available"
     if find_account_by_username(username):
-        return None, "Username already exists"
+        return None, "Email already exists"
 
     collection = collection_for_role(role)
     account = {
         "id": generate_id(f"{role.lower()}_"),
         "username": username,
+        "email": username,
         "passwordHash": generate_password_hash(password),
         "role": role,
         "name": payload.get("name"),
@@ -83,28 +88,7 @@ def google_login(payload):
     if not token:
         return None, "Google ID Token is required"
 
-    email = token.replace("mock-", "") if str(token).startswith("mock-") else "developer@estateelite.in"
-    if "@" not in email:
-        email = "developer@estateelite.in"
-    name = email.split("@")[0] or "Developer User"
-    role = normalize_role(payload.get("role") or "USER")
-
-    account = find_account_by_username(email)
-    if account and not role_matches(role, account.get("role")):
-        return None, f"This Google account is registered as a different role: {account.get('role')}"
-    if not account:
-        result, error = register_account(
-            {
-                "username": email,
-                "password": generate_id("google_"),
-                "role": role,
-                "name": name,
-                "phone": None,
-            },
-            default_role=role,
-        )
-        return result, error
-    return issue_tokens(account), None
+    return None, "Google login requires a configured Google token verifier"
 
 
 def issue_tokens(account):
@@ -114,9 +98,13 @@ def issue_tokens(account):
         "username": account.get("username"),
         "name": account.get("name"),
     }
+    access_token = create_access_token(identity=identity, additional_claims=claims)
+    refresh_token = create_refresh_token(identity=identity, additional_claims=claims)
     return {
-        "token": create_access_token(identity=identity, additional_claims=claims),
-        "refreshToken": create_refresh_token(identity=identity, additional_claims=claims),
+        "token": access_token,
+        "access_token": access_token,
+        "refreshToken": refresh_token,
+        "refresh_token": refresh_token,
         "admin": _public_account(account),
         "user": _public_account(account),
     }
@@ -133,7 +121,10 @@ def collection_for_role(role):
 
 def find_account_by_username(username):
     for collection in ("admins", "agents", "users"):
-        found = find_one(collection, lambda item: item.get("username") == username)
+        found = find_one(
+            collection,
+            lambda item: item.get("username") == username or item.get("email") == username,
+        )
         if found:
             return found
     return None

@@ -1,0 +1,33 @@
+{
+  "categories": [
+    {
+      "name": "Apartments",
+      "count": 2480,
+      "icon": "Building2"
+    },
+    {
+      "name": "Villas",
+      "count": 720,
+      "icon": "Home"
+    },
+    {
+      "name": "Commercial",
+      "count": 410,
+      "icon": "Briefcase"
+    }
+  ],
+  "homeStats": [
+    {
+      "label": "Verified Properties",
+      "value": "85K+"
+    },
+    {
+      "label": "Happy Users",
+      "value": "2M+"
+    },
+    {
+      "label": "Trusted Agents",
+      "value": "12K+"
+    }
+  ]
+}

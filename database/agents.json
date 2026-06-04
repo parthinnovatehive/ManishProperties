@@ -1,0 +1,63 @@
+[
+  {
+    "id": "agent_1",
+    "username": "agent@estateelite.com",
+    "name": "Rahul Sharma",
+    "email": "agent@estateelite.com",
+    "phone": "+91 98765 43210",
+    "role": "AGENT",
+    "assignedProperties": [
+      "1"
+    ]
+  },
+  {
+    "id": "agent_de7aebd989ab47c0adc94ec9c835dad2",
+    "username": "audit-agent-1780592459@example.com",
+    "email": "audit-agent-1780592459@example.com",
+    "passwordHash": "scrypt:32768:8:1$rS8t4juAFhq0THKp$860cf9413994269b1d9a26a71afdcf257c584117786f9933143aae5b1d2953dd03a1d976d347b8ed9254a1810366270678727b9c999ed192cebd8c07d3a0b252",
+    "role": "AGENT",
+    "name": "Audit Agent",
+    "phone": "+919999990002",
+    "savedProperties": []
+  },
+  {
+    "id": "agent_c2d84ef5dc3f46f69c09bc616bde396f",
+    "username": "audit-agent-1780592530@example.com",
+    "email": "audit-agent-1780592530@example.com",
+    "passwordHash": "scrypt:32768:8:1$J4iO0YXjuVJHqJfR$c0d1cfc7d322fcce5375821f5a9ab12a47f3f51c8792532d0c5d614626eb25925c9cb37fa06fb78d4e31bbc15381ab420cb32ab96654467d7bf88ac19562afac",
+    "role": "AGENT",
+    "name": "Audit Agent",
+    "phone": "+919999990002",
+    "savedProperties": []
+  },
+  {
+    "id": "agent_975a388125da4697b1e7cec3404fe9d4",
+    "username": "audit-agent-1780592579@example.com",
+    "email": "audit-agent-1780592579@example.com",
+    "passwordHash": "scrypt:32768:8:1$6x8FMDwTwiceuEQz$5e0f41d73d7374e743c31852370581c7e6f2f2e0a31e6c961cd56c338b6a861c64395e6bcf0f587cb9bde23c38d80740be9a3b10b90b01449006abc6307d86ac",
+    "role": "AGENT",
+    "name": "Audit Agent",
+    "phone": "+919999990002",
+    "savedProperties": []
+  },
+  {
+    "id": "agent_4ce33da2aceb45569ef1a2873db7186e",
+    "username": "debug-agent-1780592599@e.com",
+    "email": "debug-agent-1780592599@e.com",
+    "passwordHash": "scrypt:32768:8:1$aZw9t65P6D7WjLdF$d0310fd584d6b45557837cb1279b47227ad9768aea85124939a311bc7c523a0a707fba06440acd193431ec220cb9a2e7c6ae81593149b2f74ca2baf8e9d477bd",
+    "role": "AGENT",
+    "name": "Debug Agent",
+    "phone": "9999990002",
+    "savedProperties": []
+  },
+  {
+    "id": "agent_3831795ae3ca40c5950528878661763f",
+    "username": "audit-agent-1780592663@example.com",
+    "email": "audit-agent-1780592663@example.com",
+    "passwordHash": "scrypt:32768:8:1$b9vdC8ZiRMWZT1tY$93c3b33a44b06b28dd03db9cb57383070368e18a511e158e29aa93f01213bac33c5792718e4042666042c592300301c2326a1c943ef3a046b1051e4818704047",
+    "role": "AGENT",
+    "name": "Audit Agent",
+    "phone": "+919999990002",
+    "savedProperties": []
+  }
+]

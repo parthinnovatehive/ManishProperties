@@ -1,0 +1,63 @@
+[
+  {
+    "id": "user_1",
+    "username": "user@estateelite.com",
+    "name": "John Doe",
+    "email": "user@estateelite.com",
+    "phone": "+91 90000 00001",
+    "role": "USER",
+    "savedProperties": [
+      "1"
+    ]
+  },
+  {
+    "id": "user_234bea7a65a545b7b409ac8a2b1b4b48",
+    "username": "audit-user-1780592459@example.com",
+    "email": "audit-user-1780592459@example.com",
+    "passwordHash": "scrypt:32768:8:1$9pk4b7SS5YWZH04d$b19f8ffd9c35222d0cbe2c79153a93cd4a402130c9a3fed709b31c772748830a35038619933d23a461d1642eba8701fa8fce56f118e2b31d748fea00c475aad0",
+    "role": "USER",
+    "name": "Audit User",
+    "phone": "+919999990001",
+    "savedProperties": []
+  },
+  {
+    "id": "user_113d26695a264878a2d52a573f954f17",
+    "username": "audit-user-1780592530@example.com",
+    "email": "audit-user-1780592530@example.com",
+    "passwordHash": "scrypt:32768:8:1$wolMak7z140YbD8M$f446932c33b1df89644b58c72c40f2be5808f61eaf34515363b9f94aca26ee7c5e0dff97d12e6ee4fd2b6d79776eef4baddb97e03c6439d9ca0b4658fd55e422",
+    "role": "USER",
+    "name": "Audit User",
+    "phone": "+919999990001",
+    "savedProperties": []
+  },
+  {
+    "id": "user_baa3cae7657345c6a2b78f537a3f007d",
+    "username": "audit-user-1780592579@example.com",
+    "email": "audit-user-1780592579@example.com",
+    "passwordHash": "scrypt:32768:8:1$w6dmxOJ5aidhcSqQ$035a5a5499ad55c656cbefb6e8b20012028feb8509482816f68112c161d0341b44c8a4bbc7a16775318569277fffc0502b74addf44c64a813e093a8ad9572f2d",
+    "role": "USER",
+    "name": "Audit User",
+    "phone": "+919999990001",
+    "savedProperties": []
+  },
+  {
+    "id": "user_ab041e469ea0406395234fe1397024c9",
+    "username": "debug-user-1780592599@e.com",
+    "email": "debug-user-1780592599@e.com",
+    "passwordHash": "scrypt:32768:8:1$g7jAAvOXCKXSDJOG$b849dfee4262b9f2a557c15ec5a73e17e7041776dd6de09d1c22dc4bf6e195535ae782983e38eb97206843b0e4bae759ccb9205448c982d9c5ee084f12b28eb9",
+    "role": "USER",
+    "name": "Debug User",
+    "phone": "9999990001",
+    "savedProperties": []
+  },
+  {
+    "id": "user_723d77bb054240bdbae5cfb8c402c7e2",
+    "username": "audit-user-1780592663@example.com",
+    "email": "audit-user-1780592663@example.com",
+    "passwordHash": "scrypt:32768:8:1$1i0CuWl7HexgWjkD$b0b2b0ebc44776e42e256defca79a519000b2db6eac480b15518bcce2ef0a169e865aea02f5848cfe04549802d34de0ef31ff744310284d9f5d879bfde8082aa",
+    "role": "USER",
+    "name": "Audit User",
+    "phone": "+919999990001",
+    "savedProperties": []
+  }
+]

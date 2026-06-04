@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from middleware.permissions import admin_required
+from middleware.permissions import admin_required, role_required
 from services.property_service import (
     create_property,
     delete_property,
@@ -52,7 +52,7 @@ def get_property_detail(property_id):
 @properties_bp.post("/properties/submit")
 def create_property_route():
     if _is_admin_request():
-        protected = admin_required(lambda: None)
+        protected = role_required("AGENT", "ADMIN", "SUPER_ADMIN")(lambda: None)
         auth_result = protected()
         if auth_result is not None:
             return auth_result
@@ -68,7 +68,7 @@ def create_property_route():
 @properties_bp.patch("/<property_id>")
 @properties_bp.put("/properties/<property_id>")
 @properties_bp.patch("/properties/<property_id>")
-@admin_required
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
 def update_property_route(property_id):
     property_item = update_property(property_id, request.get_json(silent=True) or {})
     if not property_item:
@@ -112,7 +112,7 @@ def feature_property(property_id):
 
 @properties_bp.delete("/<property_id>")
 @properties_bp.delete("/properties/<property_id>")
-@admin_required
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
 def delete_property_route(property_id):
     if not delete_property(property_id):
         return error_response("Property not found", 404)

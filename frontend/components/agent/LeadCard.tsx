@@ -1,7 +1,18 @@
-import { Lead } from "@/data/agent-leads";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Mail, Home, DollarSign, Calendar, MessageSquare, Edit } from "lucide-react";
+
+export interface Lead {
+  id: string;
+  clientName: string;
+  phone: string;
+  email: string;
+  propertyTitle: string;
+  budget: string;
+  notes?: string;
+  date: string;
+  status: "New" | "Contacted" | "Interested" | "Closed";
+}
 
 interface LeadCardProps {
   lead: Lead;

@@ -3,8 +3,8 @@
  * Production-grade HTTP client with automatic token injection and error handling
  */
 
-import { API_BASE_URL, REQUEST_TIMEOUT } from "./config";
-import { getToken } from "@/lib/utils/token";
+import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from "./config";
+import { getRefreshToken, getToken, setToken, clearAllAuthData } from "@/lib/utils/token";
 
 export interface ApiError {
   status: number;
@@ -37,6 +37,9 @@ export class ApiClient {
    * Build full URL with query parameters
    */
   private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>): string {
+    if (!this.baseUrl) {
+      throw new Error("NEXT_PUBLIC_API_URL is not configured");
+    }
     const url = new URL(`${this.baseUrl}${endpoint}`);
 
     if (params) {
@@ -123,9 +126,32 @@ export class ApiClient {
   /**
    * Generic request method
    */
+  private async refreshAccessToken(): Promise<boolean> {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken || !this.baseUrl) return false;
+
+    try {
+      const response = await fetch(`${this.baseUrl}${API_ENDPOINTS.AUTH.REFRESH}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      });
+      if (!response.ok) return false;
+      const data = (await response.json()) as { token?: string };
+      if (!data.token) return false;
+      setToken(data.token);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async request<T = unknown>(
     endpoint: string,
-    config?: RequestConfig
+    config?: RequestConfig,
+    retry = true
   ): Promise<T> {
     const url = this.buildUrl(endpoint, config?.params);
     const timeout = config?.timeout ?? REQUEST_TIMEOUT;
@@ -141,6 +167,12 @@ export class ApiClient {
       );
 
       if (!response.ok) {
+        if (response.status === 401 && retry && await this.refreshAccessToken()) {
+          return this.request<T>(endpoint, config, false);
+        }
+        if (response.status === 401) {
+          clearAllAuthData();
+        }
         const error = await this.handleError(response);
         throw error;
       }

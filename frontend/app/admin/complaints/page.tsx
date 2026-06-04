@@ -1,12 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { complaints as initialComplaints, Complaint } from "@/data/complaints";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface Complaint {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  subject: string;
+  description: string;
+  status: "Open" | "In Progress" | "Resolved";
+  priority: "Low" | "Medium" | "High";
+  date: string;
+  resolutionNotes?: string;
+}
 
 export default function AdminComplaintsPage() {
-  const [complaintsList, setComplaintsList] = useState<Complaint[]>(initialComplaints);
+  const [complaintsList, setComplaintsList] = useState<Complaint[]>([]);
 
-  const handleUpdateStatus = (id: string, newStatus: Complaint['status']) => {
+  useEffect(() => {
+    estateApi.complaints.list<Complaint>().then(setComplaintsList);
+  }, []);
+
+  const handleUpdateStatus = async (id: string, newStatus: Complaint['status']) => {
+    await estateApi.complaints.update<Complaint>(id, { status: newStatus });
     setComplaintsList(prev =>
       prev.map(c => (c.id === id ? { ...c, status: newStatus } : c))
     );

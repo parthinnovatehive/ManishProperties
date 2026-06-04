@@ -56,6 +56,48 @@ def dashboard():
     return success_response("Agent dashboard fetched", data=data)
 
 
+@agents_bp.get("/leads")
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
+def leads():
+    data = load_json("leads")
+    return success_response("Leads fetched", data=data, leads=data)
+
+
+@agents_bp.post("/leads")
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
+def create_lead():
+    payload = request.get_json(silent=True) or {}
+    lead = {"id": str(payload.get("id") or generate_id("lead_")), **payload, "createdAt": now_iso()}
+    append_json("leads", lead)
+    return success_response("Lead created", data=lead, lead=lead, status_code=201)
+
+
+@agents_bp.get("/leads/<lead_id>")
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
+def show_lead(lead_id):
+    lead = next((item for item in load_json("leads") if str(item.get("id")) == str(lead_id)), None)
+    if not lead:
+        return error_response("Lead not found", 404)
+    return success_response("Lead fetched", data=lead, lead=lead)
+
+
+@agents_bp.patch("/leads/<lead_id>")
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
+def update_lead(lead_id):
+    lead = update_json("leads", lead_id, {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()})
+    if not lead:
+        return error_response("Lead not found", 404)
+    return success_response("Lead updated", data=lead, lead=lead)
+
+
+@agents_bp.delete("/leads/<lead_id>")
+@role_required("AGENT", "ADMIN", "SUPER_ADMIN")
+def destroy_lead(lead_id):
+    if not delete_json("leads", lead_id):
+        return error_response("Lead not found", 404)
+    return success_response("Lead deleted")
+
+
 @agents_bp.get("/<agent_id>")
 @jwt_required()
 def show(agent_id):

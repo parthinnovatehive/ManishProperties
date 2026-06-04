@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import { useAuth, Role } from "@/lib/auth";
 
 export const useRedirectIfUnauthenticated = (allowedRoles: Role[]) => {
-  const { role } = useAuth();
+  const { role, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!role || !allowedRoles.includes(role)) {
-      // Determine appropriate login route
-      const dest = allowedRoles.includes("super-admin")
-        ? "/super-admin/login"
-        : "/auth";
-      router.replace(dest);
+    if (loading) return;
+    if (!role) {
+      router.replace("/auth/login");
+      return;
     }
-  }, [role, allowedRoles, router]);
+    if (!allowedRoles.includes(role)) {
+      router.replace("/unauthorized");
+    }
+  }, [role, loading, allowedRoles, router]);
 };

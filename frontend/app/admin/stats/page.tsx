@@ -1,13 +1,37 @@
 "use client";
 
-import { properties } from "@/data/properties";
-import { agents } from "@/data/agents";
-import { users } from "@/data/users";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
 
 export default function AdminStatsPage() {
-  const totalProperties = properties.length;
-  const totalAgents = agents.length;
-  const totalUsers = users.length;
+  const [totalProperties, setTotalProperties] = useState(0);
+  const [totalAgents, setTotalAgents] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadStats = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [properties, agents, users] = await Promise.all([
+        estateApi.adminProperties.list(),
+        estateApi.agents.list(),
+        estateApi.users.list(),
+      ]);
+      setTotalProperties(properties.length);
+      setTotalAgents(agents.length);
+      setTotalUsers(users.length);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load platform statistics.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -15,11 +39,22 @@ export default function AdminStatsPage() {
         <h1 className="text-3xl font-bold text-estate-navy font-serif">Platform Statistics</h1>
         <p className="text-sm text-estate-text-sec">Interactive visual summary of EstateElite platform performance and growth.</p>
       </div>
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          {error}
+          <button onClick={loadStats} className="ml-3 font-bold underline">Retry</button>
+        </div>
+      )}
+      {loading && (
+        <div className="rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
+          Loading statistics...
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
           <h3 className="text-xs font-bold text-estate-muted uppercase tracking-wider">Broker Growth Rate</h3>
-          <div className="text-2xl font-bold text-estate-navy mt-2">+14.2% MoM</div>
+          <div className="text-2xl font-bold text-estate-navy mt-2">{totalAgents} Agents</div>
           <div className="w-full h-24 mt-4">
             <svg viewBox="0 0 200 60" className="w-full h-full overflow-visible">
               <path
@@ -35,7 +70,7 @@ export default function AdminStatsPage() {
 
         <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
           <h3 className="text-xs font-bold text-estate-muted uppercase tracking-wider">User Acquisition</h3>
-          <div className="text-2xl font-bold text-estate-navy mt-2">+28.5% YoY</div>
+          <div className="text-2xl font-bold text-estate-navy mt-2">{totalUsers} Users</div>
           <div className="w-full h-24 mt-4">
             <svg viewBox="0 0 200 60" className="w-full h-full overflow-visible">
               <path
@@ -51,7 +86,7 @@ export default function AdminStatsPage() {
 
         <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
           <h3 className="text-xs font-bold text-estate-muted uppercase tracking-wider">Listing Uploads</h3>
-          <div className="text-2xl font-bold text-estate-navy mt-2">124 Listings (Q2)</div>
+          <div className="text-2xl font-bold text-estate-navy mt-2">{totalProperties} Listings</div>
           <div className="w-full h-24 mt-4">
             <svg viewBox="0 0 200 60" className="w-full h-full overflow-visible">
               <path

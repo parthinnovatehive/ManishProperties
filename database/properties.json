@@ -1,0 +1,145 @@
+[
+  {
+    "id": "1",
+    "title": "Luxury Sea-View 3BHK Apartment",
+    "subtitle": "High-rise tower with panoramic sea views",
+    "description": "Experience luxury living in this 3BHK apartment with panoramic sea views from Worli.",
+    "price": "₹2.85 Cr",
+    "priceNum": 28500000,
+    "city": "Mumbai",
+    "location": "Worli, South Mumbai",
+    "type": "Apartment",
+    "listingType": "For Sale",
+    "beds": 3,
+    "bathrooms": 3,
+    "baths": 3,
+    "area": 1850,
+    "amenities": [
+      "Swimming Pool",
+      "Gymnasium",
+      "24/7 Security",
+      "Covered Parking"
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&auto=format&q=80"
+    ],
+    "imgs": [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&auto=format&q=80"
+    ],
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=700&auto=format&q=75",
+    "img": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=700&auto=format&q=75",
+    "builder": "Lodha Group",
+    "rating": 4.8,
+    "reviews": 24,
+    "featured": true,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-05-28T00:00:00+00:00"
+  },
+  {
+    "id": "2",
+    "title": "Modern 4BHK Independent Villa",
+    "subtitle": "Gated community with private garden",
+    "description": "Elegant 4BHK independent villa in a premium gated community in Whitefield.",
+    "price": "₹1.95 Cr",
+    "priceNum": 19500000,
+    "city": "Bangalore",
+    "location": "Whitefield, East Bangalore",
+    "type": "Villa",
+    "listingType": "For Sale",
+    "beds": 4,
+    "bathrooms": 4,
+    "baths": 4,
+    "area": 3200,
+    "amenities": [
+      "Private Garden",
+      "Smart Home",
+      "Solar Panels"
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=900&auto=format&q=80"
+    ],
+    "imgs": [
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=900&auto=format&q=80"
+    ],
+    "image": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=700&auto=format&q=75",
+    "img": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=700&auto=format&q=75",
+    "builder": "Prestige Group",
+    "rating": 4.9,
+    "reviews": 38,
+    "featured": true,
+    "isNew": false,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-05-27T00:00:00+00:00"
+  },
+  {
+    "id": "3",
+    "title": "Owner Submitted Pune Apartment",
+    "subtitle": "Awaiting moderation",
+    "description": "A submitted property that needs admin review before public listing.",
+    "price": "₹42,000/mo",
+    "priceNum": 42000,
+    "city": "Pune",
+    "location": "Koregaon Park, Pune",
+    "type": "Apartment",
+    "listingType": "For Rent",
+    "beds": 2,
+    "bathrooms": 2,
+    "baths": 2,
+    "area": 1200,
+    "amenities": [
+      "Fully Furnished",
+      "Security"
+    ],
+    "images": [],
+    "imgs": [],
+    "image": "",
+    "img": "",
+    "builder": "EstateElite",
+    "rating": 0,
+    "reviews": 0,
+    "featured": false,
+    "isNew": true,
+    "status": "PENDING",
+    "moderationStatus": "PENDING",
+    "createdAt": "2026-05-26T00:00:00+00:00"
+  },
+  {
+    "id": "prop_2b540112c3fd494dbd64636031d6b3e1",
+    "title": "Audit Property 1780592663",
+    "subtitle": "Verified integration audit listing",
+    "description": "Integration audit property",
+    "price": "INR 1.25 Cr",
+    "priceNum": 12500000.0,
+    "city": "Mumbai",
+    "location": "Audit Nagar, Mumbai",
+    "pincode": null,
+    "type": "Apartment",
+    "listingType": null,
+    "beds": 2,
+    "bathrooms": 2,
+    "baths": 2,
+    "area": 1100,
+    "furnishing": null,
+    "amenities": [],
+    "images": [
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75"
+    ],
+    "imgs": [
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75"
+    ],
+    "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75",
+    "img": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75",
+    "builder": "EstateElite",
+    "rating": 0.0,
+    "reviews": 0,
+    "featured": true,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-06-04T17:04:24.150668+00:00",
+    "updatedAt": "2026-06-04T17:04:24.167752+00:00"
+  }
+]

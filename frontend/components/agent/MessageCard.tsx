@@ -1,5 +1,24 @@
-import { ChatContact, ChatMessage } from "@/data/agent-messages";
 import { cn } from "@/lib/utils";
+
+export interface ChatMessage {
+  id: string;
+  sender: "agent" | "client";
+  text: string;
+  timestamp: string;
+}
+
+export interface ChatContact {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  avatar: string;
+  online?: boolean;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+  messages: ChatMessage[];
+}
 
 interface ContactItemProps {
   contact: ChatContact;

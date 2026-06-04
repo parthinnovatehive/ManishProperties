@@ -1,8 +1,19 @@
-import { Appointment } from "@/data/agent-appointments";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Phone, Mail, Check, X, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+export interface Appointment {
+  id: string;
+  clientName?: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  propertyName: string;
+  date: string;
+  time: string;
+  status: "Pending" | "Confirmed" | "Completed" | "Cancelled" | "Scheduled";
+  type: "Site Visit" | "Online Consultation" | "Agreement Review" | "In-Person" | "Video Call";
+}
 
 interface AppointmentCardProps {
   appointment: Appointment;

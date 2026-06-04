@@ -13,6 +13,11 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
           <p className="mt-2.5 text-[15px] text-estate-text-sec">Real stories from homebuyers, sellers, and investors across India</p>
         </div>
 
+        {testimonials.length === 0 ? (
+          <div className="rounded-2xl border border-estate-border bg-estate-bg p-8 text-center text-sm font-semibold text-estate-text-sec">
+            No testimonials are available from the API yet.
+          </div>
+        ) : (
         <div className="grid gap-6 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
             <Card key={testimonial.name} className="p-8">
@@ -30,6 +35,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
             </Card>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

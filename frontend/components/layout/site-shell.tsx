@@ -9,7 +9,7 @@ import { ToastContainer } from "../ui/toast";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const hideFooter = pathname === "/auth";
+  const hideFooter = pathname?.startsWith("/auth");
 
   return (
     <SavedPropertiesProvider>

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "conv1",
+    "userName": "John Doe",
+    "userEmail": "user@estateelite.com",
+    "avatar": "JD",
+    "lastMessage": "Is the price negotiable for the sea-view apartment?",
+    "lastMessageTime": "10:30 AM",
+    "unreadCount": 1,
+    "messages": []
+  },
+  {
+    "id": "msg_d2b41bad8a5c4281bbdd38561a125efd",
+    "content": "Hello from integration audit",
+    "from": "audit-user-1780592459@example.com",
+    "subject": "Audit Message",
+    "to": "audit-agent-1780592459@example.com",
+    "createdAt": "2026-06-04T17:01:01.193409+00:00"
+  },
+  {
+    "id": "msg_723e437b3b6c4f7fb984d4f65828c5d7",
+    "content": "Hello from integration audit",
+    "from": "audit-user-1780592530@example.com",
+    "subject": "Audit Message",
+    "to": "audit-agent-1780592530@example.com",
+    "createdAt": "2026-06-04T17:02:11.406129+00:00"
+  },
+  {
+    "id": "msg_4ddb768d16264fbeabb2f662906fa453",
+    "content": "Hello",
+    "from": "audit-user-1780592579@example.com",
+    "subject": "Audit Message",
+    "to": "audit-agent-1780592579@example.com",
+    "createdAt": "2026-06-04T17:03:00.694992+00:00"
+  },
+  {
+    "id": "msg_2216bf23395c4210a8b13378071245eb",
+    "content": "c",
+    "from": "a",
+    "subject": "s",
+    "to": "b",
+    "createdAt": "2026-06-04T17:03:19.936614+00:00"
+  }
+]

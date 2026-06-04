@@ -1,16 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { properties } from "@/data/properties";
-import { users } from "@/data/users";
-import { complaints } from "@/data/complaints";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
 
 export default function SuperAdminReportsPage() {
   const [reportType, setReportType] = useState<"Properties" | "Users" | "Complaints">("Properties");
+  const [properties, setProperties] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [complaints, setComplaints] = useState<any[]>([]);
 
   const handleExport = (format: "CSV" | "PDF" | "Excel") => {
-    alert(`Mock Action: Generating and downloading ${reportType} report as ${format}...`);
+    if (format !== "CSV") return;
+    const rows = reportType === "Properties" ? properties : reportType === "Users" ? users : complaints;
+    const csv = rows.length
+      ? [Object.keys(rows[0]).join(","), ...rows.map((row) => Object.values(row).map((value) => JSON.stringify(value ?? "")).join(","))].join("\n")
+      : "";
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${reportType.toLowerCase()}-report.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
+
+  useEffect(() => {
+    Promise.all([
+      estateApi.adminProperties.list(),
+      estateApi.users.list(),
+      estateApi.complaints.list(),
+    ]).then(([properties, users, complaints]) => {
+      setProperties(properties);
+      setUsers(users);
+      setComplaints(complaints);
+    });
+  }, []);
 
   return (
     <div className="space-y-6">

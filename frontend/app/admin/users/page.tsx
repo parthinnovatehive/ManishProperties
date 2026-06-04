@@ -1,16 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { users as initialUsers, User } from "@/data/users";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  username?: string;
+  phone?: string;
+  role: string;
+  avatar?: string;
+  joinedDate?: string;
+  savedProperties: string[];
+  status?: "active" | "suspended";
+}
 
 export default function AdminUsersPage() {
-  const [usersList, setUsersList] = useState<User[]>(initialUsers);
+  const [usersList, setUsersList] = useState<User[]>([]);
 
-  const toggleStatus = (id: string) => {
+  useEffect(() => {
+    estateApi.users.list<User>().then((items) =>
+      setUsersList(items.map((user) => ({
+        ...user,
+        email: user.email || user.username || "",
+        avatar: user.avatar || (user.name || user.username || "U").slice(0, 2).toUpperCase(),
+        joinedDate: user.joinedDate || "Not available",
+        savedProperties: user.savedProperties || [],
+        status: user.status || "active",
+      })))
+    );
+  }, []);
+
+  const toggleStatus = async (id: string) => {
+    const user = usersList.find((item) => item.id === id);
+    const newStatus = user?.status === "active" ? "suspended" : "active";
+    await estateApi.users.update<User>(id, { status: newStatus });
     setUsersList(prev =>
       prev.map(u => {
         if (u.id === id) {
-          const newStatus = u.status === 'active' ? 'suspended' : 'active';
           return { ...u, status: newStatus };
         }
         return u;

@@ -1,26 +1,65 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import StatsCard from "@/components/user/StatsCard";
 import AppointmentCard from "@/components/user/AppointmentCard";
 import SavedPropertyCard from "@/components/user/SavedPropertyCard";
-import { appointments } from "@/data/appointments";
-import { properties } from "@/data/properties";
-import { users } from "@/data/users";
+import { estateApi } from "@/lib/api";
 import { BarChart3, Calendar, Heart, Eye } from "lucide-react";
+import type { Property } from "@/types";
+import { getAdminData } from "@/lib/utils/token";
 
 export default function UserDashboardPage() {
-  // Mock logged in user John Doe (u1)
-  const user = users.find(u => u.id === "u1") || users[0];
-  const userAppointments = appointments.filter(apt => apt.userId === user.id);
-  const userSavedProperties = properties.filter(p => user.savedProperties.includes(Number(p.id)));
+  const [user, setUser] = useState<any>({ name: "User", savedProperties: [] });
+  const [userAppointments, setUserAppointments] = useState<any[]>([]);
+  const [userSavedProperties, setUserSavedProperties] = useState<Property[]>([]);
+  const [complaintsCount, setComplaintsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadDashboard = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const currentUser = (getAdminData() as any) || { name: "User", savedProperties: [] };
+      const [appointments, properties, complaints] = await Promise.all([
+        estateApi.appointments.list<any>(),
+        estateApi.properties.list(),
+        estateApi.complaints.list<any>(),
+      ]);
+      setUser(currentUser);
+      setUserAppointments(appointments.filter((apt) => !currentUser.id || apt.userId === currentUser.id));
+      const savedIds = (currentUser.savedProperties || []).map(String);
+      setUserSavedProperties(properties.filter((property) => savedIds.includes(String(property.id))));
+      setComplaintsCount(complaints.filter((complaint) => complaint.status !== "Resolved").length);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
 
   // Compute Stats
   const savedCount = userSavedProperties.length;
   const appointmentCount = userAppointments.length;
-  const complaintsCount = 2; // Mock complaints
-  const propertiesViewedCount = 48; // Mock property views
+  const propertiesViewedCount = userSavedProperties.length + userAppointments.length;
 
   return <section className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
+    {error && (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+        {error}
+        <button onClick={loadDashboard} className="ml-3 font-bold underline">Retry</button>
+      </div>
+    )}
+    {loading && (
+      <div className="rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
+        Loading dashboard data...
+      </div>
+    )}
     {/* Welcome Banner */}
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
@@ -120,7 +159,7 @@ export default function UserDashboardPage() {
               title={prop.title}
               location={prop.location}
               price={prop.price}
-              image={prop.img ?? ""}
+              image={prop.img ?? prop.image ?? ""}
               type={prop.type}
             />
           ))}

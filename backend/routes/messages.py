@@ -27,7 +27,7 @@ def create():
         "createdAt": now_iso(),
     }
     append_json("messages", message)
-    return success_response("Message created", data=message, message=message, status_code=201)
+    return success_response("Message created", data=message, status_code=201)
 
 
 @messages_bp.get("/<message_id>")
@@ -36,7 +36,7 @@ def show(message_id):
     message = next((item for item in load_json("messages") if str(item.get("id")) == str(message_id)), None)
     if not message:
         return error_response("Message not found", 404)
-    return success_response("Message fetched", data=message, message=message)
+    return success_response("Message fetched", data=message)
 
 
 @messages_bp.put("/<message_id>")
@@ -46,7 +46,7 @@ def update(message_id):
     message = update_json("messages", message_id, {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()})
     if not message:
         return error_response("Message not found", 404)
-    return success_response("Message updated", data=message, message=message)
+    return success_response("Message updated", data=message)
 
 
 @messages_bp.delete("/<message_id>")

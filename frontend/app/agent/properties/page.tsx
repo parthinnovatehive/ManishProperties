@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { agentProperties as initialProperties } from "@/data/agent-properties";
+import { useEffect, useState } from "react";
 import { PropertyCard } from "@/components/agent/PropertyCard";
 import { Property } from "@/types";
+import { estateApi } from "@/lib/api";
 import { Search, Plus, X, Bed, Bath, Maximize2, MapPin, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function AgentPropertiesPage() {
-  const [properties, setProperties] = useState<Property[]>(initialProperties);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"All" | "Active" | "Sold" | "Pending">("All");
 
@@ -16,6 +16,8 @@ export default function AgentPropertiesPage() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Form states for Add/Edit
   const [formState, setFormState] = useState({
@@ -31,6 +33,26 @@ export default function AgentPropertiesPage() {
     rera: "",
     description: "",
   });
+
+  const loadProperties = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const items = await estateApi.adminProperties.list();
+      setProperties(items.map((item) => ({
+        ...item,
+        status: item.status === "APPROVED" ? "Active" : item.status === "REJECTED" ? "Sold" : "Pending",
+      })));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load properties.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProperties();
+  }, []);
 
   // Filter logic
   const filteredProperties = properties.filter((p) => {
@@ -62,15 +84,31 @@ export default function AgentPropertiesPage() {
   };
 
   // Handle Save Edit Listing
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProperty) return;
+
+    try {
+      const updated = await estateApi.adminProperties.update(editingProperty.id, {
+        title: formState.title,
+        price: formState.price,
+        location: formState.location,
+        city: formState.city,
+        type: formState.type,
+        beds: formState.beds,
+        bathrooms: formState.baths,
+        area: formState.area,
+        status: formState.status,
+        rera: formState.rera,
+        description: formState.description,
+      });
 
     setProperties((prev) =>
       prev.map((p) =>
         p.id === editingProperty.id
           ? {
               ...p,
+              ...updated,
               title: formState.title,
               price: formState.price,
               location: formState.location,
@@ -88,33 +126,33 @@ export default function AgentPropertiesPage() {
       )
     );
     setEditingProperty(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update property.");
+    }
   };
 
   // Handle Create Listing
-  const handleCreateProperty = (e: React.FormEvent) => {
+  const handleCreateProperty = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newProperty: Property = {
-      id: `prop-${Date.now()}`,
-      title: formState.title,
-      price: formState.price,
-      priceNum: parseInt(formState.price.replace(/[^0-9]/g, "")) || 0,
-      location: formState.location,
-      city: formState.city,
-      type: formState.type,
-      beds: formState.beds,
-      baths: formState.baths,
-      bathrooms: formState.baths,
-      area: formState.area,
-      status: formState.status,
-      rera: formState.rera,
-      description: formState.description,
-      img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&auto=format&q=75",
-      rating: 4.5,
-      reviews: 0,
-      featured: false,
-      isNew: true,
-      amenities: ["Water Supply", "Power Backup", "Car Parking"],
-    };
+    try {
+      const newProperty = await estateApi.adminProperties.create({
+        title: formState.title,
+        subtitle: formState.title,
+        price: formState.price,
+        priceNum: parseInt(formState.price.replace(/[^0-9]/g, "")) || 0,
+        location: formState.location,
+        city: formState.city,
+        type: formState.type,
+        beds: formState.beds,
+        baths: formState.baths,
+        bathrooms: formState.baths,
+        area: formState.area,
+        status: formState.status,
+        rera: formState.rera,
+        description: formState.description,
+        featured: false,
+        isNew: true,
+      });
 
     setProperties((prev) => [newProperty, ...prev]);
     setShowAddModal(false);
@@ -132,10 +170,34 @@ export default function AgentPropertiesPage() {
       rera: "",
       description: "",
     });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create property.");
+    }
+  };
+
+  const handleDeleteProperty = async (property: Property) => {
+    if (!window.confirm(`Delete "${property.title}"?`)) return;
+    try {
+      await estateApi.adminProperties.remove(property.id);
+      setProperties((prev) => prev.filter((item) => item.id !== property.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete property.");
+    }
   };
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          {error}
+          <button onClick={loadProperties} className="ml-3 font-bold underline">Retry</button>
+        </div>
+      )}
+      {loading && (
+        <div className="rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
+          Loading properties...
+        </div>
+      )}
       {/* Header title */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -211,6 +273,7 @@ export default function AgentPropertiesPage() {
               property={property}
               onView={(p) => setSelectedProperty(p)}
               onEdit={handleEditClick}
+              onDelete={handleDeleteProperty}
             />
           ))}
         </div>

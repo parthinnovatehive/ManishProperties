@@ -1,14 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { properties } from "@/data/properties";
-import { users } from "@/data/users";
+import { estateApi } from "@/lib/api";
+import type { Property } from "@/types";
 
 export default function SavedPropertiesPage() {
-  // Get properties saved by the mock user John Doe (u1)
-  const user = users.find(u => u.id === "u1");
-  const savedIds = user ? user.savedProperties : [1, 2, 4];
-  const savedListings = properties.filter(p => savedIds.includes(Number(p.id)));
+  const [savedListings, setSavedListings] = useState<Property[]>([]);
+
+  useEffect(() => {
+    Promise.all([estateApi.users.list<any>(), estateApi.properties.list()]).then(([users, properties]) => {
+      const user = users[0];
+      const savedIds = (user?.savedProperties || []).map(String);
+      setSavedListings(properties.filter((property) => savedIds.includes(String(property.id))));
+    });
+  }, []);
 
   return (
     <div>
@@ -59,7 +65,7 @@ export default function SavedPropertiesPage() {
                       <div>Beds</div>
                     </div>
                     <div>
-                      <div className="font-bold text-estate-text text-sm">{property.baths}</div>
+                      <div className="font-bold text-estate-text text-sm">{property.baths ?? property.bathrooms}</div>
                       <div>Baths</div>
                     </div>
                     <div>
@@ -78,7 +84,7 @@ export default function SavedPropertiesPage() {
                   View Details
                 </Link>
                 <button
-                  onClick={() => alert("Mock Action: Property removed from Saved Properties.")}
+                  onClick={() => setSavedListings((prev) => prev.filter((item) => item.id !== property.id))}
                   className="px-3 py-2 bg-estate-red-bg hover:bg-red-100 text-estate-red font-semibold rounded-xl text-sm transition"
                   title="Remove from saved"
                 >

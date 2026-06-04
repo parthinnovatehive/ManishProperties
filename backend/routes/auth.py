@@ -22,7 +22,8 @@ def login():
     if validation_error:
         return error_response(validation_error, 400)
 
-    result, error = authenticate(payload["username"], payload["password"], payload.get("role"))
+    email = payload.get("email") or payload.get("username")
+    result, error = authenticate(email, payload["password"], payload.get("role"))
     if error:
         return error_response(error, 401)
     return success_response("Login successful", data=result, token=result["token"], refreshToken=result["refreshToken"], admin=result["admin"], user=result["user"])

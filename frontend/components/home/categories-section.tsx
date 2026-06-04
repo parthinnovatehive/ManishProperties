@@ -19,6 +19,11 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
           </p>
         </div>
 
+        {categories.length === 0 ? (
+          <div className="rounded-2xl border border-estate-border bg-estate-bg p-8 text-center text-sm font-semibold text-estate-text-sec">
+            No categories are available from the API yet.
+          </div>
+        ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <button
@@ -38,6 +43,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
             </button>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

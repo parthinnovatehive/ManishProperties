@@ -16,6 +16,7 @@ import {
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getAdminData } from "@/lib/utils/token";
 
 interface AgentSidebarProps {
   isOpen: boolean; // For mobile drawer state
@@ -36,6 +37,10 @@ const MENU_ITEMS = [
 
 export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: AgentSidebarProps) {
   const pathname = usePathname() || "";
+  const account = getAdminData();
+  const agentName = account?.name || account?.username || "Agent";
+  const agentEmail = account?.email || account?.username || "";
+  const initials = agentName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "AG";
 
   return (
     <>
@@ -116,11 +121,11 @@ export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollap
         <div className="p-4 border-t border-white/10 flex-shrink-0 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-9 h-9 rounded-full bg-estate-navy-light flex items-center justify-center font-extrabold text-xs text-white flex-shrink-0 border border-white/15">
-              RS
+              {initials}
             </div>
             <div className={cn("overflow-hidden transition-all duration-300", isCollapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100")}>
-              <span className="text-xs font-bold block text-white leading-tight">Rahul Sharma</span>
-              <span className="text-[10px] text-white/40 block leading-tight truncate">rahul@estateelite.in</span>
+              <span className="text-xs font-bold block text-white leading-tight">{agentName}</span>
+              <span className="text-[10px] text-white/40 block leading-tight truncate">{agentEmail}</span>
             </div>
           </div>
 

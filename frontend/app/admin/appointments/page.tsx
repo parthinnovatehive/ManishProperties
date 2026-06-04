@@ -1,12 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { appointments as initialAppointments, Appointment } from "@/data/appointments";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface Appointment {
+  id: string;
+  propertyId: string | number;
+  propertyName: string;
+  userId: string;
+  userName: string;
+  agentName: string;
+  agentEmail: string;
+  date: string;
+  time: string;
+  status: "Pending" | "Confirmed" | "Cancelled" | "Scheduled";
+  type: "In-Person" | "Video Call";
+}
 
 export default function AdminAppointmentsPage() {
-  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>(initialAppointments);
+  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
 
-  const handleUpdateStatus = (id: string, newStatus: Appointment['status']) => {
+  useEffect(() => {
+    estateApi.appointments.list<Appointment>().then(setAppointmentsList);
+  }, []);
+
+  const handleUpdateStatus = async (id: string, newStatus: Appointment['status']) => {
+    await estateApi.appointments.update<Appointment>(id, { status: newStatus });
     setAppointmentsList(prev =>
       prev.map(apt => (apt.id === id ? { ...apt, status: newStatus } : apt))
     );

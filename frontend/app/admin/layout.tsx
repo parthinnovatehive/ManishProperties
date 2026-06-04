@@ -7,7 +7,7 @@ import { useRedirectIfUnauthenticated } from "@/hooks/useRedirectIfUnauthenticat
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   // Protect route – only admin role can access
-  useRedirectIfUnauthenticated(["admin"]);
+  useRedirectIfUnauthenticated(["admin", "super-admin"]);
 
   return (
     <div className="min-h-screen flex bg-estate-bg text-estate-text font-sans">

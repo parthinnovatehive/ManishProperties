@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { agentAppointments as initialAppointments, Appointment } from "@/data/agent-appointments";
-import { AppointmentCard } from "@/components/agent/AppointmentCard";
+import { useEffect, useState } from "react";
+import { AppointmentCard, type Appointment } from "@/components/agent/AppointmentCard";
+import { estateApi } from "@/lib/api";
 import { Plus, X, Calendar as CalendarIcon, List, Clock, User, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function AgentAppointmentsPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
   const [filterStatus, setFilterStatus] = useState<"All" | "Confirmed" | "Pending" | "Completed">("All");
 
@@ -23,20 +23,25 @@ export default function AgentAppointmentsPage() {
     type: "Site Visit" as Appointment["type"],
   });
 
+  useEffect(() => {
+    estateApi.appointments.list<Appointment>().then(setAppointments);
+  }, []);
+
   // Calendar calculations for June 2026 (June 1st, 2026 is Monday)
   // June has 30 days.
   const daysInJune = 30;
   const startDayOffset = 1; // 1 = Monday (Monday starts at col 1)
 
   // Status Change Callback
-  const handleStatusChange = (id: string, newStatus: Appointment["status"]) => {
+  const handleStatusChange = async (id: string, newStatus: Appointment["status"]) => {
+    await estateApi.appointments.update<Appointment>(id, { status: newStatus });
     setAppointments((prev) =>
       prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
     );
   };
 
   // Submit Schedule Form
-  const handleAddAppointment = (e: React.FormEvent) => {
+  const handleAddAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     const newAppt: Appointment = {
       id: `app-${Date.now()}`,
@@ -50,7 +55,8 @@ export default function AgentAppointmentsPage() {
       type: formState.type,
     };
 
-    setAppointments((prev) => [newAppt, ...prev]);
+    const created = await estateApi.appointments.create<Appointment>(newAppt);
+    setAppointments((prev) => [created, ...prev]);
     setShowAddModal(false);
     setFormState({
       clientName: "",

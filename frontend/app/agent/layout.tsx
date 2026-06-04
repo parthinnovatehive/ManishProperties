@@ -8,7 +8,7 @@ import { useRedirectIfUnauthenticated } from "@/hooks/useRedirectIfUnauthenticat
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
   // Guard the agent routes
-  useRedirectIfUnauthenticated(["agent"]);
+  useRedirectIfUnauthenticated(["agent", "super-admin"]);
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);

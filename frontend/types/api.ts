@@ -20,6 +20,7 @@ export interface ApiResponse<T> {
 export interface AdminData {
   id: string;
   username: string;
+  email?: string;
   role: string;
   name?: string;
   phone?: string;
@@ -27,8 +28,12 @@ export interface AdminData {
 
 export interface LoginResponse extends ApiResponse<never> {
   success: boolean;
-  token: string;
+  access_token?: string;
+  refresh_token?: string;
+  token?: string;
+  refreshToken?: string;
   admin: AdminData;
+  user?: AdminData;
   message?: string;
 }
 

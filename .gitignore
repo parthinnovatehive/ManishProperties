@@ -10,6 +10,7 @@ build/
 
 # Local env files
 .env*
+!frontend/.env.example
 
 # Logs
 npm-debug.log*
@@ -22,3 +23,9 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/

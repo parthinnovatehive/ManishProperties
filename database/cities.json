@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Mumbai",
+    "count": 1280,
+    "image": "https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=500&auto=format&q=75"
+  },
+  {
+    "name": "Bangalore",
+    "count": 940,
+    "image": "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=500&auto=format&q=75"
+  },
+  {
+    "name": "Pune",
+    "count": 760,
+    "image": "https://images.unsplash.com/photo-1595658658481-d53d3f999875?w=500&auto=format&q=75"
+  }
+]

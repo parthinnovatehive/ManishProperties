@@ -18,13 +18,13 @@ NUMERIC_PROPERTY_FIELDS = ["priceNum", "beds", "bathrooms", "area"]
 
 
 def validate_login_payload(payload):
-    username = str(payload.get("username", "")).strip()
+    username = str(payload.get("email") or payload.get("username") or "").strip()
     password = str(payload.get("password", ""))
 
     if len(username) < 3:
-        return "Username too short"
+        return "Email too short"
     if len(username) > 50:
-        return "Username too long"
+        return "Email too long"
     if len(password) < 6:
         return "Password too short"
     if len(password) > 100:
@@ -56,7 +56,8 @@ def validate_property_payload(payload):
 def normalize_role(role):
     if not role:
         return "USER"
-    return str(role).upper().replace("-", "_")
+    normalized = str(role).upper().replace("-", "_")
+    return "USER" if normalized == "CLIENT" else normalized
 
 
 def role_matches(requested_role, stored_role):

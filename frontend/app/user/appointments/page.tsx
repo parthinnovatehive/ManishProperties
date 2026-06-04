@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { appointments as initialAppointments, Appointment } from "@/data/appointments";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface Appointment {
+  id: string;
+  propertyId: string | number;
+  propertyName: string;
+  userId: string;
+  userName: string;
+  agentName: string;
+  agentEmail: string;
+  date: string;
+  time: string;
+  status: "Pending" | "Confirmed" | "Cancelled" | "Scheduled";
+  type: "In-Person" | "Video Call";
+}
 
 export default function UserAppointmentsPage() {
-  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>(
-    initialAppointments.filter(apt => apt.userId === "u1")
-  );
+  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
 
-  const handleCancel = (id: string) => {
+  useEffect(() => {
+    estateApi.appointments.list<Appointment>().then(setAppointmentsList);
+  }, []);
+
+  const handleCancel = async (id: string) => {
     if (confirm("Are you sure you want to cancel this appointment?")) {
+      await estateApi.appointments.update<Appointment>(id, { status: "Cancelled" });
       setAppointmentsList(prev =>
         prev.map(apt => (apt.id === id ? { ...apt, status: "Cancelled" as const } : apt))
       );

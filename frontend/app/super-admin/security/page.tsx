@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
 
 interface AuditLog {
   id: string;
@@ -14,16 +15,39 @@ interface AuditLog {
 }
 
 export default function SuperAdminSecurityPage() {
-  const [logs, setLogs] = useState<AuditLog[]>([
-    { id: "log1", user: "Super Admin", email: "superadmin@estateelite.com", role: "Super Admin", action: "Global configuration modified", ip: "192.168.1.1", timestamp: "03 Jun 2026 12:00 PM", status: "Success" },
-    { id: "log2", user: "John Doe", email: "user@estateelite.com", role: "User", action: "User sign-in session initiated", ip: "152.12.85.96", timestamp: "03 Jun 2026 11:45 AM", status: "Success" },
-    { id: "log3", user: "Unknown", email: "attacker@gmail.com", role: "Guest", action: "Invalid authentication attempt", ip: "203.45.18.23", timestamp: "03 Jun 2026 11:30 AM", status: "Failed" },
-    { id: "log4", user: "Rahul Sharma", email: "agent@estateelite.com", role: "Agent", action: "Property listing added (ID: #1)", ip: "103.56.24.12", timestamp: "03 Jun 2026 10:15 AM", status: "Success" },
-    { id: "log5", user: "Admin (Nisha)", email: "nisha@estateelite.com", role: "Admin", action: "User account suspended (ID: u4)", ip: "192.168.1.12", timestamp: "03 Jun 2026 09:22 AM", status: "Warning" },
-  ]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadLogs = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await estateApi.superAdmin.dashboard<any>();
+      const rows = (data.messages || []).map((message: any) => ({
+        id: String(message.id),
+        user: message.senderName || message.userName || message.sender || "System",
+        email: message.senderEmail || message.email || "",
+        role: message.role || message.senderRole || "System",
+        action: message.subject || message.content || "Message recorded",
+        ip: message.ip || "N/A",
+        timestamp: message.createdAt || message.updatedAt || "N/A",
+        status: String(message.status || "Success") === "Failed" ? "Failed" : String(message.status || "").toLowerCase() === "warning" ? "Warning" : "Success",
+      }));
+      setLogs(rows);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load security logs.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadLogs();
+  }, []);
 
   const handleResolveAlert = (id: string) => {
-    alert(`Mock Action: Incident ${id} has been flagged as resolved.`);
+    setLogs((current) => current.map((log) => (log.id === id ? { ...log, status: "Success" } : log)));
   };
 
   return (
@@ -37,12 +61,25 @@ export default function SuperAdminSecurityPage() {
         <div className="p-6 border-b border-estate-border bg-estate-bg flex justify-between items-center">
           <span className="text-sm font-bold text-estate-navy">Security Logs Feed</span>
           <button
-            onClick={() => alert("Mock Action: Exporting Security Audits CSV...")}
+            onClick={loadLogs}
             className="px-4 py-2 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition"
           >
-            Export Logs
+            Refresh Logs
           </button>
         </div>
+
+        {error && (
+          <div className="m-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+            {error}
+            <button onClick={loadLogs} className="ml-3 font-bold underline">Retry</button>
+          </div>
+        )}
+
+        {loading && (
+          <div className="m-4 rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
+            Loading security logs...
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -58,7 +95,13 @@ export default function SuperAdminSecurityPage() {
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-estate-border">
-              {logs.map((log) => (
+              {logs.length === 0 && !loading ? (
+                <tr>
+                  <td colSpan={7} className="py-8 px-4 text-center text-sm font-semibold text-estate-muted">
+                    No security logs are available from the API yet.
+                  </td>
+                </tr>
+              ) : logs.map((log) => (
                 <tr key={log.id} className="hover:bg-estate-bg/40 transition">
                   <td className="py-4 px-4 font-mono font-semibold text-estate-navy">{log.id}</td>
                   <td className="py-4 px-4 whitespace-nowrap">

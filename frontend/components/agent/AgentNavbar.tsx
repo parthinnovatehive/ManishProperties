@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, Menu, ChevronRight, User, Settings, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { agentAppointments } from "@/data/agent-appointments";
+import { estateApi } from "@/lib/api";
+import { getAdminData } from "@/lib/utils/token";
 
 interface AgentNavbarProps {
   onMenuClick: () => void; // Trigger mobile drawer open
@@ -15,6 +16,18 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [pendingMeetings, setPendingMeetings] = useState<any[]>([]);
+  const account = getAdminData();
+  const agentName = account?.name || account?.username || "Agent";
+  const agentEmail = account?.email || account?.username || "";
+  const initials = agentName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "AG";
+
+  useEffect(() => {
+    estateApi.appointments
+      .list<any>()
+      .then((items) => setPendingMeetings(items.filter((a) => a.status === "Pending")))
+      .catch(() => setPendingMeetings([]));
+  }, []);
 
   // Derive page name from route path
   const getPageTitle = () => {
@@ -23,9 +36,6 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
     const sub = segments[1];
     return sub.charAt(0).toUpperCase() + sub.slice(1);
   };
-
-  // Mock notifications derived from pending appointments
-  const pendingMeetings = agentAppointments.filter((a) => a.status === "Pending");
 
   return (
     <header className="h-20 bg-white/80 border-b border-estate-border/80 flex items-center justify-between px-6 sticky top-0 z-30 backdrop-blur-md">
@@ -92,7 +102,7 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
                         <div className="w-2 h-2 rounded-full bg-estate-amber mt-1.5 flex-shrink-0" />
                         <div>
                           <p className="text-xs font-bold text-estate-text">
-                            New meeting pending: <span className="text-estate-navy">{appt.clientName}</span>
+                            New meeting pending: <span className="text-estate-navy">{appt.clientName || appt.userName}</span>
                           </p>
                           <p className="text-[10px] text-estate-text-sec mt-0.5">{appt.propertyName}</p>
                           <p className="text-[9px] text-estate-muted font-semibold mt-1">{appt.date} at {appt.time}</p>
@@ -129,10 +139,10 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
             className="flex items-center gap-2.5 p-1.5 pl-3 border border-estate-border/60 hover:bg-estate-surface bg-white shadow-sm hover:border-estate-border-med rounded-xl transition cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-estate-navy text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
-              RS
+              {initials}
             </div>
             <div className="text-left hidden md:block">
-              <span className="text-xs font-bold block text-estate-navy leading-none">Rahul Sharma</span>
+              <span className="text-xs font-bold block text-estate-navy leading-none">{agentName}</span>
               <span className="text-[9px] text-estate-success font-semibold flex items-center gap-0.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-estate-success animate-pulse inline-block" /> Online
               </span>
@@ -145,8 +155,8 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
               <div onClick={() => setShowProfileMenu(false)} className="fixed inset-0 z-40" />
               <div className="absolute right-0 mt-3 w-56 bg-white border border-estate-border rounded-2xl shadow-estate-lg z-50 overflow-hidden animate-fade-up">
                 <div className="p-4 border-b border-estate-border bg-estate-surface/10">
-                  <p className="text-xs font-bold text-estate-navy">Rahul Sharma</p>
-                  <p className="text-[10px] text-estate-muted font-semibold truncate mt-0.5">rahul@estateelite.in</p>
+                  <p className="text-xs font-bold text-estate-navy">{agentName}</p>
+                  <p className="text-[10px] text-estate-muted font-semibold truncate mt-0.5">{agentEmail}</p>
                 </div>
                 <div className="p-2 space-y-0.5">
                   <button

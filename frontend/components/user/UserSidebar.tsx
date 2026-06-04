@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 
 interface UserSidebarProps {
   isOpen: boolean; // mobile drawer state
@@ -34,6 +35,7 @@ const MENU_ITEMS = [
 
 export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: UserSidebarProps) {
   const pathname = usePathname() ?? "";
+  const { email } = useAuth();
 
   return (
     <>
@@ -138,7 +140,7 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
               )}
             >
               <span className="text-xs font-bold block text-white leading-tight">User</span>
-              <span className="text-[10px] text-white/40 block leading-tight truncate">user@estateelite.in</span>
+              <span className="text-[10px] text-white/40 block leading-tight truncate">{email || "Signed in user"}</span>
             </div>
           </div>
 

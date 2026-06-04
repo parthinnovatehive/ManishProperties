@@ -3,14 +3,51 @@
  * Handles token storage, retrieval, and lifecycle management
  */
 
-import { TOKEN_STORAGE_KEY, ADMIN_DATA_STORAGE_KEY } from "@/lib/api/config";
+import { TOKEN_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY, ADMIN_DATA_STORAGE_KEY } from "@/lib/api/config";
 
 export interface AdminData {
   id: string;
   username: string;
+  email?: string;
   role: string;
   name?: string;
   phone?: string;
+}
+
+const AUTH_PERSISTENCE_KEY = "estate_auth_persistence";
+
+function getBrowserStorage(kind?: "local" | "session"): Storage | null {
+  if (typeof window === "undefined") return null;
+  return kind === "session" ? window.sessionStorage : window.localStorage;
+}
+
+function getPreferredStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+  const preference = window.localStorage.getItem(AUTH_PERSISTENCE_KEY);
+  return preference === "session" ? window.sessionStorage : window.localStorage;
+}
+
+function getStoredItem(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(key) || window.sessionStorage.getItem(key);
+}
+
+function setStoredItem(key: string, value: string): void {
+  const storage = getPreferredStorage();
+  if (!storage) return;
+  storage.setItem(key, value);
+  const otherStorage = storage === window.localStorage ? window.sessionStorage : window.localStorage;
+  otherStorage.removeItem(key);
+}
+
+function removeStoredItem(key: string): void {
+  getBrowserStorage("local")?.removeItem(key);
+  getBrowserStorage("session")?.removeItem(key);
+}
+
+export function setAuthPersistence(remember: boolean): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(AUTH_PERSISTENCE_KEY, remember ? "local" : "session");
 }
 
 /**
@@ -23,7 +60,7 @@ export function getToken(): string | null {
   }
 
   try {
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    return getStoredItem(TOKEN_STORAGE_KEY);
   } catch (error) {
     console.error("Failed to read token from localStorage:", error);
     return null;
@@ -39,9 +76,36 @@ export function setToken(token: string): void {
   }
 
   try {
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    setStoredItem(TOKEN_STORAGE_KEY, token);
   } catch (error) {
     console.error("Failed to write token to localStorage:", error);
+  }
+}
+
+export function getRefreshToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return getStoredItem(REFRESH_TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setRefreshToken(token: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    setStoredItem(REFRESH_TOKEN_STORAGE_KEY, token);
+  } catch (error) {
+    console.error("Failed to write refresh token to localStorage:", error);
+  }
+}
+
+export function clearRefreshToken(): void {
+  if (typeof window === "undefined") return;
+  try {
+    removeStoredItem(REFRESH_TOKEN_STORAGE_KEY);
+  } catch (error) {
+    console.error("Failed to clear refresh token from localStorage:", error);
   }
 }
 
@@ -54,7 +118,7 @@ export function clearToken(): void {
   }
 
   try {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    removeStoredItem(TOKEN_STORAGE_KEY);
   } catch (error) {
     console.error("Failed to clear token from localStorage:", error);
   }
@@ -76,7 +140,7 @@ export function getAdminData(): AdminData | null {
   }
 
   try {
-    const data = localStorage.getItem(ADMIN_DATA_STORAGE_KEY);
+    const data = getStoredItem(ADMIN_DATA_STORAGE_KEY);
     if (!data) return null;
     return JSON.parse(data) as AdminData;
   } catch (error) {
@@ -94,7 +158,7 @@ export function setAdminData(data: AdminData): void {
   }
 
   try {
-    localStorage.setItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(data));
+    setStoredItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
     console.error("Failed to write admin data to localStorage:", error);
   }
@@ -109,7 +173,7 @@ export function clearAdminData(): void {
   }
 
   try {
-    localStorage.removeItem(ADMIN_DATA_STORAGE_KEY);
+    removeStoredItem(ADMIN_DATA_STORAGE_KEY);
   } catch (error) {
     console.error("Failed to clear admin data from localStorage:", error);
   }
@@ -120,7 +184,15 @@ export function clearAdminData(): void {
  */
 export function clearAllAuthData(): void {
   clearToken();
+  clearRefreshToken();
   clearAdminData();
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("estate_role");
+    localStorage.removeItem("estate_email");
+    localStorage.removeItem(AUTH_PERSISTENCE_KEY);
+    sessionStorage.removeItem("estate_role");
+    sessionStorage.removeItem("estate_email");
+  }
 }
 
 /**

@@ -1,25 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProfileCard } from "@/components/agent/ProfileCard";
-import { agentProperties } from "@/data/agent-properties";
+import { estateApi } from "@/lib/api";
 import { X, Sparkles, Award, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getAdminData } from "@/lib/utils/token";
 
 export default function AgentProfilePage() {
+  const account = getAdminData();
   const [profile, setProfile] = useState({
-    name: "Rahul Sharma",
-    email: "rahul@estateelite.in",
-    phone: "+91 98765 43210",
-    city: "Mumbai, Maharashtra",
-    experience: "8 Years",
-    propertiesCount: agentProperties.length,
-    rating: 4.9,
-    dealsCount: 152,
+    name: account?.name || account?.username || "Agent",
+    email: account?.email || account?.username || "",
+    phone: account?.phone || "",
+    city: "",
+    experience: "",
+    propertiesCount: 0,
+    rating: 0,
+    dealsCount: 0,
   });
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [formState, setFormState] = useState({ ...profile });
+
+  useEffect(() => {
+    estateApi.adminProperties.list().then((properties) => {
+      setProfile((current) => ({ ...current, propertiesCount: properties.length }));
+      setFormState((current) => ({ ...current, propertiesCount: properties.length }));
+    });
+  }, []);
 
   // Handle Save profile form
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -50,11 +59,8 @@ export default function AgentProfilePage() {
           <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate space-y-4">
             <h3 className="font-extrabold text-lg text-estate-navy font-serif">Biography Overview</h3>
             <p className="text-xs font-semibold leading-relaxed text-estate-text-sec bg-estate-surface/30 p-4 rounded-xl border border-estate-border/40">
-              Rahul Sharma is a premier certified real estate agent based in Mumbai, with over 8 years of
-              experience representing buyers, sellers, and property developers. Specializing in luxury
-              condominiums, high-rise apartments, and commercial projects across Worli, Bandra, and BKC,
-              Rahul has closed over 150+ successful deals. He prides himself on maintaining strict transparency
-              and helping clients secure high ROI properties.
+              {profile.name} has {profile.propertiesCount} properties currently connected to the EstateElite backend.
+              Update this profile to add biography, operating regions, experience, and credential details.
             </p>
           </div>
         </div>
@@ -70,9 +76,9 @@ export default function AgentProfilePage() {
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-extrabold text-estate-navy block">Top Producer 2025</span>
+                  <span className="text-xs font-extrabold text-estate-navy block">Property Portfolio</span>
                   <span className="text-[10px] text-estate-text-sec font-semibold mt-0.5 block">
-                    Recognized for closing over 30+ luxury property transactions in Mumbai.
+                    {profile.propertiesCount} listings loaded from the property API.
                   </span>
                 </div>
               </div>
@@ -82,9 +88,9 @@ export default function AgentProfilePage() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-extrabold text-estate-navy block">RERA Compliant Specialist</span>
+                  <span className="text-xs font-extrabold text-estate-navy block">Verified Agent Account</span>
                   <span className="text-[10px] text-estate-text-sec font-semibold mt-0.5 block">
-                    Certified in government regulatory compliance filings and verified properties.
+                    Role and identity are read from the authenticated backend session.
                   </span>
                 </div>
               </div>
@@ -94,9 +100,9 @@ export default function AgentProfilePage() {
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-extrabold text-estate-navy block">5-Star Rated Agent</span>
+                  <span className="text-xs font-extrabold text-estate-navy block">Profile Completion</span>
                   <span className="text-[10px] text-estate-text-sec font-semibold mt-0.5 block">
-                    Achieved average 4.9 ratings from verification reviews of past clients.
+                    Add profile details to keep this account ready for client-facing workflows.
                   </span>
                 </div>
               </div>

@@ -1,25 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { admins as initialAdmins, AdminUser } from "@/data/admins";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  username?: string;
+  role: string;
+  status: "active" | "inactive";
+  permissions: string[];
+  joinedDate: string;
+}
 
 export default function SuperAdminAdminsPage() {
-  const [adminsList, setAdminsList] = useState<AdminUser[]>(initialAdmins);
+  const [adminsList, setAdminsList] = useState<AdminUser[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleAddAdmin = (e: React.FormEvent) => {
+  useEffect(() => {
+    estateApi.admins.list<AdminUser>().then((items) =>
+      setAdminsList(items.map((admin) => ({
+        ...admin,
+        email: admin.email || admin.username || "",
+        status: admin.status || "active",
+        permissions: admin.permissions || ["Manage Users", "Approve Properties"],
+        joinedDate: admin.joinedDate || "Not available",
+      })))
+    );
+  }, []);
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newAdmin: AdminUser = {
-      id: `adm-${Date.now()}`,
+    const newAdmin = await estateApi.admins.create<AdminUser>({
       name,
+      username: email,
       email,
-      role: 'admin',
+      role: 'ADMIN',
       status: 'active',
       permissions: ["Manage Users", "Approve Properties"],
       joinedDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    };
+    } as AdminUser);
 
     setAdminsList(prev => [...prev, newAdmin]);
     setName("");
@@ -28,11 +51,13 @@ export default function SuperAdminAdminsPage() {
     setTimeout(() => setSuccess(false), 4000);
   };
 
-  const toggleStatus = (id: string) => {
+  const toggleStatus = async (id: string) => {
+    const admin = adminsList.find((item) => item.id === id);
+    const newStatus = admin?.status === "active" ? "inactive" : "active";
+    await estateApi.admins.update<AdminUser>(id, { status: newStatus });
     setAdminsList(prev =>
       prev.map(a => {
         if (a.id === id) {
-          const newStatus = a.status === 'active' ? 'inactive' : 'active';
           return { ...a, status: newStatus };
         }
         return a;

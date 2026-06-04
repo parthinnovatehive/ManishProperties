@@ -18,11 +18,17 @@ export function FeaturedProperties({ properties }: { properties: Property[] }) {
           </Button>
         </div>
 
+        {properties.length === 0 ? (
+          <div className="rounded-2xl border border-estate-border bg-white p-8 text-center text-sm font-semibold text-estate-text-sec">
+            No featured properties are available from the API yet.
+          </div>
+        ) : (
         <div className="grid gap-6 lg:grid-cols-3">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>
+        )}
       </div>
     </section>
   );

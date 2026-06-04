@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { agentLeads as initialLeads, Lead } from "@/data/agent-leads";
-import { LeadCard } from "@/components/agent/LeadCard";
+import { useEffect, useState } from "react";
+import { LeadCard, type Lead } from "@/components/agent/LeadCard";
+import { estateApi } from "@/lib/api";
 import { Search, Plus, X, Phone, Mail, Home, DollarSign, Calendar, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function AgentLeadsPage() {
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeStatusFilter, setActiveStatusFilter] = useState<"All" | Lead["status"]>("All");
 
@@ -26,12 +26,16 @@ export default function AgentLeadsPage() {
     notes: "",
   });
 
+  useEffect(() => {
+    estateApi.agents.leads<Lead>().then(setLeads);
+  }, []);
+
   // Filter logic
   const filteredLeads = leads.filter((l) => {
     const matchesSearch =
       l.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      l.phone.includes(searchTerm) ||
-      l.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (l.phone || "").includes(searchTerm) ||
+      (l.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       l.propertyTitle.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (activeStatusFilter === "All") return matchesSearch;
@@ -39,17 +43,19 @@ export default function AgentLeadsPage() {
   });
 
   // Handler for pipeline status change
-  const handleStatusChange = (id: string, newStatus: Lead["status"]) => {
+  const handleStatusChange = async (id: string, newStatus: Lead["status"]) => {
+    await estateApi.agents.updateLead<Lead>(id, { status: newStatus });
     setLeads((prev) =>
       prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
     );
   };
 
   // Save Edit Lead
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingLead) return;
 
+    await estateApi.agents.updateLead<Lead>(editingLead.id, formState);
     setLeads((prev) =>
       prev.map((l) =>
         l.id === editingLead.id
@@ -70,7 +76,7 @@ export default function AgentLeadsPage() {
   };
 
   // Create Lead
-  const handleCreateLead = (e: React.FormEvent) => {
+  const handleCreateLead = async (e: React.FormEvent) => {
     e.preventDefault();
     const today = new Date().toISOString().split("T")[0];
     const newLead: Lead = {
@@ -85,7 +91,8 @@ export default function AgentLeadsPage() {
       notes: formState.notes,
     };
 
-    setLeads((prev) => [newLead, ...prev]);
+    const created = await estateApi.agents.createLead<Lead>(newLead);
+    setLeads((prev) => [created, ...prev]);
     setShowAddModal(false);
     setFormState({
       clientName: "",

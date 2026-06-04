@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Heart, Home, Share2 } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -13,7 +11,7 @@ import { PropertySidebar } from "@/components/property/property-sidebar";
 import { PropertySimilar } from "@/components/property/property-similar";
 import { PropertyTabs, type PropertyDetailRow } from "@/components/property/property-tabs";
 import { PropertyTrust } from "@/components/property/property-trust";
-import { properties } from "@/data/properties";
+import { estateApi } from "@/lib/api";
 import type { Property } from "@/types";
 
 type PropertyResponse = {
@@ -77,10 +75,14 @@ export default function PropertyDetailsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchProperty = () => {
+    const fetchProperty = async () => {
       if (params?.id) {
-        const found = properties.find((p) => p.id.toString() === params.id);
-        setProperty(found || null);
+        try {
+          const found = await estateApi.properties.detail(params.id);
+          setProperty(found || null);
+        } catch {
+          setProperty(null);
+        }
       }
       setLoading(false);
     };

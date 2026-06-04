@@ -19,7 +19,7 @@ import { useAdminProperties } from "@/hooks/useAdminProperties";
 import { useToast } from "@/lib/utils/toast";
 import { ToastContainer } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
-import { users as MOCK_USERS } from "@/data/users";
+import { estateApi } from "@/lib/api";
 
 /* ============================================================
    DESIGN SYSTEM — matches EstateElite frontend
@@ -45,11 +45,6 @@ const C = {
 };
 const serif = { fontFamily: "'Playfair Display', Georgia, serif" };
 const sans = { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" };
-
-/* ============================================================
-  MOCK DATA — Realistic admin property moderation data
-  (mock data omitted in this refactor)
-============================================================ */
 
 /* NOTE: Sidebar/TopBar removed from this file.
   The application now uses app/admin/layout.tsx which
@@ -694,7 +689,7 @@ export default function EstateEliteAdmin() {
   const [active, setActive] = useState("overview");
   const { properties, loading, error, mutationState, approveProperty, rejectProperty, featureProperty, deleteProperty } = useAdminProperties();
   const toast = useToast();
-  const [users] = useState(MOCK_USERS);
+  const [users, setUsers] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
   const [search, setSearch] = useState("");
   const [locationFilters, setLocationFilters] = useState({ state: "", city: "", area: "" });
@@ -709,6 +704,10 @@ export default function EstateEliteAdmin() {
       toast.error(error);
     }
   }, [error, toast]);
+
+  useEffect(() => {
+    estateApi.users.list().then(setUsers).catch(() => setUsers([]));
+  }, []);
 
   // Sync drawer with properties array when properties change
   useEffect(() => {

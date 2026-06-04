@@ -8,6 +8,7 @@ from routes.agents import agents_bp
 from routes.appointments import appointments_bp
 from routes.auth import auth_bp
 from routes.complaints import complaints_bp
+from routes.content import content_bp
 from routes.messages import messages_bp
 from routes.properties import properties_bp
 from routes.super_admin import super_admin_bp
@@ -54,6 +55,7 @@ def register_blueprints(app):
     app.register_blueprint(appointments_bp, url_prefix="/api/appointments")
     app.register_blueprint(complaints_bp, url_prefix="/api/complaints")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
+    app.register_blueprint(content_bp, url_prefix="/api/content")
 
 
 def register_error_handlers(app):

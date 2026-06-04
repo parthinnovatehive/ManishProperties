@@ -10,7 +10,7 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   // Guard the user routes
-  useRedirectIfUnauthenticated(["user"]);
+  useRedirectIfUnauthenticated(["user", "super-admin"]);
 
   // Sidebar state
   const [isOpen, setIsOpen] = useState(false); // mobile drawer state

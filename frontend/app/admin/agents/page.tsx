@@ -1,16 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { agents as initialAgents, Agent } from "@/data/agents";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+
+interface Agent {
+  id: string;
+  name: string;
+  email: string;
+  username?: string;
+  phone?: string;
+  avatar?: string;
+  rating: number;
+  experience?: string;
+  deals: number;
+  status?: "active" | "inactive";
+}
 
 export default function AdminAgentsPage() {
-  const [agentsList, setAgentsList] = useState<Agent[]>(initialAgents);
+  const [agentsList, setAgentsList] = useState<Agent[]>([]);
 
-  const toggleStatus = (id: string) => {
+  useEffect(() => {
+    estateApi.agents.list<Agent>().then((items) =>
+      setAgentsList(items.map((agent) => ({
+        ...agent,
+        email: agent.email || agent.username || "",
+        avatar: agent.avatar || (agent.name || agent.username || "A").slice(0, 2).toUpperCase(),
+        rating: Number(agent.rating || 4.5),
+        deals: Number(agent.deals || 0),
+        experience: agent.experience || "2+ years",
+        status: agent.status || "active",
+      })))
+    );
+  }, []);
+
+  const toggleStatus = async (id: string) => {
+    const agent = agentsList.find((item) => item.id === id);
+    const newStatus = agent?.status === "active" ? "inactive" : "active";
+    await estateApi.agents.update<Agent>(id, { status: newStatus });
     setAgentsList(prev =>
       prev.map(a => {
         if (a.id === id) {
-          const newStatus = a.status === 'active' ? 'inactive' : 'active';
           return { ...a, status: newStatus };
         }
         return a;
@@ -19,7 +48,7 @@ export default function AdminAgentsPage() {
   };
 
   const activeCount = agentsList.filter(a => a.status === 'active').length;
-  const avgRating = (agentsList.reduce((acc, curr) => acc + curr.rating, 0) / agentsList.length).toFixed(1);
+  const avgRating = agentsList.length ? (agentsList.reduce((acc, curr) => acc + curr.rating, 0) / agentsList.length).toFixed(1) : "0.0";
 
   return (
     <div className="space-y-6">

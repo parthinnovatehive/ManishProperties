@@ -1,26 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { complaints as initialComplaints, Complaint } from "@/data/complaints";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
+import { getAdminData } from "@/lib/utils/token";
+
+interface Complaint {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  subject: string;
+  description: string;
+  status: "Open" | "In Progress" | "Resolved";
+  priority: "Low" | "Medium" | "High";
+  date: string;
+  resolutionNotes?: string;
+}
 
 export default function UserComplaintsPage() {
-  const [complaintsList, setComplaintsList] = useState<Complaint[]>(
-    initialComplaints.filter(c => c.userId === "u1")
-  );
+  const [complaintsList, setComplaintsList] = useState<Complaint[]>([]);
   
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<'Low' | 'Medium' | 'High'>('Medium');
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    estateApi.complaints.list<Complaint>().then(setComplaintsList);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const account = getAdminData();
     const newComplaint: Complaint = {
       id: `comp-${Date.now()}`,
-      userId: "u1",
-      userName: "John Doe",
-      userEmail: "user@estateelite.com",
+      userId: account?.id || "",
+      userName: account?.name || account?.username || "User",
+      userEmail: account?.email || account?.username || "",
       subject,
       description,
       status: "Open",
@@ -28,7 +45,8 @@ export default function UserComplaintsPage() {
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
 
-    setComplaintsList(prev => [newComplaint, ...prev]);
+    const created = await estateApi.complaints.create<Complaint>(newComplaint);
+    setComplaintsList(prev => [created, ...prev]);
     setSubject("");
     setDescription("");
     setPriority("Medium");

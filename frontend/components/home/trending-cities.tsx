@@ -15,6 +15,11 @@ export function TrendingCities({ cities }: { cities: City[] }) {
           <p className="mt-2.5 text-[15px] text-estate-text-sec">Explore properties in India&apos;s most sought-after locations</p>
         </div>
 
+        {cities.length === 0 ? (
+          <div className="rounded-2xl border border-estate-border bg-estate-bg p-8 text-center text-sm font-semibold text-estate-text-sec">
+            No cities are available from the API yet.
+          </div>
+        ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {cities.map((city) => (
             <button
@@ -43,6 +48,7 @@ export function TrendingCities({ cities }: { cities: City[] }) {
             </button>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

@@ -18,7 +18,7 @@ export function OwnerCta() {
           <Button href="/submit-property" variant="amber" className="px-7 py-3.5 text-[15px]">
             <Plus size={17} aria-hidden="true" /> List Your Property Free
           </Button>
-          <Button href="/auth" variant="ghost" className="border-white/30 px-7 py-3.5 text-[15px] text-white hover:bg-white/10">
+          <Button href="/auth/login" variant="ghost" className="border-white/30 px-7 py-3.5 text-[15px] text-white hover:bg-white/10">
             Talk to an Expert
           </Button>
         </div>

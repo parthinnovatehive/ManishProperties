@@ -160,7 +160,7 @@ export function Navbar() {
               </button>
             </div>
           ) : (
-            <Button href="/auth" variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <Button href="/auth/login" variant="ghost" size="sm" className="hidden sm:inline-flex">
               <User size={14} aria-hidden="true" /> Sign In
             </Button>
           )}
@@ -240,7 +240,7 @@ export function Navbar() {
                 </Button>
               </>
             ) : (
-              <Button href="/auth" variant="ghost" size="sm" fullWidth onClick={() => setMobileOpen(false)}>
+              <Button href="/auth/login" variant="ghost" size="sm" fullWidth onClick={() => setMobileOpen(false)}>
                 <User size={14} aria-hidden="true" /> Sign In
               </Button>
             )}

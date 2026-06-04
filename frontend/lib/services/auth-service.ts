@@ -6,21 +6,38 @@
 import { apiClient } from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/config";
 import { LoginResponse, LogoutResponse } from "@/types/api";
-import { getToken, setToken, setAdminData, clearAllAuthData } from "@/lib/utils/token";
+import { clearAllAuthData, getToken, setAdminData, setAuthPersistence, setRefreshToken, setToken } from "@/lib/utils/token";
+
+function notifyAuthChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("estate-auth-changed"));
+  }
+}
 
 export class AuthService {
+  private persistAuth(response: LoginResponse, remember = true) {
+    const accessToken = response.access_token || response.token;
+    const refreshToken = response.refresh_token || response.refreshToken;
+    const account = response.user || response.admin;
+
+    if (accessToken) setToken(accessToken);
+    if (refreshToken) setRefreshToken(refreshToken);
+    if (account) setAdminData(account);
+    notifyAuthChanged();
+  }
+
   /**
-   * Login user with username, password and optional role selection
+   * Login user with email and password.
    */
-  async login(username: string, password: string, role?: string): Promise<LoginResponse> {
+  async login(email: string, password: string, remember = true): Promise<LoginResponse> {
+    setAuthPersistence(remember);
     const response = await apiClient.post<LoginResponse>(
       API_ENDPOINTS.AUTH.LOGIN,
-      { username, password, role }
+      { email, password }
     );
 
     if (response.success) {
-      setToken(response.token);
-      setAdminData(response.admin);
+      this.persistAuth(response, remember);
     }
 
     return response;
@@ -30,21 +47,20 @@ export class AuthService {
    * Register a new user
    */
   async register(
-    username: string,
+    email: string,
     password: string,
     role: string,
     name?: string,
-    phone?: string,
-    otp?: string
+    phone?: string
   ): Promise<LoginResponse> {
+    setAuthPersistence(true);
     const response = await apiClient.post<LoginResponse>(
       API_ENDPOINTS.AUTH.REGISTER,
-      { username, password, role, name, phone, otp }
+      { email, password, role, name, phone }
     );
 
     if (response.success) {
-      setToken(response.token);
-      setAdminData(response.admin);
+      this.persistAuth(response);
     }
 
     return response;
@@ -60,8 +76,7 @@ export class AuthService {
     );
 
     if (response.success) {
-      setToken(response.token);
-      setAdminData(response.admin);
+      this.persistAuth(response);
     }
 
     return response;
@@ -98,6 +113,7 @@ export class AuthService {
 
     if (response.success) {
       clearAllAuthData();
+      notifyAuthChanged();
     }
 
     return response;

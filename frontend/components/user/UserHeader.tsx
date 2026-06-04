@@ -10,7 +10,7 @@ export default function UserHeader() {
 
   const handleLogout = () => {
     logout();
-    router.replace("/auth");
+    router.replace("/auth/login");
   };
 
   return (

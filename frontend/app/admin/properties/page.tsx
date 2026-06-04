@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { properties as initialProperties } from "@/data/properties";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
 
 import type { PropertyId } from "@/types";
 
@@ -21,35 +21,47 @@ interface PropertyListItem {
 }
 
 export default function AdminPropertiesPage() {
-  const [propertiesList, setPropertiesList] = useState<PropertyListItem[]>(
-    initialProperties.map((p, idx) => ({
+  const [propertiesList, setPropertiesList] = useState<PropertyListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const toListItem = (p: any): PropertyListItem => ({
       id: p.id,
       title: p.title,
       location: p.location,
       price: p.price,
       type: p.type,
-      status: p.status,
+      status: p.listingType || p.status,
       verified: !!p.verified,
       featured: !!p.featured,
-      approvalStatus: idx % 4 === 0 ? 'Pending' : idx % 5 === 0 ? 'Rejected' : 'Approved',
+      approvalStatus: p.status === "PENDING" ? "Pending" : p.status === "REJECTED" ? "Rejected" : "Approved",
       agentName: p.agent?.name || "Not Assigned",
       agentEmail: p.agent?.email || "none@estateelite.com"
-    }))
-  );
+  });
 
-  const handleApprove = (id: PropertyId) => {
+  useEffect(() => {
+    estateApi.adminProperties
+      .list()
+      .then((items) => setPropertiesList(items.map(toListItem)))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleApprove = async (id: PropertyId) => {
+    await estateApi.adminProperties.approve(id);
     setPropertiesList(prev =>
       prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Approved' } : p))
     );
   };
 
-  const handleReject = (id: PropertyId) => {
+  const handleReject = async (id: PropertyId) => {
+    await estateApi.adminProperties.reject(id);
     setPropertiesList(prev =>
       prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Rejected' } : p))
     );
   };
 
-  const handleToggleFeatured = (id: PropertyId) => {
+  const handleToggleFeatured = async (id: PropertyId) => {
+    const current = propertiesList.find((p) => p.id === id);
+    await estateApi.adminProperties.feature(id, !current?.featured);
     setPropertiesList(prev =>
       prev.map(p => (p.id === id ? { ...p, featured: !p.featured } : p))
     );
@@ -84,6 +96,7 @@ export default function AdminPropertiesPage() {
       </div>
 
       {/* Listings Table */}
+      {loading && <div className="rounded-xl border border-estate-border bg-white p-6 text-center text-estate-muted">Loading properties...</div>}
       <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

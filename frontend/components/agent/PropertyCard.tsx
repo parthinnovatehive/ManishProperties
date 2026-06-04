@@ -2,16 +2,17 @@ import Image from "next/image";
 import { Property } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Bed, Bath, Maximize2, Star, Eye, Edit2 } from "lucide-react";
+import { MapPin, Bed, Bath, Maximize2, Star, Eye, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PropertyCardProps {
   property: Property;
   onView?: (property: Property) => void;
   onEdit?: (property: Property) => void;
+  onDelete?: (property: Property) => void;
 }
 
-export function PropertyCard({ property, onView, onEdit }: PropertyCardProps) {
+export function PropertyCard({ property, onView, onEdit, onDelete }: PropertyCardProps) {
   const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
       case "active":
@@ -89,7 +90,7 @@ export function PropertyCard({ property, onView, onEdit }: PropertyCardProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2 mt-5">
+        <div className="grid grid-cols-3 gap-2 mt-5">
           <Button
             variant="ghost"
             size="sm"
@@ -105,6 +106,14 @@ export function PropertyCard({ property, onView, onEdit }: PropertyCardProps) {
             onClick={() => onEdit?.(property)}
           >
             <Edit2 className="w-3.5 h-3.5" /> Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1"
+            onClick={() => onDelete?.(property)}
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Delete
           </Button>
         </div>
       </div>

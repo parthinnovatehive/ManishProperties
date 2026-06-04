@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { PropertyId } from "@/types";
+import { estateApi } from "@/lib/api";
 
 type SavedPropertiesContextValue = {
   savedIds: PropertyId[];
@@ -15,21 +16,15 @@ const SavedPropertiesContext = createContext<SavedPropertiesContextValue | null>
 
 export function SavedPropertiesProvider({ children }: { children: ReactNode }) {
   const [savedIds, setSavedIds] = useState<PropertyId[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("estateelite:saved-properties");
-    if (stored) {
-      setSavedIds(JSON.parse(stored) as PropertyId[]);
-    }
-    setHydrated(true);
+    estateApi.users.list<any>().then((users) => {
+      const user = users[0];
+      setUserId(user?.id || null);
+      setSavedIds(user?.savedProperties || []);
+    }).catch(() => setSavedIds([]));
   }, []);
-
-  useEffect(() => {
-    if (hydrated) {
-      window.localStorage.setItem("estateelite:saved-properties", JSON.stringify(savedIds));
-    }
-  }, [hydrated, savedIds]);
 
   const value = useMemo<SavedPropertiesContextValue>(
     () => ({
@@ -37,12 +32,16 @@ export function SavedPropertiesProvider({ children }: { children: ReactNode }) {
       savedCount: savedIds.length,
       isSaved: (id: PropertyId) => savedIds.includes(id),
       toggleSaved: (id: PropertyId) => {
-        setSavedIds((current) =>
-          current.includes(id) ? current.filter((savedId) => savedId !== id) : [...current, id],
-        );
+        setSavedIds((current) => {
+          const next = current.includes(id) ? current.filter((savedId) => savedId !== id) : [...current, id];
+          if (userId) {
+            estateApi.users.update(userId, { savedProperties: next }).catch(() => undefined);
+          }
+          return next;
+        });
       },
     }),
-    [savedIds],
+    [savedIds, userId],
   );
 
   return <SavedPropertiesContext.Provider value={value}>{children}</SavedPropertiesContext.Provider>;

@@ -15,8 +15,8 @@ interface UseAuthReturn {
   admin: AdminData | null;
   loading: boolean;
   error: string | null;
-  login: (username: string, password: string, role?: string) => Promise<boolean>;
-  register: (username: string, password: string, role: string, name?: string, phone?: string, otp?: string) => Promise<boolean>;
+  login: (email: string, password: string, remember?: boolean) => Promise<boolean>;
+  register: (email: string, password: string, role: string, name?: string, phone?: string) => Promise<boolean>;
   googleLogin: (token: string, role: string) => Promise<boolean>;
   sendOtp: (phone: string) => Promise<{ success: boolean; message: string; simulated?: boolean }>;
   verifyOtp: (phone: string, otp: string) => Promise<{ success: boolean; message: string }>;
@@ -30,15 +30,15 @@ export function useAuth(): UseAuthReturn {
   const [error, setError] = useState<string | null>(null);
 
   const login = useCallback(
-    async (username: string, password: string, role?: string) => {
+    async (email: string, password: string, remember = true) => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await authService.login(username, password, role);
+        const response = await authService.login(email, password, remember);
 
         if (response.success) {
-          setAdmin(response.admin);
+          setAdmin(response.user || response.admin);
           return true;
         } else {
           setError(response.message || "Login failed");
@@ -49,7 +49,7 @@ export function useAuth(): UseAuthReturn {
         let errorMessage = "Login failed. Please try again.";
 
         if (apiError.status === 401) {
-          errorMessage = apiError.message || "Invalid username or password.";
+          errorMessage = apiError.message || "Invalid email or password.";
         } else if (apiError.status === 403) {
           errorMessage = apiError.message || "Access denied.";
         } else if (apiError.status === 0) {
@@ -68,15 +68,15 @@ export function useAuth(): UseAuthReturn {
   );
 
   const register = useCallback(
-    async (username: string, password: string, role: string, name?: string, phone?: string, otp?: string) => {
+    async (email: string, password: string, role: string, name?: string, phone?: string) => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await authService.register(username, password, role, name, phone, otp);
+        const response = await authService.register(email, password, role, name, phone);
 
         if (response.success) {
-          setAdmin(response.admin);
+          setAdmin(response.user || response.admin);
           return true;
         } else {
           setError(response.message || "Registration failed");
@@ -112,7 +112,7 @@ export function useAuth(): UseAuthReturn {
         const response = await authService.googleLogin(token, role);
 
         if (response.success) {
-          setAdmin(response.admin);
+          setAdmin(response.user || response.admin);
           return true;
         } else {
           setError(response.message || "Google login failed");

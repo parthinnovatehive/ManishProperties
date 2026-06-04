@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { properties } from "@/data/properties";
-import { agents } from "@/data/agents";
+import { useEffect, useState } from "react";
+import { estateApi } from "@/lib/api";
 
 export default function AdminAssignAgentPage() {
-  const [selectedProperty, setSelectedProperty] = useState(properties[0]?.id.toString() || "");
-  const [selectedAgent, setSelectedAgent] = useState(agents[0]?.id || "");
+  const [properties, setProperties] = useState<any[]>([]);
+  const [agents, setAgents] = useState<any[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState("");
+  const [selectedAgent, setSelectedAgent] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    Promise.all([estateApi.adminProperties.list(), estateApi.agents.list<any>()]).then(([propertiesList, agentsList]) => {
+      setProperties(propertiesList);
+      setAgents(agentsList);
+      setSelectedProperty(String(propertiesList[0]?.id || ""));
+      setSelectedAgent(String(agentsList[0]?.id || ""));
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await estateApi.adminProperties.update(selectedProperty, { assignedAgentId: selectedAgent } as any);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 4000);
   };
