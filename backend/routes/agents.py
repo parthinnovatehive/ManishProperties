@@ -5,6 +5,7 @@ from middleware.permissions import role_required
 from services.json_service import append_json, delete_json, load_json, update_json
 from services.property_service import list_properties
 from utils.helpers import error_response, generate_id, now_iso, success_response
+from utils.validators import normalize_role
 
 
 agents_bp = Blueprint("agents", __name__)
@@ -111,7 +112,10 @@ def show(agent_id):
 @agents_bp.patch("/<agent_id>")
 @role_required("AGENT", "ADMIN", "SUPER_ADMIN")
 def update(agent_id):
-    agent = update_json("agents", agent_id, {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()})
+    changes = {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()}
+    if "role" in changes:
+        changes["role"] = normalize_role(changes["role"])
+    agent = update_json("agents", agent_id, changes)
     if not agent:
         return error_response("Agent not found", 404)
     return success_response("Agent updated", data=agent, agent=agent)

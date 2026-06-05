@@ -12,6 +12,8 @@ from utils.validators import normalize_role, role_matches
 OTP_STORE = {}
 OTP_EXPIRY_SECONDS = 5 * 60
 MAX_VERIFY_ATTEMPTS = 5
+SUSPENDED_ACCOUNT_MESSAGE = "Your account has been suspended. Please contact support."
+SUSPENDED_STATUS_VALUES = {"SUSPENDED", "INACTIVE", "DISABLED", "DEACTIVATED", "BLOCKED"}
 
 
 def _public_account(account):
@@ -20,10 +22,36 @@ def _public_account(account):
         "id": account["id"],
         "username": account["username"],
         "email": email,
-        "role": account["role"],
+        "role": normalize_role(account.get("role")),
         "name": account.get("name"),
         "phone": account.get("phone"),
+        "status": normalize_status(account.get("status")),
     }
+
+
+def normalize_status(status):
+    return str(status or "ACTIVE").upper()
+
+
+def is_false_flag(value):
+    if value is False:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"false", "0", "no", "inactive", "disabled", "suspended"}
+    return False
+
+
+def is_suspended(account):
+    if not account:
+        return False
+
+    if is_false_flag(account.get("isActive")):
+        return True
+
+    if is_false_flag(account.get("active")):
+        return True
+
+    return normalize_status(account.get("status")) in SUSPENDED_STATUS_VALUES
 
 
 def ensure_default_admin():
@@ -47,12 +75,15 @@ def authenticate(username, password, requested_role=None):
     ensure_default_admin()
     account = find_account_by_username(username)
     if not account or not check_password_hash(account.get("passwordHash", ""), password):
-        return None, "Invalid credentials"
+        return None, "Invalid credentials", 401
 
     if requested_role and not role_matches(requested_role, account.get("role")):
-        return None, f"Your account role does not match the selected role: {requested_role}"
+        return None, f"Your account role does not match the selected role: {requested_role}", 401
 
-    return issue_tokens(account), None
+    if is_suspended(account):
+        return None, SUSPENDED_ACCOUNT_MESSAGE, 403
+
+    return issue_tokens(account), None, None
 
 
 def register_account(payload, default_role="USER"):
@@ -63,8 +94,8 @@ def register_account(payload, default_role="USER"):
 
     if not username or not password or not role:
         return None, "Email, password, and role are required"
-    if role in {"ADMIN", "SUPER_ADMIN"}:
-        return None, "Admin registration is not publicly available"
+    if role == "SUPER_ADMIN":
+        return None, "Super Admin accounts are created internally."
     if find_account_by_username(username):
         return None, "Email already exists"
 
@@ -97,6 +128,7 @@ def issue_tokens(account):
         "role": normalize_role(account.get("role")),
         "username": account.get("username"),
         "name": account.get("name"),
+        "status": normalize_status(account.get("status")),
     }
     access_token = create_access_token(identity=identity, additional_claims=claims)
     refresh_token = create_refresh_token(identity=identity, additional_claims=claims)
@@ -124,6 +156,17 @@ def find_account_by_username(username):
         found = find_one(
             collection,
             lambda item: item.get("username") == username or item.get("email") == username,
+        )
+        if found:
+            return found
+    return None
+
+
+def find_account_by_id(account_id):
+    for collection in ("admins", "agents", "users"):
+        found = find_one(
+            collection,
+            lambda item: str(item.get("id")) == str(account_id),
         )
         if found:
             return found

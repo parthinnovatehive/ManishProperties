@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from "@/lib/api/client";
+import { ApiError } from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/config";
 import { LoginResponse, LogoutResponse } from "@/types/api";
 import { clearAllAuthData, getToken, setAdminData, setAuthPersistence, setRefreshToken, setToken } from "@/lib/utils/token";
@@ -15,6 +16,14 @@ function notifyAuthChanged() {
 }
 
 export class AuthService {
+  private normalizeAccountRole<T extends { role?: string }>(account: T): T {
+    const normalizedRole = String(account.role || "USER").toUpperCase().replace("-", "_");
+    return {
+      ...account,
+      role: normalizedRole === "CLIENT" ? "USER" : normalizedRole,
+    };
+  }
+
   private persistAuth(response: LoginResponse, remember = true) {
     const accessToken = response.access_token || response.token;
     const refreshToken = response.refresh_token || response.refreshToken;
@@ -22,8 +31,16 @@ export class AuthService {
 
     if (accessToken) setToken(accessToken);
     if (refreshToken) setRefreshToken(refreshToken);
-    if (account) setAdminData(account);
+    if (account) setAdminData(this.normalizeAccountRole(account));
     notifyAuthChanged();
+  }
+
+  private clearOnSuspended(error: unknown) {
+    const apiError = error as ApiError;
+    if (apiError?.status === 403) {
+      clearAllAuthData();
+      notifyAuthChanged();
+    }
   }
 
   /**
@@ -31,10 +48,16 @@ export class AuthService {
    */
   async login(email: string, password: string, remember = true): Promise<LoginResponse> {
     setAuthPersistence(remember);
-    const response = await apiClient.post<LoginResponse>(
-      API_ENDPOINTS.AUTH.LOGIN,
-      { email, password }
-    );
+    let response: LoginResponse;
+    try {
+      response = await apiClient.post<LoginResponse>(
+        API_ENDPOINTS.AUTH.LOGIN,
+        { email, password }
+      );
+    } catch (error) {
+      this.clearOnSuspended(error);
+      throw error;
+    }
 
     if (response.success) {
       this.persistAuth(response, remember);
@@ -70,10 +93,16 @@ export class AuthService {
    * Authenticate user with Google
    */
   async googleLogin(token: string, role: string): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>(
-      API_ENDPOINTS.AUTH.GOOGLE,
-      { token, role }
-    );
+    let response: LoginResponse;
+    try {
+      response = await apiClient.post<LoginResponse>(
+        API_ENDPOINTS.AUTH.GOOGLE,
+        { token, role }
+      );
+    } catch (error) {
+      this.clearOnSuspended(error);
+      throw error;
+    }
 
     if (response.success) {
       this.persistAuth(response);

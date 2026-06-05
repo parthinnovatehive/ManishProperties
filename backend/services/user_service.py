@@ -1,9 +1,14 @@
 from services.json_service import append_json, delete_json, load_json, update_json
 from utils.helpers import generate_id, now_iso
+from utils.validators import normalize_role
+
+
+def _normalize_user(user):
+    return {**user, "role": normalize_role(user.get("role"))}
 
 
 def list_users():
-    return load_json("users")
+    return [_normalize_user(user) for user in load_json("users")]
 
 
 def get_user(user_id):
@@ -25,7 +30,11 @@ def create_user(payload):
 
 
 def update_user(user_id, payload):
-    return update_json("users", user_id, {**payload, "updatedAt": now_iso()})
+    changes = {**payload, "updatedAt": now_iso()}
+    if "role" in changes:
+        changes["role"] = normalize_role(changes["role"])
+    updated = update_json("users", user_id, changes)
+    return _normalize_user(updated) if updated else None
 
 
 def delete_user(user_id):

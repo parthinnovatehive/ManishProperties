@@ -2,9 +2,12 @@ from flask import Blueprint, request
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
 
 from services.auth_service import (
+    SUSPENDED_ACCOUNT_MESSAGE,
     authenticate,
     create_and_send_otp,
+    find_account_by_id,
     google_login,
+    is_suspended,
     register_account,
     verify_otp,
 )
@@ -23,9 +26,9 @@ def login():
         return error_response(validation_error, 400)
 
     email = payload.get("email") or payload.get("username")
-    result, error = authenticate(email, payload["password"], payload.get("role"))
+    result, error, status_code = authenticate(email, payload["password"], payload.get("role"))
     if error:
-        return error_response(error, 401)
+        return error_response(error, status_code or 401)
     return success_response("Login successful", data=result, token=result["token"], refreshToken=result["refreshToken"], admin=result["admin"], user=result["user"])
 
 
@@ -74,6 +77,9 @@ def check_otp():
 @jwt_required(refresh=True)
 def refresh():
     claims = get_jwt()
+    account = find_account_by_id(get_jwt_identity())
+    if account and is_suspended(account):
+        return error_response(SUSPENDED_ACCOUNT_MESSAGE, 403)
     token = create_access_token(
         identity=get_jwt_identity(),
         additional_claims={

@@ -59,5 +59,17 @@
     "name": "Audit User",
     "phone": "+919999990001",
     "savedProperties": []
+  },
+  {
+    "id": "user_0bd517fd8a7642baa85c06914d2a0437",
+    "username": "deepakmorje612006@gmail.com",
+    "email": "deepakmorje612006@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$t8DnGtdydfWMqeya$991a2264c5522b645338ef01ebe7172f73a27684f7fd4d5ca0ac847080ff3cbd1f695e1fe6a4916267df305cb5d1d7b32f7583ecb51e3fed03f67946d56e7f16",
+    "role": "USER",
+    "name": "Deepak Morje",
+    "phone": "9011411791",
+    "savedProperties": [],
+    "status": "active",
+    "updatedAt": "2026-06-05T07:08:31.968085+00:00"
   }
 ]

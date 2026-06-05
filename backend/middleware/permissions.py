@@ -1,7 +1,8 @@
 from functools import wraps
 
-from flask_jwt_extended import get_jwt, verify_jwt_in_request
+from flask_jwt_extended import get_jwt, get_jwt_identity, verify_jwt_in_request
 
+from services.auth_service import SUSPENDED_ACCOUNT_MESSAGE, find_account_by_id, is_suspended
 from utils.helpers import error_response
 from utils.validators import normalize_role
 
@@ -14,6 +15,9 @@ def role_required(*allowed_roles):
         def wrapper(*args, **kwargs):
             verify_jwt_in_request()
             claims = get_jwt()
+            account = find_account_by_id(get_jwt_identity())
+            if account and is_suspended(account):
+                return error_response(SUSPENDED_ACCOUNT_MESSAGE, 403)
             role = normalize_role(claims.get("role"))
             if role not in normalized_allowed:
                 return error_response("Access denied. Required role missing.", 403)

@@ -59,5 +59,17 @@
     "name": "Audit Agent",
     "phone": "+919999990002",
     "savedProperties": []
+  },
+  {
+    "id": "agent_61cbd26cc16a44f9b2b825438e975cce",
+    "username": "deepakmorje74@gmail.com",
+    "email": "deepakmorje74@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$K8qHNmwYNv9CZUwn$81f8d9aabf4226c256f8a520c83335066b853d122d2f05c193530d4c4f281bac063a1524478c05217cc69d2694ed0ee512606b4d2ee20bbf6abb6b3da8c45c04",
+    "role": "AGENT",
+    "name": "Rahul",
+    "phone": "9011411791",
+    "savedProperties": [],
+    "status": "inactive",
+    "updatedAt": "2026-06-05T07:17:29.311599+00:00"
   }
 ]

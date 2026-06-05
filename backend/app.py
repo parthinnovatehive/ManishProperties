@@ -74,6 +74,8 @@ def register_error_handlers(app):
 
 
 def register_jwt_handlers(jwt_manager):
+    from services.auth_service import SUSPENDED_ACCOUNT_MESSAGE, find_account_by_id, is_suspended
+
     @jwt_manager.unauthorized_loader
     def missing_token(message):
         return error_response(message or "No token provided", 401)
@@ -85,6 +87,15 @@ def register_jwt_handlers(jwt_manager):
     @jwt_manager.expired_token_loader
     def expired_token(_header, _payload):
         return error_response("Token has expired", 401)
+
+    @jwt_manager.token_in_blocklist_loader
+    def suspended_account(_header, payload):
+        account = find_account_by_id(payload.get("sub"))
+        return bool(account and is_suspended(account))
+
+    @jwt_manager.revoked_token_loader
+    def suspended_token(_header, _payload):
+        return error_response(SUSPENDED_ACCOUNT_MESSAGE, 403)
 
 
 app = create_app()

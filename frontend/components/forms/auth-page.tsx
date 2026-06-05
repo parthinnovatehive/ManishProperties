@@ -10,11 +10,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { getAdminData } from "@/lib/utils/token";
 
 type AuthMode = "login" | "register";
-type PublicRole = "USER" | "AGENT";
+type PublicRole = "USER" | "AGENT" | "ADMIN";
 
 const redirectByRole: Record<string, string> = {
   USER: "/user/dashboard",
-  CLIENT: "/user/dashboard",
   AGENT: "/agent/dashboard",
   ADMIN: "/admin/dashboard",
   SUPER_ADMIN: "/super-admin/dashboard",
@@ -44,7 +43,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const title = isLogin ? "Sign in to EstateElite" : "Create your EstateElite account";
   const subtitle = isLogin
     ? "Use your registered email and password to continue."
-    : "Register as a buyer/owner or an agent. Admin accounts are created internally.";
+    : "Register as a buyer/owner, agent, or admin.";
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -154,10 +153,11 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
 
                 <div className="mb-4">
                   <span className="mb-2 block text-[13px] font-semibold text-estate-text">Role</span>
-                  <div className="grid grid-cols-2 gap-2 rounded-xl bg-estate-bg p-1">
+                  <div className="grid grid-cols-3 gap-2 rounded-xl bg-estate-bg p-1">
                     {[
                       ["USER", "User"],
                       ["AGENT", "Agent"],
+                      ["ADMIN", "Admin"],
                     ].map(([value, label]) => (
                       <button
                         key={value}

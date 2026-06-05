@@ -174,6 +174,15 @@ export class ApiClient {
           clearAllAuthData();
         }
         const error = await this.handleError(response);
+        if (
+          response.status === 403 &&
+          error.message === "Your account has been suspended. Please contact support."
+        ) {
+          clearAllAuthData();
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new Event("estate-auth-changed"));
+          }
+        }
         throw error;
       }
 

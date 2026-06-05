@@ -21,7 +21,7 @@ function normalizeRole(role?: string | null): Role {
   if (value === "SUPER_ADMIN") return "super-admin";
   if (value === "ADMIN") return "admin";
   if (value === "AGENT") return "agent";
-  if (value === "USER" || value === "CLIENT") return "user";
+  if (value === "USER") return "user";
   return null;
 }
 

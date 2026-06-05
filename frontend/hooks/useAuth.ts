@@ -51,7 +51,8 @@ export function useAuth(): UseAuthReturn {
         if (apiError.status === 401) {
           errorMessage = apiError.message || "Invalid email or password.";
         } else if (apiError.status === 403) {
-          errorMessage = apiError.message || "Access denied.";
+          setAdmin(null);
+          errorMessage = apiError.message || "Your account has been suspended. Please contact support.";
         } else if (apiError.status === 0) {
           errorMessage = "Network error. Please check your connection.";
         } else if (apiError.message) {
@@ -124,6 +125,9 @@ export function useAuth(): UseAuthReturn {
 
         if (apiError.status === 401) {
           errorMessage = apiError.message || "Account exists with a different role.";
+        } else if (apiError.status === 403) {
+          setAdmin(null);
+          errorMessage = apiError.message || "Your account has been suspended. Please contact support.";
         } else if (apiError.status === 0) {
           errorMessage = "Network error. Please check your connection.";
         } else if (apiError.message) {

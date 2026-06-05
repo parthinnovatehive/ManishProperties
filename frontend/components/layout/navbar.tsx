@@ -23,7 +23,6 @@ function getRoleBadgeColor(role: string): string {
       return "bg-estate-red/10 text-estate-red border-estate-red/20";
     case "AGENT":
       return "bg-amber-50 text-amber-700 border-amber-200";
-    case "CLIENT":
     default:
       return "bg-estate-blue-pale text-estate-blue border-estate-blue/20";
   }

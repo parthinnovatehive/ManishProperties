@@ -16,6 +16,11 @@ export interface AdminData {
 
 const AUTH_PERSISTENCE_KEY = "estate_auth_persistence";
 
+function normalizeStoredRole(role?: string): string {
+  const normalized = String(role || "USER").toUpperCase().replace("-", "_");
+  return normalized === "CLIENT" ? "USER" : normalized;
+}
+
 function getBrowserStorage(kind?: "local" | "session"): Storage | null {
   if (typeof window === "undefined") return null;
   return kind === "session" ? window.sessionStorage : window.localStorage;
@@ -142,7 +147,8 @@ export function getAdminData(): AdminData | null {
   try {
     const data = getStoredItem(ADMIN_DATA_STORAGE_KEY);
     if (!data) return null;
-    return JSON.parse(data) as AdminData;
+    const account = JSON.parse(data) as AdminData;
+    return { ...account, role: normalizeStoredRole(account.role) };
   } catch (error) {
     console.error("Failed to read admin data from localStorage:", error);
     return null;
@@ -158,7 +164,7 @@ export function setAdminData(data: AdminData): void {
   }
 
   try {
-    setStoredItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(data));
+    setStoredItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify({ ...data, role: normalizeStoredRole(data.role) }));
   } catch (error) {
     console.error("Failed to write admin data to localStorage:", error);
   }

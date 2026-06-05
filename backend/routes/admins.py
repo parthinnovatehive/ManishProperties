@@ -4,6 +4,7 @@ from middleware.permissions import role_required, super_admin_required
 from services.json_service import append_json, delete_json, load_json, update_json
 from services.property_service import list_properties
 from utils.helpers import error_response, generate_id, now_iso, success_response
+from utils.validators import normalize_role
 
 
 admins_bp = Blueprint("admins", __name__)
@@ -27,7 +28,7 @@ def create():
         "username": payload.get("username"),
         "name": payload.get("name"),
         "phone": payload.get("phone"),
-        "role": payload.get("role", "ADMIN").upper(),
+        "role": normalize_role(payload.get("role", "ADMIN")),
         "createdAt": now_iso(),
     }
     append_json("admins", admin)
@@ -70,7 +71,10 @@ def show(admin_id):
 @admins_bp.patch("/<admin_id>")
 @super_admin_required
 def update(admin_id):
-    admin = update_json("admins", admin_id, {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()})
+    changes = {**(request.get_json(silent=True) or {}), "updatedAt": now_iso()}
+    if "role" in changes:
+        changes["role"] = normalize_role(changes["role"])
+    admin = update_json("admins", admin_id, changes)
     if not admin:
         return error_response("Admin not found", 404)
     return success_response("Admin updated", data=admin, admin=admin)
