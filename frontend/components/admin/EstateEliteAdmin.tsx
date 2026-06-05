@@ -20,6 +20,8 @@ import { useToast } from "@/lib/utils/toast";
 import { ToastContainer } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 import { estateApi } from "@/lib/api";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { FeaturedBadge } from "@/components/ui/FeaturedBadge";
 
 /* ============================================================
    DESIGN SYSTEM — matches EstateElite frontend
@@ -45,6 +47,55 @@ const C = {
 };
 const serif = { fontFamily: "'Playfair Display', Georgia, serif" };
 const sans = { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" };
+
+const LOCATION_HIERARCHY = {
+  Maharashtra: {
+    Mumbai: ["Worli", "Bandra West", "Bandra Kurla Complex", "Powai", "Andheri West"],
+    Pune: ["Baner", "Koregaon Park", "Hinjewadi", "Kalyani Nagar"],
+    Alibag: ["Alibag", "Mandwa", "Nagaon"],
+  },
+  Karnataka: {
+    Bangalore: ["Whitefield", "Sarjapur Road", "Indiranagar", "Hebbal"],
+  },
+  Telangana: {
+    Hyderabad: ["Gachibowli", "Jubilee Hills", "HITEC City", "Banjara Hills"],
+  },
+  "Delhi NCR": {
+    Gurugram: ["DLF Phase 5", "Golf Course Road", "Cyber City"],
+    "Delhi NCR": ["Noida", "Greater Noida", "Dwarka"],
+  },
+  "Tamil Nadu": {
+    Chennai: ["OMR", "Adyar", "Anna Nagar"],
+  },
+};
+
+const LOCATION_INDEX = Object.entries(LOCATION_HIERARCHY).flatMap(([state, cities]) =>
+  Object.entries(cities).flatMap(([city, areas]) => areas.map((area) => ({ state, city, area }))),
+);
+
+const formatDate = (iso) => {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+};
+
+const timeAgo = (iso) => {
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 3600) return `${Math.round(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.round(diff / 3600)}h ago`;
+  return `${Math.round(diff / 86400)}d ago`;
+};
+
+const getPropertyLocationMeta = (property) => {
+  const haystack = `${property.location} ${property.title}`.toLowerCase();
+  const match = LOCATION_INDEX.find(({ city, area }) =>
+    haystack.includes(area.toLowerCase()) || haystack.includes(city.toLowerCase()),
+  );
+
+  if (match) return match;
+
+  const stateMatch = Object.keys(LOCATION_HIERARCHY).find((state) => haystack.includes(state.toLowerCase()));
+  return { state: stateMatch || "", city: "", area: "" };
+};
 
 /* NOTE: Sidebar/TopBar removed from this file.
   The application now uses app/admin/layout.tsx which

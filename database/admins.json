@@ -7,9 +7,15 @@
     "role": "SUPER_ADMIN",
     "name": "Root Admin",
     "phone": null
+  },
+  {
+    "id": "admin_3050ed538b224e49866eeaf51a8423c7",
+    "username": "xyz@gmail.com",
+    "email": "xyz@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$Gup2393nFSQNnKCN$0e971d1cb998cde1d57e208964a3928542dfd2c3005214d365f55479fc262e4819e950a92d6f1c69e45d66d55c38fdc08425c54a8164254f2b01c0d55adbce7a",
+    "role": "ADMIN",
+    "name": "aniket",
+    "phone": "9856233265",
+    "savedProperties": []
   }
-
-
 ]
-  
-
