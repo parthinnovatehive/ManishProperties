@@ -21,7 +21,7 @@ export default function UserAppointmentsPage() {
   const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
 
   useEffect(() => {
-    estateApi.appointments.list<Appointment>().then(setAppointmentsList);
+    estateApi.appointments.myList<Appointment>().then(setAppointmentsList);
   }, []);
 
   const handleCancel = async (id: string) => {

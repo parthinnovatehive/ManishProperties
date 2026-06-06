@@ -42,6 +42,8 @@ export const estateApi = {
   },
   users: {
     list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.USERS), "users"),
+    me: async <T = unknown>() => itemFrom<T>(await apiClient.get(`${API_ENDPOINTS.USERS}/me`), "user"),
+    toggleSaved: async (propertyId: string | number) => apiClient.patch(`${API_ENDPOINTS.USERS}/me/saved-properties`, { propertyId: String(propertyId) }),
     create: async <T = unknown>(payload: T) => itemFrom<T>(await apiClient.post(API_ENDPOINTS.USERS, payload), "user"),
     update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.USERS}/${id}`, payload), "user"),
     remove: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.USERS}/${id}`),
@@ -68,6 +70,7 @@ export const estateApi = {
   },
   appointments: {
     list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.APPOINTMENTS), "appointments"),
+    myList: async <T = unknown>() => listFrom<T>(await apiClient.get(`${API_ENDPOINTS.APPOINTMENTS}/my`), "appointments"),
     create: async <T = unknown>(payload: T) => itemFrom<T>(await apiClient.post(API_ENDPOINTS.APPOINTMENTS, payload), "appointment"),
     update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.APPOINTMENTS}/${id}`, payload), "appointment"),
     remove: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.APPOINTMENTS}/${id}`),

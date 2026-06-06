@@ -1,492 +1,340 @@
 # EstateElite
 
-EstateElite is a premium real estate marketplace project built with Next.js, React, Tailwind CSS, and a separate Express/Prisma backend for admin authentication and property moderation APIs.
+EstateElite is a premium real estate marketplace platform featuring a polished, interactive frontend built with **Next.js 15** and **React 19**, integrated with a lightweight and robust **Python Flask API** backend. The system utilizes a flat-file **JSON-based database** with thread-safe file operations for simple, portable, and secure persistence.
 
-The project currently contains a polished public marketplace UI, a listing and property-detail experience powered by local mock data, a multi-step property submission flow, an admin login flow, and an admin dashboard prototype. The backend under `project-root/server` provides JWT-based admin login plus protected property moderation endpoints backed by PostgreSQL through Prisma.
+The application includes a fully wired-up public marketplace (home, property lists, and detail page views), an authenticated multi-step property submission flow, and an administrative dashboard for property moderation, statistics tracking, and role-based actions.
+
+---
 
 ## Table of Contents
 
-- [Project Status](#project-status)
-- [Features](#features)
+- [Project Architecture](#project-architecture)
+- [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
+- [Directory Structure](#directory-structure)
 - [Application Routes](#application-routes)
 - [Getting Started](#getting-started)
-- [Frontend Scripts](#frontend-scripts)
-- [Backend Setup](#backend-setup)
+  - [Prerequisites](#prerequisites)
+  - [Frontend Setup](#frontend-setup)
+  - [Backend Setup](#backend-setup)
 - [Environment Variables](#environment-variables)
-- [Backend API](#backend-api)
-- [Data Model](#data-model)
-- [Important Implementation Notes](#important-implementation-notes)
-- [Known Limitations](#known-limitations)
-- [Suggested Next Steps](#suggested-next-steps)
+- [Data Model & Normalization](#data-model--normalization)
+- [API Reference](#api-reference)
+- [System Synchronization & State](#system-synchronization--state)
 
-## Project Status
+---
 
-This repository is currently a hybrid prototype:
+## Project Architecture
 
-- The public marketplace is mostly frontend-driven and uses mock data from `data/`.
-- Saved properties are stored in browser `localStorage`.
-- The admin login form calls the backend at `http://localhost:5000/api/admin/login`.
-- The admin dashboard UI currently uses internal mock data and local state for moderation actions.
-- The backend has real Prisma models and protected admin/property routes, but the frontend dashboard is not fully wired to those API endpoints yet.
+```
+                 +-----------------------+
+                 |    Public & Admin     |
+                 |      Next.js UI       |
+                 +-----------+-----------+
+                             |
+                     apiClient (HTTP/JSON)
+                             |
+                             v
+                 +-----------+-----------+
+                 |   Python Flask API    |
+                 +-----------+-----------+
+                             |
+                   json_service (RLock)
+                             |
+                             v
+                 +-----------+-----------+
+                 |    JSON DB Storage    |
+                 |  (database/*.json)    |
+                 +-----------------------+
+```
 
-## Features
+EstateElite is designed with a decoupled frontend-backend architecture:
+1. **Frontend Layer**: Built using the Next.js App Router. Communicates with the backend using a centralized, type-safe custom API client (`apiClient`) with built-in token-handling and timed requests.
+2. **Backend API Layer**: Built on Python/Flask. Exposes REST blueprints with token-based security and custom permission middleware.
+3. **Database Layer**: Comprises independent flat-file JSON collections. Read/write concurrency is managed securely on the backend using Python's `threading.RLock`.
+
+---
+
+## Key Features
 
 ### Public Marketplace
+- **Premium Home Page**: Features a hero search, property category listings, featured homes, trending destinations, testimonials, and dynamic animation transitions.
+- **Interactive Listings Page**: Supported by URL search parameters. Features real-time multi-criteria filtering (by location state/city/area, price range, bedrooms, property type) and grid/list view toggling.
+- **Detailed Property Views**: Displays photo galleries, agent contact cards, site visit schedulers, a real EMI calculator widget, and a list of similar properties.
+- **Saved Properties**: Allows users to save properties locally with count badge indicators, persistent in `localStorage`.
+- **Public Post Property**: A step-by-step form (listing details, location selectors, custom amenities checklist, photo upload mockup, and summary verification) that creates a `PENDING` property moderation record on the backend.
+- **Unified Auth Portal**: Auth screen with sign-in, signup, simulated phone OTP registration/login verification, and Google OAuth UI placeholder.
 
-- Premium home page with hero search, stats, property categories, featured properties, trending cities, market insights, testimonials, and owner CTA sections.
-- Property listing page with:
-  - URL-driven search query support.
-  - Filters for property type, listing status, price range, bedrooms, and city.
-  - Sort modes for relevance, price, newest, and popularity.
-  - Grid/list view toggle.
-  - Empty state and pagination UI.
-- Property detail page with:
-  - Image gallery.
-  - Save/share controls.
-  - Overview, amenities, and property details tabs.
-  - Agent contact panel.
-  - Site visit CTA.
-  - Similar properties.
-  - EMI calculator.
-- Multi-step "Post Property" form with listing type, location, details/pricing, amenities, photo upload UI, and listing summary.
-- Authentication screen with login/register UI, OTP-style register flow mockup, and admin login integration.
-- Responsive navigation with mobile menu and saved-property count.
-- Footer with quick links, city links, company links, and social icons.
+### Admin & Moderation Experience
+- **Central Layout Protection**: Automatic route guarding checks authentication state client-side. Invalid or expired tokens trigger redirection to the Admin Login path.
+- **Dashboard Hub**: Displays real-time statistics (total listings, pending reviews, approved, rejected, and featured properties) based directly on backend status metrics.
+- **Property Moderation Portal**:
+  - Filterable listings table.
+  - Approve, reject (with custom message), and delete capabilities.
+  - Optimistic updates: changes reflect immediately in the UI and automatically roll back with an error toast message if the API call fails.
+- **User & Agent Management**: Displays accounts registered under `users.json` and `agents.json` with filtering and status breakdown gauges.
 
-### Admin Experience
-
-- Admin login route at `/admin/login`.
-- Protected dashboard route at `/admin/dashboard` that redirects to login if no `adminToken` is present in `localStorage`.
-- Admin dashboard prototype with:
-  - Sidebar navigation.
-  - Overview stats.
-  - Recent submissions.
-  - Property moderation tables.
-  - Pending, approved, rejected, and featured views.
-  - Approve, reject, feature, delete, and view actions using local state.
-  - User and agent management views.
-  - Toasts, confirm modal, drawer, and placeholder analytics/settings screens.
-
-### Backend API
-
-- Express server on port `5000`.
-- CORS and JSON request body parsing.
-- Admin login with bcrypt password comparison.
-- JWT token creation for authenticated admin sessions.
-- Auth middleware for protected routes.
-- Prisma-backed admin and property models.
-- Protected endpoints for property listing, dummy property creation, approval, rejection, featuring, and deletion.
-- Seed script that creates a root admin account.
+---
 
 ## Tech Stack
 
 ### Frontend
-
-- Next.js 15 App Router
-- React 19
-- TypeScript
-- Tailwind CSS 3
-- Lucide React icons
-- Unsplash remote images
+- **Framework**: Next.js 15 (App Router) & React 19
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 3 & Vanilla CSS tokens
+- **Icons**: Lucide React
+- **Client State**: Centralized services and custom hooks
 
 ### Backend
+- **Framework**: Python 3.10+ & Flask 3
+- **Authentication**: Flask-JWT-Extended
+- **Middleware**: Custom Python decorators for role-checking (`@admin_required`, `@role_required`)
+- **CORS Handling**: Flask-CORS
 
-- Node.js
-- Express 5
-- Prisma 5
-- PostgreSQL
-- bcryptjs
-- jsonwebtoken
-- cors
-- dotenv
+### Database
+- **Type**: JSON flat-file collections
+- **Thread Safety**: Multithreaded safety via standard `threading.RLock`
+- **Location**: `/database/*.json`
 
-## Project Structure
+---
+
+## Directory Structure
 
 ```text
 .
-+-- app/
-|   +-- (public)/
-|   |   +-- auth/page.tsx
-|   |   +-- layout.tsx
-|   |   +-- page.tsx
-|   |   +-- properties/page.tsx
-|   |   +-- properties/[id]/page.tsx
-|   |   +-- submit-property/page.tsx
-|   +-- admin/
-|   |   +-- dashboard/page.tsx
-|   |   +-- layout.tsx
-|   |   +-- login/page.tsx
-|   +-- globals.css
-|   +-- layout.tsx
-|   +-- not-found.tsx
-+-- components/
-|   +-- admin/
-|   +-- forms/
-|   +-- home/
-|   +-- layout/
-|   +-- property/
-|   +-- ui/
-+-- data/
-|   +-- categories.ts
-|   +-- cities.ts
-|   +-- properties.ts
-|   +-- testimonials.ts
-+-- lib/
-|   +-- saved-properties-context.tsx
-|   +-- utils.ts
-+-- types/
-|   +-- content.ts
-|   +-- index.ts
-|   +-- property.ts
-+-- project-root/
-|   +-- server/
-|       +-- index.js
-|       +-- seed.js
-|       +-- lib/prisma.js
-|       +-- middleware/authMiddleware.js
-|       +-- prisma/schema.prisma
-|       +-- routes/adminRoutes.js
-+-- next.config.ts
-+-- package.json
-+-- tailwind.config.ts
-+-- tsconfig.json
+├── backend/                       # Python Flask API Application
+│   ├── app.py                     # App factory & route registrations
+│   ├── config.py                  # Configurations & environment loading
+│   ├── middleware/                # Custom auth & permissions decorators
+│   ├── routes/                    # API route blueprints
+│   │   ├── auth.py                # OTP, logins, registrations, token refreshes
+│   │   ├── properties.py          # Public submission & admin property moderation
+│   │   ├── users.py / agents.py   # Admin management of accounts
+│   │   └── messages.py / messages # Core user interactions
+│   ├── services/                  # Business logic services
+│   │   ├── auth_service.py        # Token issue, password hash checks, OTP storage
+│   │   ├── json_service.py        # Thread-safe JSON CRUD operations
+│   │   └── property_service.py    # Sanitization, creation & state updates
+│   ├── utils/                     # Helpers and request body validators
+│   └── requirements.txt           # Python backend dependencies
+│
+├── database/                      # Persistent JSON files (flat-file DB)
+│   ├── properties.json            # Property listing documents
+│   ├── users.json                 # Standard user records
+│   ├── admins.json                # Admin user credentials (seeded rootadmin)
+│   ├── agents.json                # Registered property agents
+│   └── (appointments / messages)  # Messaging & booking collections
+│
+└── frontend/                      # Next.js App Router Frontend
+    ├── app/                       # Application Routes & Pages
+    │   ├── (public)/              # Public routes (Home, Properties, Submit)
+    │   └── admin/                 # Admin routes (Dashboard, Login)
+    ├── components/                # Modular React UI components
+    │   ├── admin/                 # EstateEliteAdmin dashboard components
+    │   ├── forms/                 # SubmitPropertyForm and Auth components
+    │   └── ui/                    # Badges, toasts, and buttons
+    ├── hooks/                     # Custom React Hooks
+    │   └── useAdminProperties.ts  # Properties state, mutations, & optimistic updates
+    ├── lib/                       # Utility and API services
+    │   ├── api/                   # Core apiClient and route configs
+    │   ├── services/              # Property and Authentication client service layers
+    │   └── utils/                 # Singleton Toast Manager
+    ├── types/                     # Centralized TypeScript declarations
+    └── package.json               # Frontend dependencies & npm scripts
 ```
+
+---
 
 ## Application Routes
 
-### Public Routes
-
+### Frontend Public Routes
 | Route | Description |
 | --- | --- |
-| `/` | Home page |
-| `/properties` | Property listing and filtering page |
-| `/properties/[id]` | Property detail page generated from local property data |
-| `/submit-property` | Multi-step property listing form |
-| `/auth` | Public sign-in/register UI |
+| `/` | Interactive home page |
+| `/properties` | Marketplace listings, search, and dynamic filters |
+| `/properties/[id]` | Detailed view page for specific listing |
+| `/submit-property` | Property poster workflow (saves as `PENDING`) |
+| `/auth` | Public login, signup, and phone OTP verification UI |
 
-### Admin Routes
-
+### Frontend Admin Routes
 | Route | Description |
 | --- | --- |
-| `/admin/login` | Admin login screen |
-| `/admin/dashboard` | Admin dashboard prototype, guarded by `adminToken` in localStorage |
+| `/admin/login` | Administrator credentials sign-in portal |
+| `/admin/dashboard` | Interactive moderation dashboard (guarded) |
+
+---
 
 ## Getting Started
 
 ### Prerequisites
+- **Node.js**: `v18.0.0` or higher
+- **Python**: `v3.10.0` or higher
 
-- Node.js 18 or newer
-- npm
-- PostgreSQL database for the backend
+### Frontend Setup
 
-### Install Frontend Dependencies
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install npm dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+   The frontend will start at: `http://localhost:3000`
 
-From the repository root:
+4. Build for production:
+   ```bash
+   npm run build
+   ```
 
-```bash
-npm install
-```
+5. Type-check TypeScript files:
+   ```bash
+   npm run type-check
+   ```
 
-### Run the Frontend
+### Backend Setup
 
-```bash
-npm run dev
-```
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   
+   # Windows:
+   venv\Scripts\activate
+   
+   # macOS/Linux:
+   source venv/bin/activate
+   ```
+3. Install required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the API server:
+   ```bash
+   python app.py
+   ```
+   The API server will run at: `http://localhost:5000`
 
-The Next.js app will usually start at:
-
-```text
-http://localhost:3000
-```
-
-### Build the Frontend
-
-```bash
-npm run build
-```
-
-### Run the Production Frontend Build
-
-```bash
-npm run start
-```
-
-### Type Check
-
-```bash
-npm run type-check
-```
-
-## Frontend Scripts
-
-Defined in the root `package.json`:
-
-| Script | Command | Purpose |
-| --- | --- | --- |
-| `dev` | `next dev` | Starts the Next.js development server |
-| `build` | `next build` | Creates a production build |
-| `start` | `next start` | Runs the production build |
-| `type-check` | `tsc --noEmit` | Runs TypeScript checks without emitting files |
-
-## Backend Setup
-
-The backend lives in:
-
-```text
-project-root/server
-```
-
-### Install Backend Dependencies
-
-```bash
-cd project-root/server
-npm install
-```
-
-### Create Backend Environment File
-
-Create `project-root/server/.env`:
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-```
-
-### Generate Prisma Client
-
-```bash
-npx prisma generate
-```
-
-### Run Database Migrations
-
-```bash
-npx prisma migrate dev
-```
-
-### Seed Root Admin
-
-```bash
-node seed.js
-```
-
-The seed script creates:
-
-```text
-username: rootadmin
-password: admin123
-role: SUPER_ADMIN
-```
-
-### Run Backend Server
-
-```bash
-node index.js
-```
-
-The API starts at:
-
-```text
-http://localhost:5000
-```
-
-Note: the backend `package.json` currently does not define `dev` or `start` scripts. Run the server directly with `node index.js`, or add scripts later if preferred.
+---
 
 ## Environment Variables
 
-### Frontend
-
-The current frontend does not require a `.env.local` file. The admin login request is hardcoded to:
-
-```text
-http://localhost:5000/api/admin/login
+### Frontend Configuration (`frontend/.env.local`)
+Create `.env.local` inside the `frontend/` folder:
+```env
+NEXT_PUBLIC_API_URL="http://localhost:5000"
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-oauth-client-id"
+JWT_SECRET="your-local-development-jwt-key"
 ```
 
-### Backend
-
-Required in `project-root/server/.env`:
-
-| Variable | Required | Description |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string used by Prisma |
-
-Security note: JWT currently uses the hardcoded secret `SUPER_SECRET_KEY` in the backend source. Move this to an environment variable before production use.
-
-## Backend API
-
-Base URL:
-
-```text
-http://localhost:5000
+### Backend Configuration (`backend/.env`)
+Create `.env` inside the `backend/` folder:
+```env
+SECRET_KEY=change-me-in-production
+JWT_SECRET_KEY=change-me-in-production
+PORT=5000
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
-### Health Check
+---
 
-```http
-GET /
-```
+## Data Model & Normalization
 
-Returns:
+The JSON database contains distinct schemas that are parsed and normalized on both ends.
 
-```text
-API Running
-```
-
-### Admin Login
-
-```http
-POST /api/admin/login
-```
-
-Request body:
-
+### Property Document
+Properties in the database support both legacy properties from mocks and real backend submissions through fields normalization (`property_service.py`):
 ```json
 {
-  "username": "rootadmin",
-  "password": "admin123"
+  "id": "prop_89b2512a...",
+  "title": "Luxury Sea-View Apartment",
+  "subtitle": "High-rise tower with panoramic views",
+  "description": "Premium 3BHK flat located in Worli...",
+  "price": "₹2.85 Cr",
+  "priceNum": 28500000.0,
+  "city": "Mumbai",
+  "location": "Worli, South Mumbai",
+  "pincode": "400018",
+  "type": "Apartment",
+  "listingType": "For Sale",
+  "beds": 3,
+  "bathrooms": 3,
+  "baths": 3,
+  "area": 1850,
+  "furnishing": "Fully Furnished",
+  "amenities": ["Swimming Pool", "Gymnasium", "24/7 Security"],
+  "images": ["https://images.unsplash.com/..."],
+  "imgs": ["https://images.unsplash.com/..."],
+  "image": "https://images.unsplash.com/...",
+  "img": "https://images.unsplash.com/...",
+  "builder": "Lodha Group",
+  "rating": 4.8,
+  "reviews": 24,
+  "featured": false,
+  "isNew": true,
+  "status": "APPROVED",
+  "moderationStatus": "APPROVED",
+  "createdAt": "2026-06-05T06:05:16.101742+00:00",
+  "updatedAt": "2026-06-05T06:27:00.262234+00:00"
 }
 ```
 
-Successful response includes:
-
+### User & Agent Document
 ```json
 {
-  "success": true,
-  "token": "jwt-token",
-  "admin": {
-    "id": "admin-id",
-    "username": "rootadmin",
-    "role": "SUPER_ADMIN"
-  }
+  "id": "user_74bfd9...",
+  "username": "client@estateelite.com",
+  "email": "client@estateelite.com",
+  "passwordHash": "pbkdf2:sha256:...",
+  "role": "USER",
+  "name": "Deepak Kumar",
+  "phone": "9876543210",
+  "savedProperties": ["prop_89b2512a..."],
+  "status": "ACTIVE"
 }
 ```
 
-### Protected Dashboard
+---
 
-```http
-GET /api/admin/dashboard
-Authorization: Bearer <token>
-```
+## API Reference
 
-### Get Properties
+### Public API Endpoints
+- `GET /` — Health status check.
+- `GET /api/public/properties` — Fetch all properties marked as `APPROVED`.
+- `GET /api/public/properties/<id>` — Fetch details of a specific approved property.
+- `POST /api/public/properties/submit` — Submit a new property listing (defaults to status `PENDING`).
+- `GET /api/public/content/cities` — Fetch list of available cities.
+- `GET /api/public/content/testimonials` — Get testimonials.
 
-```http
-GET /api/admin/properties
-Authorization: Bearer <token>
-```
+### Authentication Endpoints
+- `POST /api/auth/login` — Sign in with email & password. Expects user role verification.
+- `POST /api/auth/register` — Standard registration route.
+- `POST /api/auth/otp/send` — Triggers a 6-digit verification code to the phone (printed to console logs).
+- `POST /api/auth/otp/verify` — Validates the phone OTP.
+- `POST /api/auth/refresh` — Issue a fresh JWT access token using the refresh token.
+- `POST /api/auth/logout` — Invalidates/logs out the active session.
 
-### Create Dummy Property
+### Protected Admin & Moderation Endpoints (Requires `Bearer` token)
+- `GET /api/admin/properties` — Get all properties (pending, approved, rejected).
+- `POST /api/admin/properties/create` — Create a property as an admin action.
+- `PATCH /api/admin/properties/<id>/approve` — Change moderation status of property to `APPROVED`.
+- `PATCH /api/admin/properties/<id>/reject` — Change moderation status of property to `REJECTED`.
+- `PATCH /api/admin/properties/<id>/feature` — Set featured boolean parameter.
+- `DELETE /api/admin/properties/<id>` — Delete a property document permanently.
 
-```http
-POST /api/admin/properties/create-dummy
-Authorization: Bearer <token>
-```
+---
 
-Creates a hardcoded test property in the database.
+## System Synchronization & State
 
-### Approve Property
-
-```http
-PATCH /api/admin/properties/:id/approve
-Authorization: Bearer <token>
-```
-
-Sets the property status to `APPROVED`.
-
-### Reject Property
-
-```http
-PATCH /api/admin/properties/:id/reject
-Authorization: Bearer <token>
-```
-
-Sets the property status to `REJECTED`.
-
-### Toggle Featured Property
-
-```http
-PATCH /api/admin/properties/:id/feature
-Authorization: Bearer <token>
-```
-
-Toggles the property `featured` flag.
-
-### Delete Property
-
-```http
-DELETE /api/admin/properties/:id
-Authorization: Bearer <token>
-```
-
-Deletes the property from the database.
-
-## Data Model
-
-The Prisma schema currently defines two models.
-
-### Admin
-
-```prisma
-model Admin {
-  id           String   @id @default(uuid())
-  username     String   @unique
-  passwordHash String
-  role         String
-  createdAt    DateTime @default(now())
-}
-```
-
-### Property
-
-```prisma
-model Property {
-  id           String   @id @default(uuid())
-  title        String
-  description  String
-  price        Float
-  location     String
-  propertyType String
-  bedrooms     Int
-  bathrooms    Int
-  area         Float
-  featured     Boolean  @default(false)
-  status       String   @default("PENDING")
-  createdAt    DateTime @default(now())
-}
-```
-
-## Important Implementation Notes
-
-- `next.config.ts` allows remote images from `images.unsplash.com`.
-- The public frontend uses a route group under `app/(public)`.
-- Public pages are wrapped by `SiteShell`, which includes the navbar, footer, animation wrapper, and saved-property provider.
-- `SavedPropertiesProvider` persists saved listing IDs in `localStorage` under `estateelite:saved-properties`.
-- The public property dataset lives in `data/properties.ts`.
-- The admin dashboard component lives in `components/admin/EstateEliteAdmin.tsx`.
-- Admin dashboard authentication is currently checked client-side by reading `adminToken` from `localStorage`.
-- The backend auth middleware expects an `Authorization: Bearer <token>` header.
-- The backend uses CommonJS modules.
-
-## Known Limitations
-
-- Public listings are not yet fetched from the backend database.
-- The property submission form does not yet submit data to the backend.
-- The admin dashboard moderation UI uses mock data instead of the Prisma property endpoints.
-- Register, OTP, forgot password, Google, and Facebook flows are UI-only.
-- JWT secret is hardcoded and should be moved to `.env`.
-- There are no automated tests yet.
-- Backend `package.json` has no dedicated `dev` or `start` script yet.
-- File upload UI is present, but actual upload/storage is not implemented.
-- Pagination controls are currently visual and not backed by paginated data.
-
-## Suggested Next Steps
-
-1. Connect the admin dashboard property table to `/api/admin/properties`.
-2. Add a real property creation endpoint and wire it to `/submit-property`.
-3. Move the JWT secret into an environment variable.
-4. Add backend scripts such as `dev`, `start`, `seed`, and `prisma:migrate`.
-5. Add validation for login, property submission, and backend route inputs.
-6. Add loading and error states for API-connected UI.
-7. Add automated tests for filters, saved properties, auth middleware, and admin moderation routes.
-8. Replace hardcoded frontend API URLs with environment-driven configuration.
+EstateElite implements high-reliability data synchronization patterns in the front-end to ensure structural consistency:
+1. **Service Abstraction**: `auth-service`, `property-service`, and `admin-service` separate component view structures from raw apiClient request calls.
+2. **Central Hooks**: The `useAdminProperties` hook acts as the dashboard's property store, offering global actions (`approveProperty`, `rejectProperty`, `featureProperty`, `deleteProperty`).
+3. **Optimistic Updates & Rollbacks**: Actions like property deletion, status switches, or featured updates run optimistically. The UI updates instantly. If the network drops or backend returns an error code, the hook automatically reverts to the previous snapshot state and notifies the user via toast.
+4. **Toast Manager**: A singleton notification service triggers success, info, warning, and error toasts with dismiss indicators.

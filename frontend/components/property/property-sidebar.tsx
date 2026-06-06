@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, Phone, ShieldCheck, TrendingUp } from "lucide-react";
+import { getAdminData } from "@/lib/utils/token";
+import { estateApi } from "@/lib/api";
 
 type PropertySidebarProps = {
+  propertyId: string;
   title: string;
   price: string;
   area?: number | null;
@@ -24,15 +27,48 @@ function pricePerSqft(price: string, area?: number | null) {
   });
 }
 
-export function PropertySidebar({ title, price, area }: PropertySidebarProps) {
+export function PropertySidebar({ propertyId, title, price, area }: PropertySidebarProps) {
   const [messageSent, setMessageSent] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState("Today");
+  const [selectedTime, setSelectedTime] = useState("10:00 AM");
+  const [selectedType, setSelectedType] = useState("In-Person");
+  const [bookingStatus, setBookingStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
   const sqftPrice = pricePerSqft(price, area);
   const shortTitle = title ? `${title.slice(0, 42)}${title.length > 42 ? "..." : ""}` : "this property";
 
   const handleMessage = () => {
     setMessageSent(true);
     window.setTimeout(() => setMessageSent(false), 3000);
+  };
+
+  const handleBookVisit = async () => {
+    const account = getAdminData();
+    if (!account) {
+      alert("Please log in to schedule a site visit.");
+      window.location.href = `/auth/login?redirect=/properties/${propertyId}`;
+      return;
+    }
+
+    setBookingStatus("loading");
+    try {
+      await estateApi.appointments.create({
+        propertyId,
+        propertyName: title,
+        userName: account.name || account.username || "User",
+        agentName: "EstateElite Luxe",
+        agentEmail: "luxe@estateelite.com",
+        date: selectedVisit,
+        time: selectedTime,
+        type: selectedType,
+        status: "Pending",
+      });
+      setBookingStatus("success");
+    } catch (err) {
+      console.error("Failed to book site visit:", err);
+      setBookingStatus("error");
+      window.setTimeout(() => setBookingStatus("idle"), 4000);
+    }
   };
 
   return (
@@ -133,10 +169,13 @@ export function PropertySidebar({ title, price, area }: PropertySidebarProps) {
               <p className="text-[10px] text-gray-400 mt-0.5 font-light">Private tour available</p>
             </div>
           </div>
+          
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preferred Date</p>
           <div className="grid grid-cols-2 gap-2.5 mb-4">
             {visitDates.map((date) => (
               <button
                 key={date}
+                type="button"
                 onClick={() => setSelectedVisit(date)}
                 className={`py-2.5 px-3 rounded-xl border text-xs font-semibold tracking-wide transition-all duration-200 ${
                   selectedVisit === date
@@ -148,9 +187,62 @@ export function PropertySidebar({ title, price, area }: PropertySidebarProps) {
               </button>
             ))}
           </div>
-          <button className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-estate-navy py-3.5 text-sm font-semibold tracking-wide text-white transition-all duration-200 hover:bg-estate-navy-mid active:scale-[0.98]">
+
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preferred Time</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {["10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setSelectedTime(t)}
+                className={`py-2 px-1 rounded-lg border text-[10px] font-semibold text-center transition-all duration-150 ${
+                  selectedTime === t
+                    ? "bg-estate-navy border-estate-navy text-white"
+                    : "bg-white border-estate-border text-estate-text-sec hover:border-estate-navy hover:bg-estate-blue-pale"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Meeting Type</p>
+          <div className="grid grid-cols-2 gap-2 mb-5">
+            {["In-Person", "Video Call"].map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setSelectedType(type)}
+                className={`py-2 px-2 rounded-lg border text-xs font-semibold text-center transition-all duration-150 ${
+                  selectedType === type
+                    ? "bg-estate-navy border-estate-navy text-white"
+                    : "bg-white border-estate-border text-estate-text-sec hover:border-estate-navy hover:bg-estate-blue-pale"
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={handleBookVisit}
+            disabled={bookingStatus === "loading" || bookingStatus === "success"}
+            className={`flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-sm font-semibold tracking-wide text-white transition-all duration-200 active:scale-[0.98] ${
+              bookingStatus === "success"
+                ? "bg-estate-success hover:bg-estate-success text-white"
+                : bookingStatus === "error"
+                ? "bg-estate-red hover:bg-estate-red text-white"
+                : "bg-estate-navy hover:bg-estate-navy-mid text-white"
+            }`}
+          >
             <Calendar className="w-4 h-4" />
-            Book Site Visit{selectedVisit ? ` - ${selectedVisit}` : ""}
+            {bookingStatus === "loading"
+              ? "Booking Tour..."
+              : bookingStatus === "success"
+              ? "Tour Requested! ✓"
+              : bookingStatus === "error"
+              ? "Error! Try Again"
+              : `Book Site Visit - ${selectedVisit}`}
           </button>
         </div>
 

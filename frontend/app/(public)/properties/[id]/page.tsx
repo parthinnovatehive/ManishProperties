@@ -13,6 +13,7 @@ import { PropertyTabs, type PropertyDetailRow } from "@/components/property/prop
 import { PropertyTrust } from "@/components/property/property-trust";
 import { estateApi } from "@/lib/api";
 import type { Property } from "@/types";
+import { getAdminData } from "@/lib/utils/token";
 
 type PropertyResponse = {
   property?: Property | null;
@@ -75,20 +76,44 @@ export default function PropertyDetailsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      if (params?.id) {
-        try {
-          const found = await estateApi.properties.detail(params.id);
-          setProperty(found || null);
-        } catch {
-          setProperty(null);
+    const loadData = async () => {
+      if (!params?.id) return;
+      try {
+        const found = await estateApi.properties.detail(params.id);
+        setProperty(found || null);
+
+        const account = getAdminData();
+        if (account) {
+          const user = await estateApi.users.me<any>();
+          const savedIds = (user?.savedProperties || []).map(String);
+          setSaved(savedIds.includes(String(params.id)));
         }
+      } catch (err) {
+        console.error("Error loading property page data:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    fetchProperty();
+    loadData();
   }, [params?.id]);
+
+  const handleToggleSaved = async () => {
+    if (!property) return;
+    const account = getAdminData();
+    if (!account) {
+      alert("Please log in to save properties.");
+      window.location.href = `/auth/login?redirect=/properties/${property.id}`;
+      return;
+    }
+
+    try {
+      await estateApi.users.toggleSaved(property.id);
+      setSaved((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to toggle saved property:", err);
+    }
+  };
 
   const derived = useMemo(() => {
     if (!property) return null;
@@ -109,7 +134,7 @@ export default function PropertyDetailsPage() {
 
   return (
     <div className="min-h-screen bg-estate-bg pb-28 font-sans selection:bg-estate-blue-pale selection:text-estate-navy">
-      <PropertyTopBar saved={saved} onSavedChange={setSaved} />
+      <PropertyTopBar saved={saved} onSavedChange={handleToggleSaved} />
 
       <PropertyGallery
         images={derived.images}
@@ -118,7 +143,7 @@ export default function PropertyDetailsPage() {
         price={property.price}
         area={property.area}
         saved={saved}
-        onSavedChange={setSaved}
+        onSavedChange={handleToggleSaved}
       />
 
       <div className="mx-auto mt-12 max-w-[1400px] px-6 sm:px-10 lg:px-12">
@@ -160,7 +185,7 @@ export default function PropertyDetailsPage() {
             <PropertySimilar city={property.city} propertyType={property.type} />
           </main>
 
-          <PropertySidebar title={property.title} price={property.price} area={property.area} />
+          <PropertySidebar propertyId={String(property.id)} title={property.title} price={property.price} area={property.area} />
         </div>
       </div>
     </div>

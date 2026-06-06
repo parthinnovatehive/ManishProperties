@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Calendar,
   Building2,
   Users,
   User,
-
   ChevronLeft,
   ChevronRight,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { getAdminData } from "@/lib/utils/token";
 
 interface UserSidebarProps {
   isOpen: boolean; // mobile drawer state
@@ -29,13 +30,37 @@ const MENU_ITEMS = [
   { href: "/user/saved-properties", label: "Saved Properties", icon: Building2 },
   { href: "/user/complaints", label: "Complaints", icon: Users },
   { href: "/user/profile", label: "Profile", icon: User },
-
-
 ];
 
 export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: UserSidebarProps) {
   const pathname = usePathname() ?? "";
   const { email } = useAuth();
+
+  // Use state to avoid SSR/client hydration mismatch (localStorage is browser-only)
+  const [userName, setUserName] = useState("User");
+  const [userEmail, setUserEmail] = useState("Signed in user");
+  const [initials, setInitials] = useState("UE");
+
+  useEffect(() => {
+    const account = getAdminData();
+    if (account) {
+      const name = account.name || account.username || "User";
+      const emailVal = account.email || email || "Signed in user";
+      const init = name
+        .split(" ")
+        .map((part: string) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase() || "UE";
+      setUserName(name);
+      setUserEmail(emailVal);
+      setInitials(init);
+    } else if (email) {
+      setUserEmail(email);
+      const init = email.slice(0, 2).toUpperCase();
+      setInitials(init);
+    }
+  }, [email]);
 
   return (
     <>
@@ -128,10 +153,10 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
         </nav>
 
         {/* Footer with profile and collapse toggle */}
-        <div className="p-4 border-t bg-estate-bg flex items-center justify-between">
+        <div className="p-4 border-t border-white/10 bg-black/20 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-9 h-9 rounded-full bg-estate-navy-light flex items-center justify-center font-extrabold text-xs text-white border border-white/15">
-              UE
+              {initials}
             </div>
             <div
               className={cn(
@@ -139,8 +164,8 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
                 isCollapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100"
               )}
             >
-              <span className="text-xs font-bold block text-white leading-tight">User</span>
-              <span className="text-[10px] text-white/40 block leading-tight truncate">{email || "Signed in user"}</span>
+              <span className="text-xs font-bold block text-white leading-tight">{userName}</span>
+              <span className="text-[10px] text-white/40 block leading-tight truncate">{userEmail}</span>
             </div>
           </div>
 

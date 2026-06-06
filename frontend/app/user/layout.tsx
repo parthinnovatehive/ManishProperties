@@ -1,4 +1,5 @@
 "use client";
+
 import UserSidebar from "@/components/user/UserSidebar";
 import UserHeader from "@/components/user/UserHeader";
 import { useRedirectIfUnauthenticated } from "@/hooks/useRedirectIfUnauthenticated";
@@ -25,11 +26,10 @@ export default function UserLayout({
         setIsCollapsed={setIsCollapsed}
       />
 
-      <div className="flex-1 flex flex-col">
-        <UserHeader />
+      <div className="flex-1 flex flex-col min-w-0">
+        <UserHeader onOpen={() => setIsOpen(true)} />
 
-        <main className={`p-6 flex-1 overflow-y-auto ${isCollapsed ? "lg:pl-20" : "lg:pl-64"}`}>
-
+        <main className="p-6 flex-1 overflow-y-auto transition-all duration-300">
           {children}
         </main>
       </div>

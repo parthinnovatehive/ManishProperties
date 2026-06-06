@@ -9,12 +9,22 @@ export default function SavedPropertiesPage() {
   const [savedListings, setSavedListings] = useState<Property[]>([]);
 
   useEffect(() => {
-    Promise.all([estateApi.users.list<any>(), estateApi.properties.list()]).then(([users, properties]) => {
-      const user = users[0];
+    Promise.all([estateApi.users.me<any>(), estateApi.properties.list()]).then(([user, properties]) => {
       const savedIds = (user?.savedProperties || []).map(String);
       setSavedListings(properties.filter((property) => savedIds.includes(String(property.id))));
+    }).catch((err) => {
+      console.error("Failed to fetch saved properties:", err);
     });
   }, []);
+
+  const handleRemove = async (propertyId: string | number) => {
+    try {
+      await estateApi.users.toggleSaved(propertyId);
+      setSavedListings((prev) => prev.filter((item) => String(item.id) !== String(propertyId)));
+    } catch (err) {
+      console.error("Failed to remove saved property:", err);
+    }
+  };
 
   return (
     <div>
@@ -84,7 +94,7 @@ export default function SavedPropertiesPage() {
                   View Details
                 </Link>
                 <button
-                  onClick={() => setSavedListings((prev) => prev.filter((item) => item.id !== property.id))}
+                  onClick={() => handleRemove(property.id)}
                   className="px-3 py-2 bg-estate-red-bg hover:bg-red-100 text-estate-red font-semibold rounded-xl text-sm transition"
                   title="Remove from saved"
                 >

@@ -7,7 +7,6 @@ import SavedPropertyCard from "@/components/user/SavedPropertyCard";
 import { estateApi } from "@/lib/api";
 import { BarChart3, Calendar, Heart, Eye } from "lucide-react";
 import type { Property } from "@/types";
-import { getAdminData } from "@/lib/utils/token";
 
 export default function UserDashboardPage() {
   const [user, setUser] = useState<any>({ name: "User", savedProperties: [] });
@@ -16,22 +15,23 @@ export default function UserDashboardPage() {
   const [complaintsCount, setComplaintsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formattedDate, setFormattedDate] = useState<string>("");
 
   const loadDashboard = async () => {
     setLoading(true);
     setError(null);
     try {
-      const currentUser = (getAdminData() as any) || { name: "User", savedProperties: [] };
+      const userProfile = await estateApi.users.me<any>();
       const [appointments, properties, complaints] = await Promise.all([
-        estateApi.appointments.list<any>(),
+        estateApi.appointments.myList<any>(),
         estateApi.properties.list(),
         estateApi.complaints.list<any>(),
       ]);
-      setUser(currentUser);
-      setUserAppointments(appointments.filter((apt) => !currentUser.id || apt.userId === currentUser.id));
-      const savedIds = (currentUser.savedProperties || []).map(String);
+      setUser(userProfile);
+      setUserAppointments(appointments);
+      const savedIds = (userProfile.savedProperties || []).map(String);
       setUserSavedProperties(properties.filter((property) => savedIds.includes(String(property.id))));
-      setComplaintsCount(complaints.filter((complaint) => complaint.status !== "Resolved").length);
+      setComplaintsCount(complaints.filter((complaint) => complaint.status !== "Resolved" && String(complaint.userId) === String(userProfile.id)).length);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load dashboard data.");
     } finally {
@@ -41,6 +41,7 @@ export default function UserDashboardPage() {
 
   useEffect(() => {
     loadDashboard();
+    setFormattedDate(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }));
   }, []);
 
   // Compute Stats
@@ -71,7 +72,7 @@ export default function UserDashboardPage() {
         </p>
       </div>
       <div className="text-xs font-bold text-estate-navy bg-estate-blue-pale/80 border border-estate-border-med px-4 py-2 rounded-xl">
-        Today: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+        Today: {formattedDate}
       </div>
     </div>
 

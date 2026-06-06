@@ -68,8 +68,38 @@
     "role": "USER",
     "name": "Deepak Morje",
     "phone": "9011411791",
-    "savedProperties": [],
+    "savedProperties": [
+      "1"
+    ],
     "status": "active",
-    "updatedAt": "2026-06-05T07:08:31.968085+00:00"
+    "updatedAt": "2026-06-06T08:58:45.944951+00:00"
+  },
+  {
+    "id": "user_27d1cc99a45a4fe7b612cc706a46d728",
+    "username": "testuser@example.com",
+    "email": "testuser@example.com",
+    "passwordHash": "scrypt:32768:8:1$VB7telQpjuBvRtVL$720142fb467e2b47b1760044d6ad5bfbe5037d18bd91a177523ee83f4923f5227aa2e433271b8d6a49893c929674ebee7b6bc6c0a2cf4c6666a1e6dd013372ba",
+    "role": "USER",
+    "name": "Test User",
+    "phone": "1234567890",
+    "savedProperties": [
+      "1",
+      "2"
+    ],
+    "updatedAt": "2026-06-06T08:53:20.575663+00:00"
+  },
+  {
+    "id": "user_1ff55d3a7db343a5a2ea0d56b41e35c9",
+    "username": "testuser_saved_test@example.com",
+    "email": "testuser_saved_test@example.com",
+    "passwordHash": "scrypt:32768:8:1$2iZX7yW56I61xABg$859ceeb93d3445d17913df6891b0217b8b979218b1b6bbf25d135c2955b68ca2f20cb12ceffc72e04c24cc0b6886213f60edbe7a256c04201e9490891a408ba0",
+    "role": "USER",
+    "name": "Test User Two",
+    "phone": "1234567890",
+    "savedProperties": [
+      "prop_2b540112c3fd494dbd64636031d6b3e1",
+      "1"
+    ],
+    "updatedAt": "2026-06-06T08:57:52.071982+00:00"
   }
 ]

@@ -31,11 +31,12 @@
     "builder": "Lodha Group",
     "rating": 4.8,
     "reviews": 24,
-    "featured": true,
+    "featured": false,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
-    "createdAt": "2026-05-28T00:00:00+00:00"
+    "createdAt": "2026-05-28T00:00:00+00:00",
+    "updatedAt": "2026-06-05T14:34:33.192821+00:00"
   },
   {
     "id": "2",
@@ -68,11 +69,12 @@
     "builder": "Prestige Group",
     "rating": 4.9,
     "reviews": 38,
-    "featured": true,
+    "featured": false,
     "isNew": false,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
-    "createdAt": "2026-05-27T00:00:00+00:00"
+    "createdAt": "2026-05-27T00:00:00+00:00",
+    "updatedAt": "2026-06-05T14:34:32.052331+00:00"
   },
   {
     "id": "3",
