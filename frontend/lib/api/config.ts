@@ -39,10 +39,14 @@ export const API_ENDPOINTS = {
   USERS: "/api/users",
   AGENTS: "/api/agents",
   ADMINS: "/api/admins",
+  CITIES: "/api/cities",
   SUPER_ADMIN: "/api/super-admin",
   APPOINTMENTS: "/api/appointments",
   COMPLAINTS: "/api/complaints",
   MESSAGES: "/api/messages",
+  SUBAREAS: "/api/subareas",  // Add SUBAREAS here, not in a separate declaration
+  NOTIFICATIONS: "/api/notifications",
+  PROPERTIES_COMPARE: "/api/properties/compare",
 } as const;
 
 /**

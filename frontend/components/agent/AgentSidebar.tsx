@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getAdminData } from "@/lib/utils/token";
+import { clearAllAuthData } from "@/lib/utils/token";
+import { useRouter } from "next/navigation";
 
 interface AgentSidebarProps {
   isOpen: boolean; // For mobile drawer state
@@ -29,11 +31,11 @@ const MENU_ITEMS = [
   { href: "/agent/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/agent/properties", label: "Properties", icon: Building2 },
   { href: "/agent/appointments", label: "Appointments", icon: Calendar },
-  { href: "/agent/leads", label: "Leads", icon: Users },
-  { href: "/agent/messages", label: "Messages", icon: MessageSquare },
+  // { href: "/agent/leads", label: "Leads", icon: Users },
   { href: "/agent/profile", label: "Profile", icon: User },
   { href: "/agent/settings", label: "Settings", icon: Settings },
 ];
+
 
 export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: AgentSidebarProps) {
   const pathname = usePathname() || "";
@@ -41,6 +43,7 @@ export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollap
   const agentName = account?.name || account?.username || "Agent";
   const agentEmail = account?.email || account?.username || "";
   const initials = agentName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "AG";
+  const router = useRouter();
 
   return (
     <>
@@ -69,7 +72,7 @@ export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollap
               <Building2 className="w-5 h-5 text-white" />
             </div>
             <div className={cn("overflow-hidden transition-all duration-300", isCollapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100")}>
-              <span className="font-extrabold text-lg text-white block tracking-tight">EstateElite</span>
+              <span className="font-extrabold text-lg text-white block tracking-tight">Manish Properties</span>
               <span className="text-[10px] text-white/50 tracking-widest font-semibold uppercase -mt-0.5 block">Agent Hub</span>
             </div>
           </Link>
@@ -136,6 +139,16 @@ export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollap
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
+
+          <button
+  onClick={() => {
+    clearAllAuthData();
+    window.dispatchEvent(new Event("estate-auth-changed"));
+    router.replace("/auth/login");
+  }}
+>
+  Logout
+</button>
         </div>
       </aside>
     </>

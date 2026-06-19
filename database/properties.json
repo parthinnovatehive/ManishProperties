@@ -1,13 +1,17 @@
 [
   {
     "id": "1",
+    "lister_type": "agent",
+    "lister_id": "agent_a3b4daf6ec4d46f9a933087740d12f98",
     "title": "Luxury Sea-View 3BHK Apartment",
     "subtitle": "High-rise tower with panoramic sea views",
     "description": "Experience luxury living in this 3BHK apartment with panoramic sea views from Worli.",
     "price": "₹2.85 Cr",
     "priceNum": 28500000,
-    "city": "Mumbai",
-    "location": "Worli, South Mumbai",
+    "city": "Aurangabad",
+    "city_id": "city_aurangabad",
+    "sub_area_id": "sub_aurangpura",
+    "location": "Worli, South Aurangabad",
     "type": "Apartment",
     "listingType": "For Sale",
     "beds": 3,
@@ -32,20 +36,107 @@
     "rating": 4.8,
     "reviews": 24,
     "featured": false,
+    "featuredRequested": true,
+    "requested_for": 1,
+    "granted_for": 1,
+    "featuredRequestDate": "2026-03-13T10:30:00+00:00",
+    "featuredPaymentStatus": "approved",
+    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": "admin_d8e4eb35a37d472c87e7a0b55fab8129",
+    "featuredApprovedAt": "2026-03-13T10:30:00+00:00",
+    "featuredExpiryDate": "2026-04-10T17:39:36.195Z",
+    "featuredExpired": true,
+    "featuredRejectionReason": null,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
-    "createdAt": "2026-05-28T00:00:00+00:00",
-    "updatedAt": "2026-06-05T14:34:33.192821+00:00"
+    "createdAt": "2026-03-28T00:00:00+00:00",
+    "updatedAt": "2026-06-13T18:34:04.806403+00:00",
+    "coordinates": {
+      "lat": 18.9976,
+      "lng": 72.8174
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jaslok Hospital",
+        "distance": 1.8,
+        "travelTime": "5 min"
+      },
+      "school": {
+        "name": "Podar International School",
+        "distance": 1.2,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "DMart",
+        "distance": 0.9,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "HP Petrol Pump",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Lower Parel Railway Station",
+        "distance": 2.3,
+        "travelTime": "7 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Mainland China",
+        "distance": 0.4,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Worli Depot",
+        "distance": 0.9,
+        "travelTime": "3 min"
+      },
+      "college": {
+        "name": "Wilson College",
+        "distance": 2.7,
+        "travelTime": "8 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Mumbai Airport",
+        "distance": 15.4,
+        "travelTime": "35 min"
+      }
+    }
   },
   {
     "id": "2",
+    "lister_type": "agent",
+    "lister_id": "agent_a3b4daf6ec4d46f9a933087740d12f98",
     "title": "Modern 4BHK Independent Villa",
     "subtitle": "Gated community with private garden",
     "description": "Elegant 4BHK independent villa in a premium gated community in Whitefield.",
     "price": "₹1.95 Cr",
     "priceNum": 19500000,
-    "city": "Bangalore",
+    "city": "Aurangabad",
+    "city_id": "city_aurangabad",
+    "sub_area_id": "sub_gulmandi",
     "location": "Whitefield, East Bangalore",
     "type": "Villa",
     "listingType": "For Sale",
@@ -69,22 +160,109 @@
     "builder": "Prestige Group",
     "rating": 4.9,
     "reviews": 38,
-    "featured": false,
+    "featured": true,
+    "featuredRequested": false,
+    "requested_for": 1,
+    "granted_for": 1,
+    "featuredRequestDate": "2026-06-13T10:30:00+00:00",
+    "featuredPaymentStatus": "approved",
+    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": "2026-07-13T17:40:41.720Z",
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
     "isNew": false,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-05-27T00:00:00+00:00",
-    "updatedAt": "2026-06-05T14:34:32.052331+00:00"
+    "updatedAt": "2026-06-18T14:28:23.057017+00:00",
+    "coordinates": {
+      "lat": 18.9976,
+      "lng": 72.8174
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jaslok Hospital",
+        "distance": 1.8,
+        "travelTime": "5 min"
+      },
+      "school": {
+        "name": "Podar International School",
+        "distance": 1.2,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "DMart",
+        "distance": 0.9,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "HP Petrol Pump",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Lower Parel Railway Station",
+        "distance": 2.3,
+        "travelTime": "7 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Mainland China",
+        "distance": 0.4,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Worli Depot",
+        "distance": 0.9,
+        "travelTime": "3 min"
+      },
+      "college": {
+        "name": "Wilson College",
+        "distance": 2.7,
+        "travelTime": "8 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Mumbai Airport",
+        "distance": 15.4,
+        "travelTime": "35 min"
+      }
+    }
   },
   {
     "id": "3",
-    "title": "Owner Submitted Pune Apartment",
+    "lister_type": "agent",
+    "lister_id": "agent_de7aebd989ab47c0adc94ec9c835dad2",
+    "title": "Owner Submitted NSK Apartment",
     "subtitle": "Awaiting moderation",
     "description": "A submitted property that needs admin review before public listing.",
     "price": "₹42,000/mo",
     "priceNum": 42000,
     "city": "Pune",
-    "location": "Koregaon Park, Pune",
+    "city_id": "city_nashik",
+    "sub_area_id": "sub_college_road",
+    "location": "Koregaon NSK, Nsk",
     "type": "Apartment",
     "listingType": "For Rent",
     "beds": 2,
@@ -103,20 +281,107 @@
     "rating": 0,
     "reviews": 0,
     "featured": false,
+    "featuredRequested": true,
+    "requested_for": 1,
+    "granted_for": null,
+    "featuredRequestDate": "2026-06-13T10:30:00+00:00",
+    "featuredPaymentStatus": "pending",
+    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-05-26T00:00:00+00:00",
-    "updatedAt": "2026-06-05T13:10:06.955851+00:00"
+    "updatedAt": "2026-06-18T13:01:20.641197+00:00",
+    "coordinates": {
+      "lat": 18.9976,
+      "lng": 72.8174
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jaslok Hospital",
+        "distance": 1.8,
+        "travelTime": "5 min"
+      },
+      "school": {
+        "name": "Podar International School",
+        "distance": 1.2,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "DMart",
+        "distance": 0.9,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "HP Petrol Pump",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Lower Parel Railway Station",
+        "distance": 2.3,
+        "travelTime": "7 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Mainland China",
+        "distance": 0.4,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Worli Depot",
+        "distance": 0.9,
+        "travelTime": "3 min"
+      },
+      "college": {
+        "name": "Wilson College",
+        "distance": 2.7,
+        "travelTime": "8 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Mumbai Airport",
+        "distance": 15.4,
+        "travelTime": "35 min"
+      }
+    }
   },
   {
     "id": "prop_2b540112c3fd494dbd64636031d6b3e1",
+    "lister_type": "agent",
+    "lister_id": "agent_5797047d805e48caa2c8c018a6ec6905",
     "title": "Audit Property 1780592663",
     "subtitle": "Verified integration audit listing",
     "description": "Integration audit property",
     "price": "INR 1.25 Cr",
     "priceNum": 12500000.0,
-    "city": "Mumbai",
+    "city": "Pune",
+    "city_id": "city_pune",
+    "sub_area_id": "sub_karve_nagar",
     "location": "Audit Nagar, Mumbai",
     "pincode": null,
     "type": "Apartment",
@@ -138,22 +403,109 @@
     "builder": "EstateElite",
     "rating": 0.0,
     "reviews": 0,
-    "featured": true,
+    "featured": false,
+    "featuredRequested": true,
+    "requested_for": 1,
+    "granted_for": null,
+    "featuredRequestDate": "2026-06-13T10:30:00+00:00",
+    "featuredPaymentStatus": "pending",
+    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-06-04T17:04:24.150668+00:00",
-    "updatedAt": "2026-06-04T17:04:24.167752+00:00"
+    "updatedAt": "2026-06-13T19:56:39.551810+00:00",
+    "coordinates": {
+      "lat": 18.9976,
+      "lng": 72.8174
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jaslok Hospital",
+        "distance": 1.8,
+        "travelTime": "5 min"
+      },
+      "school": {
+        "name": "Podar International School",
+        "distance": 1.2,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "DMart",
+        "distance": 0.9,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "HP Petrol Pump",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Lower Parel Railway Station",
+        "distance": 2.3,
+        "travelTime": "7 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Mainland China",
+        "distance": 0.4,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Worli Depot",
+        "distance": 0.9,
+        "travelTime": "3 min"
+      },
+      "college": {
+        "name": "Wilson College",
+        "distance": 2.7,
+        "travelTime": "8 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Mumbai Airport",
+        "distance": 15.4,
+        "travelTime": "35 min"
+      }
+    }
   },
   {
     "id": "prop_c5e736fedb064718b8f998a860f9ecc1",
+    "lister_type": "user",
+    "lister_id": "user_71670e4f29e94438800bedfa7131569e",
     "title": "3BHK",
     "subtitle": "3BHK",
     "description": "Luxury 3BHK apartment in Mumbai with parking and security.",
     "price": "₹2.45cr",
     "priceNum": 245.0,
-    "city": "Mumbai",
-    "location": "Mumbai",
+    "city": "Pune",
+    "city_id": "city_pune",
+    "sub_area_id": "sub_karve_nagar",
+    "location": "Pune",
     "pincode": null,
     "type": "Apartment",
     "listingType": null,
@@ -170,12 +522,95 @@
     "builder": "EstateElite",
     "rating": 0.0,
     "reviews": 0,
-    "featured": false,
+    "featured": true,
+    "featuredRequested": false,
+    "requested_for": 1,
+    "granted_for": 1,
+    "featuredRequestDate": "2026-06-13T10:30:00+00:00",
+    "featuredPaymentStatus": "approved",
+    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": "2026-07-13T17:39:36.195Z",
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-06-05T06:05:16.101742+00:00",
-    "updatedAt": "2026-06-05T06:27:00.262234+00:00",
-    "rera": ""
+    "updatedAt": "2026-06-18T13:01:13.487461+00:00",
+    "rera": "",
+    "coordinates": {
+      "lat": 18.9976,
+      "lng": 72.8174
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jaslok Hospital",
+        "distance": 1.8,
+        "travelTime": "5 min"
+      },
+      "school": {
+        "name": "Podar International School",
+        "distance": 1.2,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "DMart",
+        "distance": 0.9,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "HP Petrol Pump",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Lower Parel Railway Station",
+        "distance": 2.3,
+        "travelTime": "7 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Mainland China",
+        "distance": 0.4,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Worli Depot",
+        "distance": 0.9,
+        "travelTime": "3 min"
+      },
+      "college": {
+        "name": "Wilson College",
+        "distance": 2.7,
+        "travelTime": "8 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Mumbai Airport",
+        "distance": 15.4,
+        "travelTime": "35 min"
+      }
+    }
   }
 ]

@@ -14,6 +14,8 @@ import { PropertyTrust } from "@/components/property/property-trust";
 import { estateApi } from "@/lib/api";
 import type { Property } from "@/types";
 import { getAdminData } from "@/lib/utils/token";
+import PropertyMapClient from "@/components/property/property-map-client";
+
 
 type PropertyResponse = {
   property?: Property | null;
@@ -69,6 +71,7 @@ export default function PropertyDetailsPage() {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -128,67 +131,155 @@ export default function PropertyDetailsPage() {
     };
   }, [property]);
 
+  const nearbySummary = property?.nearbyAmenities;
+  const coords = property?.coordinates;
+  const amenitiesList = [
+    { icon: "🏥", title: "Hospital", data: nearbySummary?.hospital },
+    { icon: "🏫", title: "School", data: nearbySummary?.school },
+    { icon: "🛒", title: "Supermarket", data: nearbySummary?.supermarket },
+    { icon: "⛽", title: "Petrol Pump", data: nearbySummary?.petrol },
+    { icon: "🚉", title: "Railway Station", data: nearbySummary?.station },
+    { icon: "🏦", title: "Bank", data: nearbySummary?.bank },
+    { icon: "🍽️", title: "Restaurant", data: nearbySummary?.restaurant },
+    { icon: "💳", title: "ATM", data: nearbySummary?.atm },
+    { icon: "💊", title: "Pharmacy", data: nearbySummary?.pharmacy },
+    { icon: "🚌", title: "Bus Station", data: nearbySummary?.busStation },
+    { icon: "🎓", title: "College", data: nearbySummary?.college },
+    { icon: "🌳", title: "Park", data: nearbySummary?.park },
+    { icon: "✈️", title: "Airport", data: nearbySummary?.airport },
+  ];
+
   if (loading) return <PropertyLoadingState />;
   if (!property || !derived) return <PropertyUnavailableState />;
   if (!mounted) return null;
 
   return (
     <div className="min-h-screen bg-estate-bg pb-28 font-sans selection:bg-estate-blue-pale selection:text-estate-navy">
-      <PropertyTopBar saved={saved} onSavedChange={handleToggleSaved} />
+        <PropertyTopBar saved={saved} onSavedChange={handleToggleSaved} />
 
-      <PropertyGallery
-        images={derived.images}
-        title={property.title}
-        listingType={derived.listingType}
-        price={property.price}
-        area={property.area}
-        saved={saved}
-        onSavedChange={handleToggleSaved}
-      />
+        <PropertyGallery
+          images={derived.images}
+          title={property.title}
+          listingType={derived.listingType}
+          price={property.price}
+          area={property.area}
+          saved={saved}
+          onSavedChange={handleToggleSaved}
+        />
 
-      <div className="mx-auto mt-12 max-w-[1400px] px-6 sm:px-10 lg:px-12">
-        <div className="grid grid-cols-1 items-start gap-x-10 gap-y-8 lg:grid-cols-12">
-          <main className="space-y-7 lg:col-span-8">
-            <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
-              <PropertyHeader
-                title={property.title}
-                subtitle={property.subtitle}
-                price={property.price}
-                location={property.location}
-                area={property.area}
-                listingType={derived.listingType}
-                propertyType={property.type}
-                possession={property.possession}
-                facing={property.facing}
-              />
-              <PropertyOverview
-                bedrooms={derived.bedrooms}
-                bathrooms={derived.bathrooms}
-                area={property.area}
-                propertyType={property.type}
+        <div className="mx-auto mt-12 max-w-[1400px] px-6 sm:px-10 lg:px-12">
+          <div className="grid grid-cols-1 items-start gap-x-10 gap-y-8 lg:grid-cols-12">
+            <main className="space-y-7 lg:col-span-8">
+              <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
+                <PropertyHeader
+                  title={property.title}
+                  subtitle={property.subtitle}
+                  price={property.price}
+                  location={property.location}
+                  area={property.area}
+                  listingType={derived.listingType}
+                  propertyType={property.type}
+                  possession={property.possession}
+                  facing={property.facing}
+                />
+                <PropertyOverview
+                  bedrooms={derived.bedrooms}
+                  bathrooms={derived.bathrooms}
+                  area={property.area}
+                  propertyType={property.type}
+                  furnishing={property.furnishing}
+                  listingType={derived.listingType}
+                />
+              </section>
+
+              <PropertyTabs
+                description={property.description}
                 furnishing={property.furnishing}
                 listingType={derived.listingType}
+                features={derived.features}
+                amenities={property.amenities}
+                details={derived.details}
               />
-            </section>
 
-            <PropertyTabs
-              description={property.description}
-              furnishing={property.furnishing}
-              listingType={derived.listingType}
-              features={derived.features}
-              amenities={property.amenities}
-              details={derived.details}
+              {coords && (
+                <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
+                  <h2 className="mb-5 text-2xl font-bold text-estate-navy">
+                    Property Location
+                  </h2>
+                  <p className="mb-4 text-estate-text-sec">
+                    📍 {property.location}, {property.city}
+                  </p>
+                  <PropertyMapClient
+                    lat={coords.lat}
+                    lng={coords.lng}
+                    title={property.title}
+                  />
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex rounded-xl bg-estate-navy px-4 py-2 text-white hover:opacity-90"
+                  >
+                    Open in Google Maps
+                  </a>
+                </section>
+              )}
+
+              {nearbySummary && (
+                <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
+                  <h2 className="mb-5 text-2xl font-bold text-estate-navy">
+                    Nearby Essentials
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {(showAllAmenities ? amenitiesList : amenitiesList.slice(0, 6)).map((item) => (
+                      <div key={item.title} className="rounded-xl bg-slate-50 p-4">
+                        <div className="font-medium">
+                          {item.icon} {item.title}
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500 truncate">
+                            {item.data?.name || "Not Found"}
+                          </p>
+                          <p className="font-semibold">
+                            {item.data?.distance || "N/A"} km
+                          </p>
+                          {item.data?.travelTime && (
+                            <p className="text-xs text-gray-400">
+                              {item.data.travelTime}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {amenitiesList.length > 6 && (
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        onClick={() => setShowAllAmenities(!showAllAmenities)}
+                        className="rounded-xl border border-estate-border px-5 py-2 text-sm font-medium text-estate-navy hover:bg-slate-50 transition"
+                      >
+                        {showAllAmenities ? "Show Less ▲" : "View More Amenities ▼"}
+                      </button>
+                    </div>
+                  )}
+                </section>
+              )}
+              <PropertyTrust rera={property.rera} />
+              <PropertyEMI price={property.price} />
+              <PropertySimilar city={property.city} propertyType={property.type} />
+            </main>
+
+            <PropertySidebar 
+              propertyId={String(property.id)} 
+              title={property.title} 
+              price={property.price} 
+              area={property.area} 
+              city={property.city}
+              cityId={(property as any).city_id}
             />
-
-            <PropertyTrust rera={property.rera} />
-            <PropertyEMI price={property.price} />
-            <PropertySimilar city={property.city} propertyType={property.type} />
-          </main>
-
-          <PropertySidebar propertyId={String(property.id)} title={property.title} price={property.price} area={property.area} />
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 

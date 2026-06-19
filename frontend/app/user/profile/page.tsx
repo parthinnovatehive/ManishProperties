@@ -123,7 +123,7 @@ export default function UserProfilePage() {
             <h4 className="text-md font-bold text-estate-text">Notification Preferences</h4>
             {[
               ["notifications", "Receive email notifications about message responses and appointment updates."],
-              ["newsletter", "Subscribe to EstateElite weekly property recommendations."],
+              ["newsletter", "Subscribe to Manish Properties weekly property recommendations."],
             ].map(([name, label]) => (
               <label key={name} className="flex items-center gap-3 text-sm text-estate-text-sec">
                 <input

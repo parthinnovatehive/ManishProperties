@@ -19,5 +19,47 @@
     "savedProperties": [],
     "status": "active",
     "updatedAt": "2026-06-05T14:35:46.116639+00:00"
+  },
+  {
+    "id": "admin_54aa04b4dcd94ce2bf1e8c9ac6870246",
+    "username": "test@gmail.com",
+    "email": "test@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$kimE4zXYvOvyf0lO$a62be89d65454bbd83229064fb3e9c1a52dc6684fee7c62cffcae73ebc9771341ace6b02b27198234ff563dde398587aa021ed537932b58f48b5081fe1364325",
+    "role": "ADMIN",
+    "name": "testt",
+    "phone": "9168281183",
+    "savedProperties": [],
+    "updatedAt": "2026-06-18T16:50:20.655628+00:00"
+  },
+  {
+    "id": "admin_d8e4eb35a37d472c87e7a0b55fab8129",
+    "username": "testadmin@gmail.com",
+    "name": "testadmin",
+    "phone": "7410852963",
+    "role": "ADMIN",
+    "createdAt": "2026-06-12T09:58:47.660551+00:00"
+  },
+  {
+    "id": "admin_d899cfae5d654ae683207edc269aa0dc",
+    "username": "admin@gmail.com",
+    "email": "admin@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$nBuPHgzDvlz0rJUp$464a5587cabc77da9a2528c43088fdfbabfb37cfa11b8703b6b80749438f34a95497e5c32e0aa9975e6d27a23c37d674fe0299af18c0ec5161f4cb73ed1208c6",
+    "name": "admin",
+    "phone": "",
+    "role": "ADMIN",
+    "status": "active",
+    "createdAt": "2026-06-16T10:20:41.395622+00:00",
+    "updatedAt": "2026-06-18T15:57:36.447139+00:00"
+  },
+  {
+    "id": "admin_697f4958c4c044318240369fcafd72ee",
+    "username": "puneadmin@gmail.com",
+    "email": "puneadmin@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$vIXjHfZtyMujPN7Q$d43c7db1b43caa00b4daab73a68b3ac0d45c92a57c3e22434b95afbeb7265770cd6f47488aff31eb853869d3447c76312be267a8fbcaa5bb71cfbbea0fde446e",
+    "name": "pune admin",
+    "phone": "7895632014",
+    "role": "ADMIN",
+    "status": "active",
+    "createdAt": "2026-06-16T13:31:41.330812+00:00"
   }
 ]

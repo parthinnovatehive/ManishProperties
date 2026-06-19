@@ -1,5 +1,6 @@
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
+import { ComparisonGlobalWrapper } from "@/components/property/ComparisonGlobalWrapper";
 
 export default function RootLayout({
   children,
@@ -9,7 +10,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ComparisonGlobalWrapper>{children}</ComparisonGlobalWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

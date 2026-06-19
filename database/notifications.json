@@ -1,0 +1,54 @@
+[
+  {
+    "id": "notif_001",
+    "userId": "user_71670e4f29e94438800bedfa7131569e",
+    "userType": "USER",
+    "title": "Appointment Confirmed",
+    "message": "Your appointment for Luxury Sea-View 3BHK Apartment has been confirmed.",
+    "type": "appointment",
+    "relatedId": "apt10",
+    "isRead": false,
+    "createdAt": "2026-06-15T10:30:00+00:00",
+    "actionUrl": "/user/appointments",
+    "icon": "Calendar"
+  },
+  {
+    "id": "notif_002",
+    "userId": "agent_a3b4daf6ec4d46f9a933087740d12f98",
+    "userType": "AGENT",
+    "title": "New Appointment Assigned",
+    "message": "You have been assigned an appointment for Property XYZ on 20 Jun 2026.",
+    "type": "appointment",
+    "relatedId": "apt11",
+    "isRead": true,
+    "createdAt": "2026-06-15T09:15:00+00:00",
+    "actionUrl": "/agent/appointments",
+    "icon": "UserPlus"
+  },
+  {
+    "id": "notif_003",
+    "userId": "admin_d8e4eb35a37d472c87e7a0b55fab8129",
+    "userType": "ADMIN",
+    "title": "Appointment Completed",
+    "message": "Agent test has marked appointment for Property XYZ as completed.",
+    "type": "appointment",
+    "relatedId": "apt11",
+    "isRead": false,
+    "createdAt": "2026-06-15T14:20:00+00:00",
+    "actionUrl": "/admin/appointments",
+    "icon": "CheckCircle"
+  },
+  {
+    "id": "notif_004",
+    "userId": "superadmin",
+    "userType": "SUPER_ADMIN",
+    "title": "Featured Request Pending",
+    "message": "Property '3BHK Luxury Apartment' requested featured listing. Payment pending.",
+    "type": "featured_request",
+    "relatedId": "prop_c5e736fedb064718b8f998a860f9ecc1",
+    "isRead": false,
+    "createdAt": "2026-06-15T08:00:00+00:00",
+    "actionUrl": "/super-admin/featured-requests",
+    "icon": "Star"
+  }
+]

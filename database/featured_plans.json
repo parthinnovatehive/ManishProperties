@@ -1,0 +1,42 @@
+[
+  {
+    "id": "plan_basic",
+    "name": "Basic Featured",
+    "duration": 7,
+    "price": 499,
+    "description": "Get your property featured for 7 days",
+    "features": [
+      "Featured listing for 7 days",
+      "Priority in search results",
+      "Highlighted property badge"
+    ]
+  },
+  {
+    "id": "plan_standard",
+    "name": "Standard Featured",
+    "duration": 15,
+    "price": 999,
+    "description": "Get your property featured for 15 days",
+    "features": [
+      "Featured listing for 15 days",
+      "Priority in search results",
+      "Highlighted property badge",
+      "Top of category listings"
+    ]
+  },
+  {
+    "id": "plan_premium",
+    "name": "Premium Featured",
+    "duration": 30,
+    "price": 1499,
+    "description": "Get your property featured for 30 days",
+    "features": [
+      "Featured listing for 30 days",
+      "Priority in search results",
+      "Highlighted property badge",
+      "Top of category listings",
+      "Social media promotion",
+      "WhatsApp broadcast"
+    ]
+  }
+]

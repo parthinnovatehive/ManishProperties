@@ -30,6 +30,16 @@ export const estateApi = {
     featured: async () => listFrom<Property>(await apiClient.get(API_ENDPOINTS.PUBLIC.FEATURED_PROPERTIES), "properties"),
     detail: async (id: string | number) => itemFrom<Property>(await apiClient.get(API_ENDPOINTS.PUBLIC.PROPERTIES_DETAIL(String(id))), "property"),
     submit: async (payload: Partial<Property>) => itemFrom<Property>(await apiClient.post(API_ENDPOINTS.PUBLIC.PROPERTIES_SUBMIT, payload), "property"),
+    getByIds: async (ids: string[]) => {
+      if (!ids || ids.length === 0) return [];
+      try {
+        const response = await apiClient.get(`${API_ENDPOINTS.PROPERTIES_COMPARE}?ids=${ids.join(",")}`);
+        return response.properties || [];
+      } catch (error) {
+        console.error("Failed to fetch properties for comparison:", error);
+        return [];
+      }
+    },
   },
   adminProperties: {
     list: async () => listFrom<Property>(await apiClient.get(API_ENDPOINTS.ADMIN.PROPERTIES), "properties"),
@@ -39,15 +49,19 @@ export const estateApi = {
     approve: async (id: string | number) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/approve`, {}), "property"),
     reject: async (id: string | number, reason?: string) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/reject`, { reason }), "property"),
     feature: async (id: string | number, featured: boolean) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/feature`, { featured }), "property"),
+    checkFeaturedExpiry: async () => {
+    return await apiClient.post("/api/properties/check-featured-expiry");
+  },
   },
   users: {
-    list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.USERS), "users"),
-    me: async <T = unknown>() => itemFrom<T>(await apiClient.get(`${API_ENDPOINTS.USERS}/me`), "user"),
-    toggleSaved: async (propertyId: string | number) => apiClient.patch(`${API_ENDPOINTS.USERS}/me/saved-properties`, { propertyId: String(propertyId) }),
-    create: async <T = unknown>(payload: T) => itemFrom<T>(await apiClient.post(API_ENDPOINTS.USERS, payload), "user"),
-    update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.USERS}/${id}`, payload), "user"),
-    remove: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.USERS}/${id}`),
-  },
+  list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.USERS), "users"),
+  me: async <T = unknown>() => itemFrom<T>(await apiClient.get(`${API_ENDPOINTS.USERS}/me`), "user"),
+  getById: async <T = unknown>(id: string) => itemFrom<T>(await apiClient.get(`${API_ENDPOINTS.USERS}/${id}`), "user"),
+  toggleSaved: async (propertyId: string | number) => apiClient.patch(`${API_ENDPOINTS.USERS}/me/saved-properties`, { propertyId: String(propertyId) }),
+  create: async <T = unknown>(payload: T) => itemFrom<T>(await apiClient.post(API_ENDPOINTS.USERS, payload), "user"),
+  update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.USERS}/${id}`, payload), "user"),
+  remove: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.USERS}/${id}`),
+},
   agents: {
     list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.AGENTS), "agents"),
     dashboard: async <T = unknown>() => itemFrom<T>(await apiClient.get(`${API_ENDPOINTS.AGENTS}/dashboard`), "data"),
@@ -57,6 +71,8 @@ export const estateApi = {
     updateLead: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.AGENTS}/leads/${id}`, payload), "lead"),
     removeLead: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.AGENTS}/leads/${id}`),
     update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.AGENTS}/${id}`, payload), "agent"),
+    subareas: async <T = unknown>(agentId: string) => listFrom<T>(await apiClient.get(`${API_ENDPOINTS.AGENTS}/${agentId}/subareas`), "subareas"),
+    updateSubareas: async <T = unknown>(agentId: string, subareaIds: string[]) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.AGENTS}/${agentId}/subareas`, { subarea_ids: subareaIds }), "data"),
   },
   admins: {
     list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.ADMINS), "admins"),
@@ -90,5 +106,35 @@ export const estateApi = {
     cities: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.PUBLIC.CITIES), "cities"),
     testimonials: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.PUBLIC.TESTIMONIALS), "testimonials"),
     categories: async <T = unknown>() => itemFrom<T>(await apiClient.get(API_ENDPOINTS.PUBLIC.CATEGORIES), "data"),
+    subareas: {
+  list: async <T = unknown>() => listFrom<T>(await apiClient.get("/api/subareas"), "subareas"),
+  update: async <T = unknown>(id: string | number, payload: Partial<T>) => 
+    itemFrom<T>(await apiClient.patch(`/api/subareas/${id}`, payload), "subarea"),
+},
+  },
+  cities: {
+    list: async <T = unknown>() =>
+      listFrom<T>(
+        await apiClient.get(API_ENDPOINTS.CITIES),
+        "cities"
+      ),
+
+    create: async <T = unknown>(payload: T) =>
+      itemFrom<T>(
+        await apiClient.post(API_ENDPOINTS.CITIES, payload),
+        "city"
+      ),
+
+    update: async <T = unknown>(
+      id: string | number,
+      payload: Partial<T>
+    ) =>
+      itemFrom<T>(
+        await apiClient.patch(
+          `${API_ENDPOINTS.CITIES}/${id}`,
+          payload
+        ),
+        "city"
+      ),
   },
 };

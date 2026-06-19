@@ -4,7 +4,7 @@
     "name": "Ananya Rao",
     "role": "Home Buyer",
     "rating": 5,
-    "content": "EstateElite helped us shortlist verified homes quickly and book visits without confusion.",
+    "content": "Manish Properties helped us shortlist verified homes quickly and book visits without confusion.",
     "avatar": "AR"
   },
   {
@@ -14,5 +14,45 @@
     "rating": 5,
     "content": "The property details and agent follow-up made the buying process clear from day one.",
     "avatar": "KM"
+  },
+  {
+    "id": "test_3",
+    "name": "Priya Sharma",
+    "role": "First-Time Buyer",
+    "rating": 5,
+    "content": "I was nervous about buying my first apartment, but Manish Properties made the entire journey smooth and transparent.",
+    "avatar": "PS"
+  },
+  {
+    "id": "test_4",
+    "name": "Rahul Deshmukh",
+    "role": "Property Seller",
+    "rating": 5,
+    "content": "My property received genuine inquiries within days. The platform's verification process attracted serious buyers.",
+    "avatar": "RD"
+  },
+  {
+    "id": "test_5",
+    "name": "Sneha Kulkarni",
+    "role": "Working Professional",
+    "rating": 5,
+    "content": "Finding a rental home near my workplace was incredibly easy. The listings were accurate and up to date.",
+    "avatar": "SK"
+  },
+  {
+    "id": "test_6",
+    "name": "Vikram Patil",
+    "role": "Real Estate Investor",
+    "rating": 5,
+    "content": "The detailed market insights and premium property listings helped me identify high-potential investment opportunities.",
+    "avatar": "VP"
+  },
+  {
+    "id": "test_7",
+    "name": "Vikram Patil",
+    "role": "Real Estate Investor",
+    "rating": 5,
+    "content": "The detailed market insights and premium property listings helped me identify high-potential investment opportunities.",
+    "avatar": "VP"
   }
 ]

@@ -16,6 +16,7 @@ export type Agent = {
   name: string;
   phone?: string;
   rating?: number;
+  totalRatings?: number;
   deals: number;
   avatar?: string;
   email?: string;
@@ -77,10 +78,97 @@ export type Property = {
   updatedAt?: string | Date;
 
   submittedBy?: string | null;
-  submitterEmail?: string | null;
-  views?: number | null;
-  inquiries?: number | null;
-  rejectReason?: string | null;
+submitterEmail?: string | null;
+views?: number | null;
+inquiries?: number | null;
+rejectReason?: string | null;
+
+/* NEW */
+
+coordinates?: {
+  lat: number;
+  lng: number;
+};
+
+nearbyAmenities?: {
+  hospital?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  school?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  supermarket?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  petrol?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  station?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  bank?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  restaurant?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  atm?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  pharmacy?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  busStation?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  college?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  park?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+
+  airport?: {
+    name: string;
+    distance: number;
+    travelTime: string;
+  };
+};
 };
 
 export type ListingFilters = {
@@ -90,4 +178,5 @@ export type ListingFilters = {
   maxPrice: string;
   beds: string;
   city: string;
+  isNew: string;
 };

@@ -10,7 +10,7 @@ import { StatsBar } from "./stats-bar";
 import { TestimonialsSection } from "./testimonials-section";
 import { TrendingCities } from "./trending-cities";
 import { estateApi } from "@/lib/api";
-import type { Category, City, Stat, Testimonial, Property } from "@/types";
+import type { Category, City, IconKey, Stat, Testimonial, Property } from "@/types";
 
 export function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -22,23 +22,35 @@ export function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   const loadHomeData = async () => {
+    const featuredProperties = await estateApi.properties.featured();
+
+    console.log("Featured Properties:", featuredProperties);
     setLoading(true);
     setError(null);
     try {
-      const [categoryData, cityItems, featuredProperties, testimonialItems] = await Promise.all([
+      const [categoryData, cityItems, featuredProperties, testimonialItems, allProperties] = await Promise.all([
         estateApi.content.categories<{ categories: any[]; homeStats: any[] }>(),
         estateApi.content.cities<any>(),
         estateApi.properties.featured(),
         estateApi.content.testimonials<any>(),
+        estateApi.properties.list(),
       ]);
-      setCategories((categoryData.categories || []).map((item) => ({
-        label: item.label || item.name,
-        icon: "building",
-        count: String(item.count || ""),
-        surfaceClass: "bg-estate-bg",
-        accentClass: "text-estate-navy",
-        borderClass: "border-estate-border",
-      })));
+      const propertyTypes = [...new Set(allProperties.map((p: any) => p.type).filter(Boolean))] as string[];
+      setCategories(propertyTypes.map((type) => {
+        const icon: IconKey = type === "Villa" ? "home"
+          : type === "Penthouse" ? "landmark"
+          : type === "Studio" ? "sparkles"
+          : "building";
+        return {
+          label: type,
+          icon,
+          count: "",
+          queryType: type,
+          surfaceClass: "bg-estate-bg",
+          accentClass: "text-estate-navy",
+          borderClass: "border-estate-border",
+        };
+      }));
       setHomeStats((categoryData.homeStats || []).map((item) => ({
         value: String(item.value || ""),
         label: item.label || "",
@@ -51,14 +63,15 @@ export function HomePage() {
         img: item.img || item.image || "",
       })));
       setProperties(featuredProperties);
-      setTestimonials(testimonialItems.map((item) => ({
-        name: item.name,
-        role: item.role,
-        city: item.city || "",
-        rating: Number(item.rating || 5),
-        avatar: item.avatar || item.name?.slice(0, 2).toUpperCase() || "EE",
-        text: item.text || item.content || "",
-      })));
+      setTestimonials(
+        testimonialItems.slice(0, 3).map((item) => ({
+          name: item.name,
+          role: item.role,
+          city: item.city || "",
+          rating: Number(item.rating || 5),
+          avatar: item.avatar || item.name?.slice(0, 2).toUpperCase() || "EE",
+          text: item.text || item.content || "",
+        })));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load homepage data.");
     } finally {
@@ -69,7 +82,7 @@ export function HomePage() {
   useEffect(() => {
     loadHomeData();
   }, []);
-
+  console.log("HomePage properties state:", properties);
   return (
     <>
       <HeroSearch />
@@ -84,7 +97,7 @@ export function HomePage() {
       {loading && (
         <section className="bg-white py-6">
           <div className="container-wide rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
-            Loading latest EstateElite data...
+            Loading latest Manish Properties data...
           </div>
         </section>
       )}

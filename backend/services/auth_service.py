@@ -26,6 +26,8 @@ def _public_account(account):
         "name": account.get("name"),
         "phone": account.get("phone"),
         "status": normalize_status(account.get("status")),
+        "city_id": account.get("city_id"),
+        "sub_area_ids": account.get("sub_area_ids", []),  # Changed to array
     }
 
 
@@ -92,12 +94,25 @@ def register_account(payload, default_role="USER"):
     password = str(payload.get("password", ""))
     role = normalize_role(payload.get("role") or default_role)
 
+    # 🔍 DEBUG: Log incoming data
+    print(f"🔍 DEBUG: register_account called with:")
+    print(f"  - role: {role}")
+    print(f"  - username: {username}")
+    print(f"  - sub_area_ids from payload: {payload.get('sub_area_ids')}")
+    print(f"  - sub_area_ids type: {type(payload.get('sub_area_ids'))}")
+
     if not username or not password or not role:
         return None, "Email, password, and role are required"
-    if role == "SUPER_ADMIN":
-        return None, "Super Admin accounts are created internally."
+    if role in ["ADMIN", "SUPER_ADMIN"]:
+        return None, "Admin accounts can only be created by platform owners."
     if find_account_by_username(username):
         return None, "Email already exists"
+
+    # Set status based on role
+    if role == "AGENT":
+        status = "PENDING"
+    else:
+        status = "ACTIVE"
 
     collection = collection_for_role(role)
     account = {
@@ -108,9 +123,56 @@ def register_account(payload, default_role="USER"):
         "role": role,
         "name": payload.get("name"),
         "phone": payload.get("phone"),
+        "status": status,
         "savedProperties": payload.get("savedProperties", []),
+        "createdAt": __import__('datetime').datetime.now().isoformat(),
     }
+
+    # ✅ Add city and subarea IDs for AGENT role
+    if role == "AGENT":
+        city_id = payload.get("city_id")
+        sub_area_ids = payload.get("sub_area_ids", [])
+        
+        # ✅ Handle different formats of sub_area_ids
+        if isinstance(sub_area_ids, str):
+            # Try to parse as JSON array if it looks like one
+            if sub_area_ids.startswith('['):
+                try:
+                    import json
+                    sub_area_ids = json.loads(sub_area_ids)
+                except:
+                    # If parsing fails, treat as single string
+                    sub_area_ids = [sub_area_ids]
+            else:
+                # Treat as single string
+                sub_area_ids = [sub_area_ids]
+        
+        # ✅ Ensure it's a list of strings
+        if not isinstance(sub_area_ids, list):
+            sub_area_ids = []
+        else:
+            # Filter out empty values and ensure strings
+            sub_area_ids = [str(sid) for sid in sub_area_ids if sid]
+        
+        if city_id:
+            account["city_id"] = str(city_id)
+        
+        if sub_area_ids:
+            account["sub_area_ids"] = sub_area_ids
+            
+        print(f"🔍 DEBUG: Agent account data: {account}")
+        print(f"🔍 DEBUG: sub_area_ids to save: {account.get('sub_area_ids')}")
+
     append_json(collection, account)
+    
+    # ✅ After saving, verify it was saved correctly
+    saved_account = find_account_by_username(username)
+    if saved_account:
+        print(f"🔍 DEBUG: Account saved successfully: {saved_account.get('id')}")
+        print(f"🔍 DEBUG: Saved sub_area_ids: {saved_account.get('sub_area_ids')}")
+    else:
+        print(f"❌ ERROR: Failed to save account")
+    
     return issue_tokens(account), None
 
 

@@ -3,6 +3,12 @@
  * Handles all authentication-related API calls
  */
 
+// import { apiClient } from "@/lib/api/client";
+// import { ApiError } from "@/lib/api/client";
+// import { API_ENDPOINTS } from "@/lib/api/config";
+// import { LoginResponse, LogoutResponse } from "@/types/api";
+// import { clearAllAuthData, getToken, setAdminData, setAuthPersistence, setRefreshToken, setToken } from "@/lib/utils/token";
+
 import { apiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/config";
@@ -74,12 +80,33 @@ export class AuthService {
     password: string,
     role: string,
     name?: string,
-    phone?: string
+    phone?: string,
+    status: string = "pending",
+    city_id?: string,
+    sub_area_ids: string[] = [] // Changed to array
   ): Promise<LoginResponse> {
     setAuthPersistence(true);
+
+    const payload: any = {
+      email,
+      password,
+      role,
+      name,
+      phone,
+      status,
+    };
+
+    // Add city and subareas only for AGENT role
+    if (role === "AGENT") {
+      if (city_id) payload.city_id = city_id;
+      if (sub_area_ids.length > 0) payload.sub_area_ids = sub_area_ids;
+    }
+
+    console.log("Register payload:", payload);
+
     const response = await apiClient.post<LoginResponse>(
       API_ENDPOINTS.AUTH.REGISTER,
-      { email, password, role, name, phone }
+      payload
     );
 
     if (response.success) {

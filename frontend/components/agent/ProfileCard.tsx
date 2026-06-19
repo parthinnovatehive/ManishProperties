@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, Mail, Phone, MapPin, Briefcase, Building2, Star, Edit } from "lucide-react";
+import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
 
 interface AgentProfile {
   name: string;
@@ -10,6 +11,7 @@ interface AgentProfile {
   experience: string;
   propertiesCount: number;
   rating: number;
+  totalRatings?: number;
   dealsCount: number;
 }
 
@@ -53,11 +55,7 @@ export function ProfileCard({ profile, onEditClick }: ProfileCardProps) {
 
         {/* Rating and Deals summaries */}
         <div className="flex items-center gap-4 mt-4 py-3 border-y border-estate-border/50">
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-estate-amber fill-estate-amber" />
-            <span className="text-sm font-bold text-estate-text">{profile.rating}</span>
-            <span className="text-xs text-estate-muted font-medium">({profile.dealsCount} deals)</span>
-          </div>
+          <AgentRatingDisplay rating={profile.rating} totalRatings={profile.totalRatings} showCount={true} />
           <div className="w-1.5 h-1.5 rounded-full bg-estate-border-med" />
           <div className="flex items-center gap-1.5">
             <Building2 className="w-4 h-4 text-estate-navy-light" />

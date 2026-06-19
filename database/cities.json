@@ -1,17 +1,26 @@
 [
   {
-    "name": "Mumbai",
+    "id": "city_nashik",
+    "name": "Nashik",
     "count": 1280,
-    "image": "https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=500&auto=format&q=75"
+    "image": "https://ik.imagekit.io/yd29mwkn4/images/uploads/packages/large/32913.jpg",
+    "admin_id": null,
+    "status": "active"
   },
   {
-    "name": "Bangalore",
-    "count": 940,
-    "image": "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=500&auto=format&q=75"
-  },
-  {
+    "id": "city_pune",
     "name": "Pune",
     "count": 760,
-    "image": "https://images.unsplash.com/photo-1595658658481-d53d3f999875?w=500&auto=format&q=75"
+    "image": "https://static.toiimg.com/img/92863964/Master.jpg",
+    "admin_id": "admin_697f4958c4c044318240369fcafd72ee",
+    "status": "active"
+  },
+  {
+    "id": "city_aurangabad",
+    "name": "Aurangabad",
+    "count": 940,
+    "image": "https://t4.ftcdn.net/jpg/01/96/50/87/360_F_196508763_c2Sb6vIcsgmaXCOLMvuprBvaDxvTDkyf.jpg",
+    "admin_id": "admin_54aa04b4dcd94ce2bf1e8c9ac6870246",
+    "status": "active"
   }
 ]

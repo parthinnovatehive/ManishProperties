@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { PropertyCard } from "@/components/property/property-card";
 
 export function FeaturedProperties({ properties }: { properties: Property[] }) {
+  console.log("FeaturedProperties received:", properties);
+console.log("Count:", properties.length);
   return (
     <section className="bg-estate-bg py-24 lg:py-28">
       <div className="container-wide">

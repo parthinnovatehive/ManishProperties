@@ -25,23 +25,38 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
           </div>
         ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category) => (
-            <button
-              key={category.label}
-              className={cn(
-                "rounded-[20px] border border-transparent p-6 text-left transition duration-300 hover:-translate-y-1 hover:shadow-estate-md",
-                category.surfaceClass,
-                category.borderClass,
-              )}
-              onClick={() => router.push(category.queryType ? `/properties?type=${encodeURIComponent(category.queryType)}` : "/properties")}
-            >
-              <span className={cn("mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] bg-white/85 shadow-estate", category.accentClass)}>
-                <ContentIcon icon={category.icon} size={22} />
-              </span>
-              <span className="block text-base font-bold text-estate-text">{category.label}</span>
-              <span className={cn("mt-2 block text-xs font-semibold", category.accentClass)}>{category.count} Properties</span>
-            </button>
-          ))}
+          {categories.map((category, idx) => {
+            const gradients = [
+              "from-emerald-50 to-teal-50",
+              "from-blue-50 to-indigo-50",
+              "from-amber-50 to-orange-50",
+              "from-purple-50 to-pink-50",
+              "from-rose-50 to-red-50",
+              "from-cyan-50 to-sky-50",
+            ];
+            const grad = gradients[idx % gradients.length];
+            return (
+              <button
+                key={category.label}
+                className={cn(
+                  "group rounded-[20px] border border-estate-border/60 bg-gradient-to-br p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-estate-md",
+                  grad,
+                )}
+                onClick={() => router.push(category.queryType ? `/properties?type=${encodeURIComponent(category.queryType)}` : "/properties")}
+              >
+                <span className={cn(
+                  "mb-5 flex h-14 w-14 items-center justify-center rounded-[16px] bg-white/90 shadow-sm transition-transform duration-300 group-hover:scale-110",
+                  category.accentClass,
+                )}>
+                  <ContentIcon icon={category.icon} size={24} />
+                </span>
+                <span className="block text-lg font-bold text-estate-text">{category.label}</span>
+                <span className="mt-1.5 block text-sm font-medium text-estate-muted group-hover:text-estate-text-sec">
+                  Browse {category.label}s &rarr;
+                </span>
+              </button>
+            );
+          })}
         </div>
         )}
       </div>

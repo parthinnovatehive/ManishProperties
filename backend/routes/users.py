@@ -12,7 +12,7 @@ users_bp = Blueprint("users", __name__)
 
 @users_bp.get("/")
 @users_bp.get("")
-@role_required("ADMIN", "SUPER_ADMIN")
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def index():
     users = list_users()
     return success_response("Users fetched", data=users, users=users)
@@ -71,8 +71,9 @@ def create():
 
 
 @users_bp.get("/<user_id>")
-@role_required("USER", "ADMIN", "SUPER_ADMIN")
+@jwt_required()
 def show(user_id):
+    """Get a single user by ID - accessible by authenticated users (including agents)"""
     user = get_user(user_id)
     if not user:
         return error_response("User not found", 404)
@@ -82,7 +83,7 @@ def show(user_id):
 
 @users_bp.put("/<user_id>")
 @users_bp.patch("/<user_id>")
-@role_required("USER", "ADMIN", "SUPER_ADMIN")
+@role_required(["USER", "ADMIN", "SUPER_ADMIN"])
 def update(user_id):
     user = update_user(user_id, request.get_json(silent=True) or {})
     if not user:
@@ -91,7 +92,7 @@ def update(user_id):
 
 
 @users_bp.delete("/<user_id>")
-@role_required("ADMIN", "SUPER_ADMIN")
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def destroy(user_id):
     if not delete_user(user_id):
         return error_response("User not found", 404)

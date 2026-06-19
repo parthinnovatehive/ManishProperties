@@ -70,7 +70,7 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
       ? [property.image]
       : [];
   const agent = property.agent ?? {
-    name: "EstateElite Agent",
+    name: "Manish Properties Agent",
     avatar: "EA",
     deals: 0,
     rating: property.rating,

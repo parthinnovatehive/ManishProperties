@@ -16,7 +16,16 @@ interface UseAuthReturn {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string, remember?: boolean) => Promise<boolean>;
-  register: (email: string, password: string, role: string, name?: string, phone?: string) => Promise<boolean>;
+  register: (
+    email: string,
+    password: string,
+    role: string,
+    name?: string,
+    phone?: string,
+    status?: string,
+    city_id?: string,
+    sub_area_ids?: string[] // Changed to array
+  ) => Promise<boolean>;
   googleLogin: (token: string, role: string) => Promise<boolean>;
   sendOtp: (phone: string) => Promise<{ success: boolean; message: string; simulated?: boolean }>;
   verifyOtp: (phone: string, otp: string) => Promise<{ success: boolean; message: string }>;
@@ -69,12 +78,30 @@ export function useAuth(): UseAuthReturn {
   );
 
   const register = useCallback(
-    async (email: string, password: string, role: string, name?: string, phone?: string) => {
+    async (
+      email: string,
+      password: string,
+      role: string,
+      name?: string,
+      phone?: string,
+      status: string = "pending",
+      city_id?: string,
+      sub_area_ids: string[] = [] // Changed to array with default
+    ) => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await authService.register(email, password, role, name, phone);
+        const response = await authService.register(
+          email,
+          password,
+          role,
+          name,
+          phone,
+          status,
+          city_id,
+          sub_area_ids // Pass array
+        );
 
         if (response.success) {
           setAdmin(response.user || response.admin);
@@ -103,6 +130,8 @@ export function useAuth(): UseAuthReturn {
     },
     []
   );
+
+  // ... rest of the code remains the same (googleLogin, sendOtp, verifyOtp, logout, clearError)
 
   const googleLogin = useCallback(
     async (token: string, role: string) => {

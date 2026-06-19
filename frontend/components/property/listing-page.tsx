@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronDown, ChevronLeft, ChevronRight, Filter, Grid3X3, List, Search } from "lucide-react";
 import type { ListingFilters, Property } from "@/types";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PropertyCard } from "./property-card";
 import { PropertyFilters } from "./property-filters";
 
-const blankFilters: ListingFilters = { type: "", status: "", minPrice: "", maxPrice: "", beds: "", city: "" };
+const blankFilters: ListingFilters = { type: "", status: "", minPrice: "", maxPrice: "", beds: "", city: "", isNew: "" };
 const sortOptions = ["Relevance", "Price: Low to High", "Price: High to Low", "Newest First", "Most Popular"];
 
 function listingStatus(property: Property) {
@@ -24,14 +24,31 @@ export function ListingPage({ properties }: { properties: Property[] }) {
   const searchParams = useSearchParams();
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState("Relevance");
+  const [currentPage, setCurrentPage] = useState(1);
+const PROPERTIES_PER_PAGE = 12;
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filters, setFilters] = useState<ListingFilters>({
     ...blankFilters,
     type: searchParams?.get("type") ?? "",
     status: searchParams?.get("status") ?? "",
     city: searchParams?.get("city") ?? "",
+    isNew: searchParams?.get("new") ?? "",
   });
   const query = searchParams?.get("q")?.toLowerCase() ?? "";
+
+  // Sync URL search params to filter state whenever URL changes
+  useEffect(() => {
+    setFilters({
+      ...blankFilters,
+      type: searchParams?.get("type") ?? "",
+      status: searchParams?.get("status") ?? "",
+      city: searchParams?.get("city") ?? "",
+      isNew: searchParams?.get("new") ?? "",
+    });
+  }, [searchParams]);
+  useEffect(() => {
+  setCurrentPage(1);
+}, [filters, query, sort]);
 
   const cities = useMemo(() => uniqueValues(properties.map((property) => property.city)), [properties]);
   const types = useMemo(() => uniqueValues(properties.map((property) => property.type)), [properties]);
@@ -44,6 +61,7 @@ export function ListingPage({ properties }: { properties: Property[] }) {
       if (filters.beds && property.beds < Number.parseInt(filters.beds, 10)) return false;
       if (filters.minPrice && property.priceNum < Number.parseInt(filters.minPrice, 10)) return false;
       if (filters.maxPrice && property.priceNum > Number.parseInt(filters.maxPrice, 10)) return false;
+      if (filters.isNew && property.isNew !== true) return false;
       if (query) {
         const haystack = `${property.title} ${property.subtitle} ${property.type} ${property.builder} ${property.location} ${property.city}`.toLowerCase();
         if (!haystack.includes(query)) return false;
@@ -63,7 +81,16 @@ export function ListingPage({ properties }: { properties: Property[] }) {
       return String(a.id).localeCompare(String(b.id));
     });
   }, [filters, properties, query, sort]);
+const totalPages = Math.max(
+  1,
+  Math.ceil(filtered.length / PROPERTIES_PER_PAGE)
+);
 
+const paginatedProperties =
+  filtered.slice(
+    (currentPage - 1) * PROPERTIES_PER_PAGE,
+    currentPage * PROPERTIES_PER_PAGE
+  );
   const clearFilters = () => setFilters(blankFilters);
 
   return (
@@ -142,33 +169,71 @@ export function ListingPage({ properties }: { properties: Property[] }) {
             </div>
           ) : (
             <div className={cn("grid gap-6", view === "grid" ? "xl:grid-cols-2" : "grid-cols-1")}>
-              {filtered.map((property) => (
+              {paginatedProperties.map((property) => (
                 <PropertyCard key={property.id} property={property} compact={view === "grid"} />
               ))}
             </div>
           )}
-
           {filtered.length > 0 && (
-            <div className="mt-12 flex items-center justify-center gap-2">
-              <button className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-medium text-estate-text-sec shadow-estate">
-                <ChevronLeft size={15} aria-hidden="true" /> Previous
-              </button>
-              {[1, 2, 3, "...", 12].map((page, index) => (
-                <button
-                  key={`${page}-${index}`}
-                  className={cn(
-                    "h-10 w-10 rounded-xl border-[1.5px] text-sm font-semibold shadow-estate",
-                    page === 1 ? "border-estate-blue bg-estate-blue text-white" : "border-estate-border bg-white text-estate-text-sec",
-                  )}
-                >
-                  {page}
-                </button>
-              ))}
-              <button className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-estate">
-                Next <ChevronRight size={15} aria-hidden="true" />
-              </button>
-            </div>
+  <>
+    <div className="mb-5 text-center text-sm text-estate-muted">
+      Showing{" "}
+      {(currentPage - 1) * PROPERTIES_PER_PAGE + 1}
+      -
+      {Math.min(
+        currentPage * PROPERTIES_PER_PAGE,
+        filtered.length
+      )}{" "}
+      of {filtered.length} properties
+    </div>
+
+    <div className="mt-12 flex items-center justify-center gap-2">
+      <button
+        disabled={currentPage === 1}
+        onClick={() =>
+          setCurrentPage((p) =>
+            Math.max(1, p - 1)
+          )
+        }
+        className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-medium text-estate-text-sec shadow-estate disabled:opacity-50"
+      >
+        <ChevronLeft size={15} />
+        Previous
+      </button>
+
+      {Array.from(
+        { length: totalPages },
+        (_, i) => i + 1
+      ).map((page) => (
+        <button
+          key={page}
+          onClick={() => setCurrentPage(page)}
+          className={cn(
+            "h-10 w-10 rounded-xl border-[1.5px] text-sm font-semibold shadow-estate",
+            page === currentPage
+              ? "border-estate-blue bg-estate-blue text-white"
+              : "border-estate-border bg-white text-estate-text-sec"
           )}
+        >
+          {page}
+        </button>
+      ))}
+
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() =>
+          setCurrentPage((p) =>
+            Math.min(totalPages, p + 1)
+          )
+        }
+        className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-estate disabled:opacity-50"
+      >
+        Next
+        <ChevronRight size={15} />
+      </button>
+    </div>
+  </>
+)}
         </div>
       </div>
     </div>

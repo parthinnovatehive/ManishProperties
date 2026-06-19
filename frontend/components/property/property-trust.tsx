@@ -14,7 +14,7 @@ export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProp
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-base font-semibold tracking-tight">EstateElite Verified Listing</h3>
+            <h3 className="text-base font-semibold tracking-tight">Manish Properties Verified Listing</h3>
             <p className="text-[11px] text-white/50 mt-1 font-light leading-relaxed">
               {"Legally audited \u00b7 RERA compliant \u00b7 Fraud-protected transaction"}
             </p>
@@ -33,7 +33,7 @@ export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProp
           ))}
         </div>
         <p className="text-xs text-white/35 font-light leading-relaxed">
-          Title deeds, structural integrity, and legal clearances have been comprehensively audited by EstateElite Legal. All transactions are secured with full documentation.
+          Title deeds, structural integrity, and legal clearances have been comprehensively audited by Manish Properties Legal. All transactions are secured with full documentation.
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProp
           </div>
           <h3 className="text-base font-semibold mb-2">Verified Authenticity</h3>
           <p className="text-sm leading-relaxed text-white/75">
-            Title deeds, structural integrity, and legal clearances have been comprehensively audited by EstateElite Legal.
+            Title deeds, structural integrity, and legal clearances have been comprehensively audited by Manish Properties Legal.
           </p>
         </div>
       </div>

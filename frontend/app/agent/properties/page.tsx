@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PropertyCard } from "@/components/agent/PropertyCard";
 import { Property } from "@/types";
 import { estateApi } from "@/lib/api";
@@ -8,6 +9,7 @@ import { Search, Plus, X, Bed, Bath, Maximize2, MapPin, Star, Sparkles } from "l
 import { Button } from "@/components/ui/button";
 
 export default function AgentPropertiesPage() {
+  const router = useRouter();
   const [properties, setProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"All" | "Active" | "Sold" | "Pending">("All");
@@ -15,11 +17,10 @@ export default function AgentPropertiesPage() {
   // Selection states for Drawers/Modals
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Form states for Add/Edit
+  // Form states for Edit
   const [formState, setFormState] = useState({
     title: "",
     price: "",
@@ -38,8 +39,34 @@ export default function AgentPropertiesPage() {
     setLoading(true);
     setError(null);
     try {
+      // Get current agent from localStorage
+      let storedUser = localStorage.getItem("userData");
+      let currentAgentId = null;
+
+      if (!storedUser) {
+        storedUser = localStorage.getItem("adminData");
+      }
+
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        currentAgentId = userData.id;
+      }
+
+      if (!currentAgentId) {
+        setProperties([]);
+        setLoading(false);
+        return;
+      }
+
       const items = await estateApi.adminProperties.list();
-      setProperties(items.map((item) => ({
+      
+      // Filter properties where lister_id matches current agent's ID
+      // and lister_type is "agent"
+      const agentProperties = items.filter(
+        (item) => item.lister_id === currentAgentId && item.lister_type === "agent"
+      );
+      
+      setProperties(agentProperties.map((item) => ({
         ...item,
         status: item.status === "APPROVED" ? "Active" : item.status === "REJECTED" ? "Sold" : "Pending",
       })));
@@ -103,75 +130,31 @@ export default function AgentPropertiesPage() {
         description: formState.description,
       });
 
-    setProperties((prev) =>
-      prev.map((p) =>
-        p.id === editingProperty.id
-          ? {
-              ...p,
-              ...updated,
-              title: formState.title,
-              price: formState.price,
-              location: formState.location,
-              city: formState.city,
-              type: formState.type,
-              beds: formState.beds,
-              baths: formState.baths,
-              bathrooms: formState.baths,
-              area: formState.area,
-              status: formState.status,
-              rera: formState.rera,
-              description: formState.description,
-            }
-          : p
-      )
-    );
-    setEditingProperty(null);
+      setProperties((prev) =>
+        prev.map((p) =>
+          p.id === editingProperty.id
+            ? {
+                ...p,
+                ...updated,
+                title: formState.title,
+                price: formState.price,
+                location: formState.location,
+                city: formState.city,
+                type: formState.type,
+                beds: formState.beds,
+                baths: formState.baths,
+                bathrooms: formState.baths,
+                area: formState.area,
+                status: formState.status,
+                rera: formState.rera,
+                description: formState.description,
+              }
+            : p
+        )
+      );
+      setEditingProperty(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update property.");
-    }
-  };
-
-  // Handle Create Listing
-  const handleCreateProperty = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const newProperty = await estateApi.adminProperties.create({
-        title: formState.title,
-        subtitle: formState.title,
-        price: formState.price,
-        priceNum: parseInt(formState.price.replace(/[^0-9]/g, "")) || 0,
-        location: formState.location,
-        city: formState.city,
-        type: formState.type,
-        beds: formState.beds,
-        baths: formState.baths,
-        bathrooms: formState.baths,
-        area: formState.area,
-        status: formState.status,
-        rera: formState.rera,
-        description: formState.description,
-        featured: false,
-        isNew: true,
-      });
-
-    setProperties((prev) => [newProperty, ...prev]);
-    setShowAddModal(false);
-    // Reset formState
-    setFormState({
-      title: "",
-      price: "",
-      location: "",
-      city: "Mumbai",
-      type: "Apartment",
-      beds: 3,
-      baths: 3,
-      area: 1500,
-      status: "Active",
-      rera: "",
-      description: "",
-    });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create property.");
     }
   };
 
@@ -183,6 +166,10 @@ export default function AgentPropertiesPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete property.");
     }
+  };
+
+  const handleAddListing = () => {
+    router.push("/submit-property");
   };
 
   return (
@@ -210,22 +197,7 @@ export default function AgentPropertiesPage() {
         </div>
         <Button
           variant="primary"
-          onClick={() => {
-            setFormState({
-              title: "",
-              price: "",
-              location: "",
-              city: "Mumbai",
-              type: "Apartment",
-              beds: 3,
-              baths: 3,
-              area: 1500,
-              status: "Active",
-              rera: "",
-              description: "",
-            });
-            setShowAddModal(true);
-          }}
+          onClick={handleAddListing}
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> Add Listing
@@ -578,190 +550,6 @@ export default function AgentPropertiesPage() {
                 </button>
                 <Button variant="primary" size="sm" type="submit">
                   Save Changes
-                </Button>
-              </div>
-            </form>
-          </div>
-        </>
-      )}
-
-      {/* ADD LISTING MODAL */}
-      {showAddModal && (
-        <>
-          <div
-            onClick={() => setShowAddModal(false)}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
-          />
-          <div className="fixed inset-x-4 top-10 max-w-xl mx-auto bg-white z-50 rounded-2xl shadow-estate-lg border border-estate-border overflow-hidden animate-fade-up">
-            <div className="p-5 border-b border-estate-border flex justify-between items-center bg-estate-surface/10">
-              <h3 className="font-extrabold text-base text-estate-navy font-serif">Add New Property</h3>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="p-1 hover:bg-estate-surface rounded-lg transition"
-              >
-                <X className="w-5 h-5 text-estate-text-sec" />
-              </button>
-            </div>
-            <form onSubmit={handleCreateProperty} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <label className="col-span-2">
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Listing Title
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Elegant 3BHK Gated Residence"
-                    value={formState.title}
-                    onChange={(e) => setFormState({ ...formState, title: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Listing Price
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. ₹1.45 Cr or ₹45,000/mo"
-                    value={formState.price}
-                    onChange={(e) => setFormState({ ...formState, price: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Initial status
-                  </span>
-                  <select
-                    value={formState.status}
-                    onChange={(e) => setFormState({ ...formState, status: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-bold text-estate-navy focus:ring-4 focus:ring-estate-blue-pale/50 cursor-pointer bg-white"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Sold">Sold</option>
-                  </select>
-                </label>
-
-                <label className="col-span-2">
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Exact Location address
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Sector 24, Cyber City, Gurugram"
-                    value={formState.location}
-                    onChange={(e) => setFormState({ ...formState, location: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Property Type
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Apartment, Villa, Studio, Commercial"
-                    value={formState.type}
-                    onChange={(e) => setFormState({ ...formState, type: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    RERA Code (Optional)
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="e.g. PRM/KA/RERA/1251"
-                    value={formState.rera}
-                    onChange={(e) => setFormState({ ...formState, rera: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Bedrooms count
-                  </span>
-                  <input
-                    type="number"
-                    value={formState.beds}
-                    onChange={(e) => setFormState({ ...formState, beds: Number(e.target.value) })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Bathrooms count
-                  </span>
-                  <input
-                    type="number"
-                    value={formState.baths}
-                    onChange={(e) => setFormState({ ...formState, baths: Number(e.target.value) })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Area (Square Feet)
-                  </span>
-                  <input
-                    type="number"
-                    value={formState.area}
-                    onChange={(e) => setFormState({ ...formState, area: Number(e.target.value) })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label>
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Operating City
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Bangalore, Mumbai, Pune"
-                    value={formState.city}
-                    onChange={(e) => setFormState({ ...formState, city: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-
-                <label className="col-span-2">
-                  <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                    Detailed Description
-                  </span>
-                  <textarea
-                    rows={3}
-                    placeholder="Provide a stunning marketing overview..."
-                    value={formState.description}
-                    onChange={(e) => setFormState({ ...formState, description: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
-                  />
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-estate-border flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2.5 border border-estate-border text-xs font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition"
-                >
-                  Cancel
-                </button>
-                <Button variant="primary" size="sm" type="submit">
-                  Publish Listing
                 </Button>
               </div>
             </form>

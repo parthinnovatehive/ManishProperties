@@ -12,7 +12,8 @@ import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
   BuildingOfficeIcon,
-  DocumentChartBarIcon
+  DocumentChartBarIcon,
+  StarIcon
 } from "@heroicons/react/24/outline";
 
 const navItems = [
@@ -21,10 +22,11 @@ const navItems = [
   { href: "/super-admin/users", label: "Manage Users", icon: UsersIcon },
   { href: "/super-admin/agents", label: "Manage Agents", icon: UsersIcon },
   { href: "/super-admin/properties", label: "Manage Properties", icon: BuildingOfficeIcon },
+  { href: "/super-admin/featured-requests", label: "Featured Requests", icon: StarIcon },
   { href: "/super-admin/analytics", label: "Platform Analytics", icon: ChartBarIcon },
-  { href: "/super-admin/security", label: "Security Logs", icon: ShieldCheckIcon },
-  { href: "/super-admin/reports", label: "System Reports", icon: DocumentChartBarIcon },
-  { href: "/super-admin/settings", label: "Global Settings", icon: CogIcon },
+  // { href: "/super-admin/security", label: "Security Logs", icon: ShieldCheckIcon },
+  { href: "/super-admin/complaints", label: "Complaints", icon: DocumentChartBarIcon },
+  // { href: "/super-admin/settings", label: "Global Settings", icon: CogIcon },
 ];
 
 export default function SuperAdminSidebar() {
@@ -36,7 +38,7 @@ export default function SuperAdminSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-estate-navy p-4 text-white border-r border-white/10">
       <div className="mb-8 px-2">
-        <h1 className="text-2xl font-bold font-serif text-white">EstateElite</h1>
+        <h1 className="text-2xl font-bold font-serif text-white">Manish Properties</h1>
         <p className="text-[10px] text-white/50 tracking-widest font-semibold uppercase mt-0.5">Super Admin</p>
       </div>
       <nav className="flex-1 space-y-1">
@@ -65,4 +67,3 @@ export default function SuperAdminSidebar() {
     </aside>
   );
 }
-

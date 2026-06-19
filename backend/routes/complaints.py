@@ -19,7 +19,7 @@ def index():
 
 @complaints_bp.post("/")
 @complaints_bp.post("")
-@role_required("USER", "ADMIN", "SUPER_ADMIN")
+@role_required(["USER", "ADMIN", "SUPER_ADMIN"])
 def create():
     complaint = create_complaint(request.get_json(silent=True) or {})
     return success_response("Complaint created", data=complaint, complaint=complaint, status_code=201)
@@ -36,7 +36,7 @@ def show(complaint_id):
 
 @complaints_bp.put("/<complaint_id>")
 @complaints_bp.patch("/<complaint_id>")
-@role_required("ADMIN", "SUPER_ADMIN")
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def update(complaint_id):
     complaint = update_complaint(complaint_id, request.get_json(silent=True) or {})
     if not complaint:
@@ -45,7 +45,7 @@ def update(complaint_id):
 
 
 @complaints_bp.delete("/<complaint_id>")
-@role_required("ADMIN", "SUPER_ADMIN")
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def destroy(complaint_id):
     if not delete_complaint(complaint_id):
         return error_response("Complaint not found", 404)

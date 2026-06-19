@@ -1,9 +1,9 @@
-// components/user/UserHeader.tsx
 "use client";
 import { useAuth } from "@/lib/auth";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftOnRectangleIcon, HomeIcon } from "@heroicons/react/24/outline";
 import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 interface UserHeaderProps {
   onOpen: () => void;
@@ -28,13 +28,21 @@ export default function UserHeader({ onOpen }: UserHeaderProps) {
         >
           <Menu className="w-6 h-6" />
         </button>
-        <div className="text-xl font-semibold">EstateElite User Dashboard</div>
+        <div className="text-xl font-semibold">User Dashboard</div>
       </div>
       <div className="flex items-center space-x-4">
+        <NotificationBell />
         {email && <span className="text-sm">{email}</span>}
         <button
+          onClick={() => router.push("/")}
+          className="flex items-center hover:opacity-80 transition"
+        >
+          <HomeIcon className="h-5 w-5 mr-1" />
+          Home
+        </button>
+        <button
           onClick={handleLogout}
-          className="flex items-center hover:opacity-80"
+          className="flex items-center hover:opacity-80 transition"
         >
           <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-1" />
           Logout

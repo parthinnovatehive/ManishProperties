@@ -2,32 +2,57 @@
   "categories": [
     {
       "name": "Apartments",
-      "count": 2480,
+      "count": 24500,
       "icon": "Building2"
     },
     {
       "name": "Villas",
-      "count": 720,
+      "count": 8200,
       "icon": "Home"
     },
     {
+      "name": "Plots & Land",
+      "count": 12800,
+      "icon": "Crosshair"
+    },
+    {
       "name": "Commercial",
-      "count": 410,
-      "icon": "Briefcase"
+      "count": 6400,
+      "icon": "Landmark"
+    },
+    {
+      "name": "Penthouses",
+      "count": 1200,
+      "icon": "Sparkles"
+    },
+    {
+      "name": "New Projects",
+      "count": 890,
+      "icon": "Zap"
+    },
+    {
+      "name": "PG / Co-living",
+      "count": 18600,
+      "icon": "Users"
+    },
+    {
+      "name": "Farmhouses",
+      "count": 450,
+      "icon": "Trees"
     }
   ],
   "homeStats": [
     {
-      "label": "Verified Properties",
-      "value": "85K+"
+      "label": "Properties Available",
+      "value": "73K+"
     },
     {
-      "label": "Happy Users",
-      "value": "2M+"
+      "label": "Property Categories",
+      "value": "8"
     },
     {
-      "label": "Trusted Agents",
-      "value": "12K+"
+      "label": "Cities Covered",
+      "value": "3"
     }
   ]
 }

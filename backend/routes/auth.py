@@ -35,11 +35,13 @@ def login():
 @auth_bp.post("/register")
 def register():
     payload = request.get_json(silent=True) or {}
+    print(f"🔍 DEBUG: Registration payload: {payload}")
+    print(f"🔍 DEBUG: sub_area_ids: {payload.get('sub_area_ids')}")
+    print(f"🔍 DEBUG: sub_area_ids type: {type(payload.get('sub_area_ids'))}")
     result, error = register_account(payload)
     if error:
         return error_response(error, 400)
     return success_response("Registration successful", data=result, status_code=201, token=result["token"], refreshToken=result["refreshToken"], admin=result["admin"], user=result["user"])
-
 
 @auth_bp.post("/google-login")
 def google():
@@ -108,3 +110,5 @@ def dashboard():
         "name": claims.get("name"),
     }
     return success_response("Welcome Admin Dashboard", admin=admin, data=admin)
+
+

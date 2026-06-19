@@ -8,7 +8,7 @@ export default function SuperAdminSettingsPage() {
     apiLimit: "5000",
     maintenanceMode: false,
     cronBackup: "Daily",
-    allowedDomains: "estateelite.com, estateelite.in",
+    allowedDomains: "manishproperties.com, manishproperties.in",
   });
   const [saved, setSaved] = useState(false);
 
@@ -48,7 +48,7 @@ export default function SuperAdminSettingsPage() {
           <div className="p-5 bg-estate-bg rounded-2xl border border-estate-border flex justify-between items-center">
             <div>
               <span className="font-bold text-estate-navy block">System Maintenance Mode</span>
-              <span className="text-xs text-estate-text-sec mt-0.5 block">Restrict access to EstateElite for database optimizations.</span>
+              <span className="text-xs text-estate-text-sec mt-0.5 block">Restrict access to Manish Properties for database optimizations.</span>
             </div>
             <button
               type="button"

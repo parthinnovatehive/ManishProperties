@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Menu, ChevronRight, User, Settings, LogOut, Shield } from "lucide-react";
+import { Menu, ChevronRight, User, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { estateApi } from "@/lib/api";
-import { getAdminData } from "@/lib/utils/token";
+import { getAdminData, clearAllAuthData } from "@/lib/utils/token";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 interface AgentNavbarProps {
   onMenuClick: () => void; // Trigger mobile drawer open
@@ -14,20 +14,11 @@ interface AgentNavbarProps {
 export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
   const pathname = usePathname() || "";
   const router = useRouter();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [pendingMeetings, setPendingMeetings] = useState<any[]>([]);
   const account = getAdminData();
   const agentName = account?.name || account?.username || "Agent";
   const agentEmail = account?.email || account?.username || "";
   const initials = agentName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "AG";
-
-  useEffect(() => {
-    estateApi.appointments
-      .list<any>()
-      .then((items) => setPendingMeetings(items.filter((a) => a.status === "Pending")))
-      .catch(() => setPendingMeetings([]));
-  }, []);
 
   // Derive page name from route path
   const getPageTitle = () => {
@@ -59,82 +50,14 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
 
       {/* Right Controls - Notification & Profile */}
       <div className="flex items-center gap-4">
-        {/* Notification Bell Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setShowNotifications(!showNotifications);
-              setShowProfileMenu(false);
-            }}
-            className="p-2.5 text-estate-text-sec hover:text-estate-navy rounded-xl border border-estate-border/60 hover:bg-estate-surface bg-white shadow-sm transition relative"
-            title="Notifications"
-          >
-            <Bell className="w-4.5 h-4.5" />
-            {pendingMeetings.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-estate-red text-white text-[10px] font-extrabold flex items-center justify-center rounded-full shadow-sm">
-                {pendingMeetings.length}
-              </span>
-            )}
-          </button>
-
-          {/* Notifications Dropdown Panel */}
-          {showNotifications && (
-            <>
-              <div onClick={() => setShowNotifications(false)} className="fixed inset-0 z-40" />
-              <div className="absolute right-0 mt-3 w-80 bg-white border border-estate-border rounded-2xl shadow-estate-lg z-50 overflow-hidden animate-fade-up">
-                <div className="p-4 border-b border-estate-border flex justify-between items-center bg-estate-surface/20">
-                  <span className="font-extrabold text-sm text-estate-navy">Notifications</span>
-                  <span className="text-[10px] font-bold text-estate-navy-light uppercase cursor-pointer hover:underline">
-                    Mark Read
-                  </span>
-                </div>
-                <div className="max-h-72 overflow-y-auto divide-y divide-estate-border/40">
-                  {pendingMeetings.length > 0 ? (
-                    pendingMeetings.map((appt) => (
-                      <div
-                        key={appt.id}
-                        onClick={() => {
-                          router.push("/agent/appointments");
-                          setShowNotifications(false);
-                        }}
-                        className="p-3.5 hover:bg-estate-surface/40 cursor-pointer transition flex items-start gap-2.5"
-                      >
-                        <div className="w-2 h-2 rounded-full bg-estate-amber mt-1.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-xs font-bold text-estate-text">
-                            New meeting pending: <span className="text-estate-navy">{appt.clientName || appt.userName}</span>
-                          </p>
-                          <p className="text-[10px] text-estate-text-sec mt-0.5">{appt.propertyName}</p>
-                          <p className="text-[9px] text-estate-muted font-semibold mt-1">{appt.date} at {appt.time}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-6 text-center text-xs text-estate-muted font-medium">
-                      No new notifications
-                    </div>
-                  )}
-                </div>
-                <div
-                  onClick={() => {
-                    router.push("/agent/appointments");
-                    setShowNotifications(false);
-                  }}
-                  className="p-3 border-t border-estate-border text-center text-xs text-estate-navy-light font-bold hover:bg-estate-surface/30 cursor-pointer block"
-                >
-                  View all appointments
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+        {/* Notification Bell Component */}
+        <NotificationBell />
 
         {/* Profile Dropdown Tag */}
         <div className="relative">
           <button
             onClick={() => {
               setShowProfileMenu(!showProfileMenu);
-              setShowNotifications(false);
             }}
             className="flex items-center gap-2.5 p-1.5 pl-3 border border-estate-border/60 hover:bg-estate-surface bg-white shadow-sm hover:border-estate-border-med rounded-xl transition cursor-pointer"
           >
@@ -181,8 +104,9 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
                 <div className="p-2 border-t border-estate-border/50 bg-estate-surface/10">
                   <button
                     onClick={() => {
-                      router.push("/");
-                      setShowProfileMenu(false);
+                      clearAllAuthData();
+                      window.dispatchEvent(new Event("estate-auth-changed"));
+                      router.replace("/auth/login");
                     }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs text-estate-red hover:bg-estate-red-bg font-bold rounded-xl transition text-left"
                   >

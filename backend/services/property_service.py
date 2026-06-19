@@ -31,7 +31,7 @@ def _normalize_property(payload, status="PENDING"):
         "imgs": images if isinstance(images, list) else [],
         "image": image,
         "img": image,
-        "builder": payload.get("builder") or "EstateElite",
+        "builder": payload.get("builder") or "Manish Properties",
         "rating": float(payload.get("rating") or 0),
         "reviews": int(float(payload.get("reviews") or 0)),
         "featured": bool(payload.get("featured", False)),

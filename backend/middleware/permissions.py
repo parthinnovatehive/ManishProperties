@@ -1,32 +1,34 @@
 from functools import wraps
+from flask import jsonify, request
+import jwt
+from config import Config
 
-from flask_jwt_extended import get_jwt, get_jwt_identity, verify_jwt_in_request
-
-from services.auth_service import SUSPENDED_ACCOUNT_MESSAGE, find_account_by_id, is_suspended
-from utils.helpers import error_response
-from utils.validators import normalize_role
-
-
-def role_required(*allowed_roles):
-    normalized_allowed = {normalize_role(role) for role in allowed_roles}
-
-    def decorator(fn):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            claims = get_jwt()
-            account = find_account_by_id(get_jwt_identity())
-            if account and is_suspended(account):
-                return error_response(SUSPENDED_ACCOUNT_MESSAGE, 403)
-            role = normalize_role(claims.get("role"))
-            if role not in normalized_allowed:
-                return error_response("Access denied. Required role missing.", 403)
-            return fn(*args, **kwargs)
-
-        return wrapper
-
+def role_required(allowed_roles):
+    """Decorator to check if user has any of the allowed roles"""
+    allowed_set = {r.upper() for r in allowed_roles}
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            token = request.headers.get('Authorization')
+            if not token:
+                return jsonify({'message': 'Token is missing!'}), 401
+            
+            try:
+                token = token.split(' ')[1]
+                data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+                if data.get('role', '').upper() not in allowed_set:
+                    return jsonify({'message': 'Insufficient permissions!'}), 403
+            except jwt.InvalidTokenError:
+                return jsonify({'message': 'Invalid token!'}), 401
+            
+            return f(*args, **kwargs)
+        return decorated_function
     return decorator
 
+def admin_required(f):
+    """Convenience decorator for admin role"""
+    return role_required(['admin'])(f)
 
-admin_required = role_required("ADMIN", "SUPER_ADMIN")
-super_admin_required = role_required("SUPER_ADMIN")
+def super_admin_required(f):
+    """Convenience decorator for super_admin role"""
+    return role_required(['super_admin'])(f)

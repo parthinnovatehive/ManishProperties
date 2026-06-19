@@ -12,9 +12,13 @@ export interface AdminData {
   role: string;
   name?: string;
   phone?: string;
+  status?: string;
+  city_id?: string;
+  sub_area_id?: string;
 }
 
 const AUTH_PERSISTENCE_KEY = "estate_auth_persistence";
+const ADMIN_DATA_COOKIE_KEY = "estate_admin_data";
 
 function normalizeStoredRole(role?: string): string {
   const normalized = String(role || "USER").toUpperCase().replace("-", "_");
@@ -48,6 +52,34 @@ function setStoredItem(key: string, value: string): void {
 function removeStoredItem(key: string): void {
   getBrowserStorage("local")?.removeItem(key);
   getBrowserStorage("session")?.removeItem(key);
+}
+
+/**
+ * Set cookie for middleware access
+ */
+function setAdminDataCookie(data: AdminData): void {
+  if (typeof window === "undefined") return;
+  try {
+    const jsonData = JSON.stringify(data);
+    // Set cookie with 7 days expiry
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=${encodeURIComponent(jsonData)}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+  } catch (error) {
+    console.error("Failed to set admin data cookie:", error);
+  }
+}
+
+/**
+ * Clear admin data cookie
+ */
+function clearAdminDataCookie(): void {
+  if (typeof window === "undefined") return;
+  try {
+    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  } catch (error) {
+    console.error("Failed to clear admin data cookie:", error);
+  }
 }
 
 export function setAuthPersistence(remember: boolean): void {
@@ -164,7 +196,14 @@ export function setAdminData(data: AdminData): void {
   }
 
   try {
-    setStoredItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify({ ...data, role: normalizeStoredRole(data.role) }));
+    const normalizedData = { ...data, role: normalizeStoredRole(data.role) };
+    const jsonData = JSON.stringify(normalizedData);
+    
+    // Store in localStorage/sessionStorage
+    setStoredItem(ADMIN_DATA_STORAGE_KEY, jsonData);
+    
+    // Also set as cookie for middleware access
+    setAdminDataCookie(normalizedData);
   } catch (error) {
     console.error("Failed to write admin data to localStorage:", error);
   }
@@ -180,6 +219,7 @@ export function clearAdminData(): void {
 
   try {
     removeStoredItem(ADMIN_DATA_STORAGE_KEY);
+    clearAdminDataCookie();
   } catch (error) {
     console.error("Failed to clear admin data from localStorage:", error);
   }
@@ -198,6 +238,7 @@ export function clearAllAuthData(): void {
     localStorage.removeItem(AUTH_PERSISTENCE_KEY);
     sessionStorage.removeItem("estate_role");
     sessionStorage.removeItem("estate_email");
+    clearAdminDataCookie();
   }
 }
 

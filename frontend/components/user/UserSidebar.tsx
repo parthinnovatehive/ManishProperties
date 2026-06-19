@@ -84,7 +84,7 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
       >
         {/* Header - logo & title */}
         <div className="flex items-center justify-between h-20 px-5 border-b border-white/10 flex-shrink-0">
-          <Link href="/user/dashboard" className="flex items-center gap-3 select-none">
+          <Link href="/" className="flex items-center gap-3 select-none">
             <div className="w-10 h-10 bg-estate-blue flex items-center justify-center rounded-xl shadow-md border border-white/10 flex-shrink-0">
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
@@ -94,7 +94,7 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
                 isCollapsed ? "lg:w-0 lg:opacity-0" : "w-auto opacity-100"
               )}
             >
-              <span className="font-extrabold text-lg text-white block tracking-tight">EstateElite</span>
+              <span className="font-extrabold text-lg text-white block tracking-tight">Manish Properties</span>
               <span className="text-[10px] text-white/50 tracking-widest font-semibold uppercase -mt-0.5 block">
                 User Portal
               </span>

@@ -59,6 +59,12 @@ def normalize_role(role):
     normalized = str(role).upper().replace("-", "_")
     return "USER" if normalized == "CLIENT" else normalized
 
+# In utils/validators.py
+def normalize_status(status):
+    """Normalize status to uppercase string"""
+    if status is None:
+        return "PENDING"
+    return str(status).strip().upper()
 
 def role_matches(requested_role, stored_role):
     if not requested_role:

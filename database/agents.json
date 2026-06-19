@@ -1,75 +1,230 @@
 [
   {
-    "id": "agent_1",
-    "username": "agent@estateelite.com",
-    "name": "Rahul Sharma",
-    "email": "agent@estateelite.com",
-    "phone": "+91 98765 43210",
+    "id": "agent_a3b4daf6ec4d46f9a933087740d12f98",
+    "username": "testagent@gmail.com",
+    "email": "testagent@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$7JRrA1lCnWVuYva7$f8aae9c6499923b2447aa681eb4653583af0ba4fb16234054f119a8134346c0c98b3c60bdb4cd46929612179f2e2770d73a9bc6c0de5e0a494411c208985e710",
     "role": "AGENT",
-    "assignedProperties": [
-      "1"
+    "name": "test",
+    "phone": "7410852963",
+    "status": "active",
+    "savedProperties": [],
+    "updatedAt": "2026-06-16T12:49:45.960291+00:00",
+    "sub_area_ids": [
+      "sub_aurangpura",
+      "sub_gulmandi"
     ]
   },
   {
-    "id": "agent_de7aebd989ab47c0adc94ec9c835dad2",
-    "username": "audit-agent-1780592459@example.com",
-    "email": "audit-agent-1780592459@example.com",
-    "passwordHash": "scrypt:32768:8:1$rS8t4juAFhq0THKp$860cf9413994269b1d9a26a71afdcf257c584117786f9933143aae5b1d2953dd03a1d976d347b8ed9254a1810366270678727b9c999ed192cebd8c07d3a0b252",
+    "id": "agent_a27b53e817bc4a199d36dd9a4b9ef8b9",
+    "username": "agent900@gmail.com",
+    "email": "agent900@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$sedI5yNWmRPd9hy6$864d4236c1194eb7f2369d7555a411c2cd23ebb96ba66cae121697f712fa8f59f9c58de1a571879ea01e7e34b9e64b9a49a290cd073618a3bcad2aeb37a4193e",
     "role": "AGENT",
-    "name": "Audit Agent",
-    "phone": "+919999990002",
+    "name": "a",
+    "phone": "7418529630",
+    "status": "PENDING",
     "savedProperties": []
   },
   {
-    "id": "agent_c2d84ef5dc3f46f69c09bc616bde396f",
-    "username": "audit-agent-1780592530@example.com",
-    "email": "audit-agent-1780592530@example.com",
-    "passwordHash": "scrypt:32768:8:1$J4iO0YXjuVJHqJfR$c0d1cfc7d322fcce5375821f5a9ab12a47f3f51c8792532d0c5d614626eb25925c9cb37fa06fb78d4e31bbc15381ab420cb32ab96654467d7bf88ac19562afac",
+    "id": "agent_0a07017b516e4fd38d193ac8d3322251",
+    "username": "agent101@gmail.com",
+    "email": "agent101@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$xmZAHhvr5z7WfB3v$b191bebedc36f148b9d0e678d3b5f837ef04b5c61bbe652146f89c39dfe31b471bf5112e57e5b4ba8a519a78fcc6a4947acf317e53ec48873764751e9131be98",
     "role": "AGENT",
-    "name": "Audit Agent",
-    "phone": "+919999990002",
+    "name": "agent",
+    "phone": "7410852369",
+    "status": "PENDING",
     "savedProperties": []
   },
   {
-    "id": "agent_975a388125da4697b1e7cec3404fe9d4",
-    "username": "audit-agent-1780592579@example.com",
-    "email": "audit-agent-1780592579@example.com",
-    "passwordHash": "scrypt:32768:8:1$6x8FMDwTwiceuEQz$5e0f41d73d7374e743c31852370581c7e6f2f2e0a31e6c961cd56c338b6a861c64395e6bcf0f587cb9bde23c38d80740be9a3b10b90b01449006abc6307d86ac",
+    "id": "agent_8879aadd6522430aaf2f91f5f23879c9",
+    "username": "agent102@gmail.com",
+    "email": "agent102@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$f80dG0Bl4RFaVYak$7faf95db91f2580c3d1f81d9905535fc71b1d5baf0c82662b1361a43d5f7476ad4f98d6dc3833c7523480a3bd036ea217d4e4110f869c745f99da8a57173db65",
     "role": "AGENT",
-    "name": "Audit Agent",
-    "phone": "+919999990002",
-    "savedProperties": []
-  },
-  {
-    "id": "agent_4ce33da2aceb45569ef1a2873db7186e",
-    "username": "debug-agent-1780592599@e.com",
-    "email": "debug-agent-1780592599@e.com",
-    "passwordHash": "scrypt:32768:8:1$aZw9t65P6D7WjLdF$d0310fd584d6b45557837cb1279b47227ad9768aea85124939a311bc7c523a0a707fba06440acd193431ec220cb9a2e7c6ae81593149b2f74ca2baf8e9d477bd",
-    "role": "AGENT",
-    "name": "Debug Agent",
-    "phone": "9999990002",
-    "savedProperties": []
-  },
-  {
-    "id": "agent_3831795ae3ca40c5950528878661763f",
-    "username": "audit-agent-1780592663@example.com",
-    "email": "audit-agent-1780592663@example.com",
-    "passwordHash": "scrypt:32768:8:1$b9vdC8ZiRMWZT1tY$93c3b33a44b06b28dd03db9cb57383070368e18a511e158e29aa93f01213bac33c5792718e4042666042c592300301c2326a1c943ef3a046b1051e4818704047",
-    "role": "AGENT",
-    "name": "Audit Agent",
-    "phone": "+919999990002",
-    "savedProperties": []
-  },
-  {
-    "id": "agent_61cbd26cc16a44f9b2b825438e975cce",
-    "username": "deepakmorje74@gmail.com",
-    "email": "deepakmorje74@gmail.com",
-    "passwordHash": "scrypt:32768:8:1$K8qHNmwYNv9CZUwn$81f8d9aabf4226c256f8a520c83335066b853d122d2f05c193530d4c4f281bac063a1524478c05217cc69d2694ed0ee512606b4d2ee20bbf6abb6b3da8c45c04",
-    "role": "AGENT",
-    "name": "Rahul",
-    "phone": "9011411791",
-    "savedProperties": [],
+    "name": "Parth Darda",
+    "phone": "7894563210",
     "status": "active",
-    "updatedAt": "2026-06-05T14:10:04.740060+00:00"
+    "savedProperties": [],
+    "city_id": "city_pune",
+    "sub_area_id": "sub_aundh",
+    "updatedAt": "2026-06-17T06:05:28.662451+00:00"
+  },
+  {
+    "id": "agent_c75bd1f731804e608f025f059e4995d7",
+    "username": "agent201@gmail.com",
+    "email": "agent201@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$SIew3NAjnXlytJio$c71d2b0c837b0243d6895e1344280789e5825a55ad31e416b91a0a189dbf0daf955a2a9c8306526d1bf77f4c1ddaeff3bfacef58200fb7b7e283ac812036038b",
+    "role": "AGENT",
+    "name": "agentt",
+    "phone": "7854120369",
+    "status": "active",
+    "savedProperties": [],
+    "city_id": "city_nashik",
+    "sub_area_ids": [],
+    "updatedAt": "2026-06-16T14:44:46.111954+00:00"
+  },
+  {
+    "id": "agent_95e8954dc6984d00994f87624e4613a6",
+    "username": "test301@gmail.com",
+    "email": "test301@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$rhOaqlGhscADUZQh$c01df20b0b06135b03400f40d7531810af3cf669b0275502ee99a01b80cb3781218a2948087907cf1e8287b622bc705ef9182a79cc318ca5f03bbf6cb04e862a",
+    "role": "AGENT",
+    "name": "t4",
+    "phone": "1234567890",
+    "status": "active",
+    "savedProperties": [],
+    "city_id": "city_pune",
+    "sub_area_ids": [],
+    "updatedAt": "2026-06-16T19:09:32.332371+00:00"
+  },
+  {
+    "id": "agent_67811db1c1324561a6fd2e057577116f",
+    "username": "test401@gmail.com",
+    "email": "test401@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$VptxK4VSjgTErMLn$c1c0ae7a4168fefad8b79df65f0176c6705e5d73ddb3550d21df9a6073c2a7c51b1a9286d3504c05a6a1b7117b73b5d414d578254fe294ac9ae37027e34ef8b5",
+    "role": "AGENT",
+    "name": "asg",
+    "phone": "7412589630",
+    "status": "active",
+    "savedProperties": [],
+    "city_id": "city_pune",
+    "sub_area_ids": [],
+    "updatedAt": "2026-06-17T06:09:01.292906+00:00"
+  },
+  {
+    "id": "agent_1fd42047de774c71abf194d9b68e8d77",
+    "username": "test402@gmail.com",
+    "email": "test402@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$MtH0GdJRqbqDHcrw$b27c2922b3f1af4f745a5d56fed1b313b8be62b2e8c91e5909f6202d77c41ab6d9e4d74de4a79187c378e9966868891abb10decf2b566ad1ce2aaebf2c907883",
+    "role": "AGENT",
+    "name": "a",
+    "phone": "12",
+    "status": "active",
+    "savedProperties": [],
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_camp_pune",
+      "sub_koregaon_park"
+    ],
+    "updatedAt": "2026-06-17T06:43:54.227414+00:00"
+  },
+  {
+    "id": "agent_d83025f4d7d9485f91c99597451e6670",
+    "username": "test404@gmail.com",
+    "email": "test404@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$ildnjHPgLpI81I5p$fb46ae27eed16973db406251c100f0cfb3c9773a6d16b7e5a3c2ef87faa8a1cf425d2a987f10ae3b4f6ae9340b5caf8d71aeba5bfc757f711b2369bbb405e11c",
+    "role": "AGENT",
+    "name": "adf",
+    "phone": "2345",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T12:06:46.206604",
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_wakad",
+      "sub_hinjewadi"
+    ],
+    "updatedAt": "2026-06-17T06:37:29.951108+00:00"
+  },
+  {
+    "id": "agent_86f0c3179b3e480d9dd1ecd18b641df6",
+    "username": "test405@gmail.com",
+    "email": "test405@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$5TopSjkIwn2cBE65$c7a3afdde2e99717dfe309b0e00acf341d04537b08e68a9059b453b21701c2f4e6d8b64da5daf4a8a58554b3bebb6cb6391a6ac256d8d5f9fb56bf5f20f429be",
+    "role": "AGENT",
+    "name": "qwerty",
+    "phone": "1234567890-",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T12:28:43.468475",
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_chakan"
+    ],
+    "updatedAt": "2026-06-17T06:59:42.725451+00:00"
+  },
+  {
+    "id": "agent_bc834dec7699488492888230492c04cc",
+    "username": "test406@gmail.com",
+    "email": "test406@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$j1mlScmMKRBKSirY$5cb3891aeb74813539b0c22d9af9598ec1cd793d81f08c724b397599f371b8c3583a351619a8699fcadb519869ebdb215663543ec9ef27adcd9d90f18560d3e0",
+    "role": "AGENT",
+    "name": "gfh",
+    "phone": "45",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T12:44:28.786394",
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_pimple_gurav"
+    ],
+    "updatedAt": "2026-06-17T07:19:30.019558+00:00"
+  },
+  {
+    "id": "agent_6259189b2d1544c5a9c5d09c623a6f0e",
+    "username": "test407@gmail.com",
+    "email": "test407@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$n0GOYf3IVRhXZccG$4dd23ba18cd5914c9b7d72e0033b4ed01156579b72f502b51dfe4b01baaa5862271572e34d6a33f17f7523d04e1fa7a8a69ad7852f6d325345bfc3e3723ef693",
+    "role": "AGENT",
+    "name": "test",
+    "phone": "234",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T12:50:36.433579",
+    "city_id": "city_pune",
+    "sub_area_ids": [],
+    "updatedAt": "2026-06-17T07:21:23.858304+00:00"
+  },
+  {
+    "id": "agent_d16ca5421e67441a8af273b5e9792210",
+    "username": "test408@gmail.com",
+    "email": "test408@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$LYyLgM6BCVNnrQ5J$89738156ea4b5d4ac23babf1ae45f98b1bd67ccda045610f0d582135fb797beacf5767717f4a911dcd56a6979a6f73f3477b4cf3bc50458cc87b3bab35c1c959",
+    "role": "AGENT",
+    "name": "sfd",
+    "phone": "678",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T13:01:09.951210",
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_thergaon"
+    ],
+    "updatedAt": "2026-06-17T07:33:53.462305+00:00"
+  },
+  {
+    "id": "agent_00c21c6507c94c27854572d596e5e9ea",
+    "username": "test409@gmail.com",
+    "email": "test409@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$GyRo0KFPF7jdvPDW$a2af422e290d520f5363a700c61d3e7ceb657c0799b96598995107576325d7f178a564aed802286da868ab25b8b1a4722162c9a0f8d9bad55d60301ea1eb45ca",
+    "role": "AGENT",
+    "name": "fg",
+    "phone": "325",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T13:05:00.718382",
+    "city_id": "city_pune",
+    "sub_area_ids": [
+      "sub_punawale",
+      "sub_spine_road"
+    ],
+    "updatedAt": "2026-06-17T07:37:02.194691+00:00"
+  },
+  {
+    "id": "agent_5797047d805e48caa2c8c018a6ec6905",
+    "username": "test501@gmail.com",
+    "email": "test501@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$83AqpRBpNDfLgaal$beca675a3522c520e0268d13483a7a0119712abbbb40e6791847574dd98b982d17e1ab61a30984d1fa58c6900b9c055a01721f4ba9549c5d3d4d23a059790f94",
+    "role": "AGENT",
+    "name": "asdgf",
+    "phone": "345",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-06-17T14:25:33.636885",
+    "city_id": "city_pune",
+    "sub_area_ids": [],
+    "updatedAt": "2026-06-17T08:58:38.172215+00:00"
   }
 ]

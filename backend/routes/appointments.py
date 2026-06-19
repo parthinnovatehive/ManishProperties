@@ -96,7 +96,7 @@ def update(appointment_id):
 
 
 @appointments_bp.delete("/<appointment_id>")
-@role_required("ADMIN", "SUPER_ADMIN")
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def destroy(appointment_id):
     if not delete_appointment(appointment_id):
         return error_response("Appointment not found", 404)

@@ -231,11 +231,11 @@ function LocationFilterPanel({ value, onChange, onClear, resultCount }) {
    STATS CARDS
 ============================================================ */
 function StatsGrid({ properties }) {
-  const stats = [
-    { label: "Total Properties", value: properties.length, icon: <Building2 size={20}/>, color: C.blue, bg: C.bluePale, delta: "+12 this week" },
-    { label: "Pending Review", value: properties.filter(p => p.status === "PENDING").length, icon: <Clock size={20}/>, color: C.warning, bg: C.warningLight, delta: "Needs attention", urgent: true },
-    { label: "Approved", value: properties.filter(p => p.status === "APPROVED").length, icon: <CheckCircle size={20}/>, color: C.success, bg: C.successLight, delta: "+3 today" },
-    { label: "Rejected", value: properties.filter(p => p.status === "REJECTED").length, icon: <XCircle size={20}/>, color: C.danger, bg: C.dangerLight, delta: "2 flagged" },
+const stats = [
+  { label: "Total Properties", value: properties.length, icon: <Building2 size={20}/>, color: C.blue, bg: C.bluePale, delta: "" },
+  { label: "Pending Review", value: properties.filter(p => p.status === "PENDING").length, icon: <Clock size={20}/>, color: C.warning, bg: C.warningLight, delta: "", urgent: true },
+    { label: "Approved", value: properties.filter(p => p.status === "APPROVED").length, icon: <CheckCircle size={20}/>, color: C.success, bg: C.successLight, delta: "" },
+    { label: "Rejected", value: properties.filter(p => p.status === "REJECTED").length, icon: <XCircle size={20}/>, color: C.danger, bg: C.dangerLight, delta: "" },
     { label: "Featured", value: properties.filter(p => p.featured).length, icon: <Star size={20}/>, color: C.amber, bg: C.amberPale, delta: "Premium slots" },
   ];
   return (
@@ -746,7 +746,8 @@ export default function EstateEliteAdmin() {
   const [locationFilters, setLocationFilters] = useState({ state: "", city: "", area: "" });
   const [modal, setModal] = useState(null);
   const [drawer, setDrawer] = useState(null);
-
+  const [filteredProperties, setFilteredProperties] = useState([]);
+const [adminCity, setAdminCity] = useState<string | null>(null);
   // Authentication is handled by app/admin/layout.tsx via useRedirectIfUnauthenticated
 
   // Handle initial errors
@@ -759,6 +760,36 @@ export default function EstateEliteAdmin() {
   useEffect(() => {
     estateApi.users.list().then(setUsers).catch(() => setUsers([]));
   }, []);
+
+  // Get admin's assigned city
+useEffect(() => {
+  const getAdminCity = async () => {
+    try {
+      const storedAdmin = localStorage.getItem("adminData");
+      if (storedAdmin) {
+        const admin = JSON.parse(storedAdmin);
+        const citiesData = await estateApi.cities.list<any>();
+        const assignedCity = citiesData.find((city: any) => city.admin_id === admin.id);
+        if (assignedCity) {
+          setAdminCity(assignedCity.id);
+          console.log("Admin assigned to city:", assignedCity.name);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to get admin city:", err);
+    }
+  };
+  getAdminCity();
+}, []);
+// Filter properties by admin's city
+useEffect(() => {
+  if (adminCity) {
+    const filtered = properties.filter(p => p.city_id === adminCity);
+    setFilteredProperties(filtered);
+  } else {
+    setFilteredProperties(properties);
+  }
+}, [properties, adminCity]);
 
   // Sync drawer with properties array when properties change
   useEffect(() => {
@@ -799,20 +830,20 @@ export default function EstateEliteAdmin() {
     });
   }, [rejectProperty, toast]);
 
-  const handleFeature = useCallback(async (id: string | number) => {
-    try {
-      const prop = properties.find(p => p.id === id);
-      if (!prop) {
-        toast.error("Property not found in the current list");
-        return;
-      }
-      const newFeaturedStatus = !(prop?.featured);
-      await featureProperty(id, newFeaturedStatus);
-      toast.success(newFeaturedStatus ? "Marked as Featured" : "Removed from Featured", 2000);
-    } catch (err) {
-      toast.error(err?.message || "Failed to update property");
+const handleFeature = useCallback(async (id: string | number) => {
+  try {
+    const prop = filteredProperties.find(p => p.id === id);
+    if (!prop) {
+      toast.error("Property not found in the current list");
+      return;
     }
-  }, [featureProperty, properties, toast]);
+    const newFeaturedStatus = !(prop?.featured);
+    await featureProperty(id, newFeaturedStatus);
+    toast.success(newFeaturedStatus ? "Marked as Featured" : "Removed from Featured", 2000);
+  } catch (err) {
+    toast.error(err?.message || "Failed to update property");
+  }
+}, [featureProperty, filteredProperties, toast]);
 
   const handleDelete = useCallback((id: string | number) => {
     setModal({
@@ -836,35 +867,37 @@ export default function EstateEliteAdmin() {
     setDrawer(prop);
   }, []);
 
-  // Filter properties for table
-  const filterMap = { moderation: "all", pending: "PENDING", approved: "APPROVED", rejected: "REJECTED", featured: "featured" };
-  const currentFilter = filterMap[active] || "all";
-  const filteredProperties = properties.filter(p => {
-    const q = search.toLowerCase();
-    const searchable = [p.title, p.location, p.submittedBy, p.type]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    const matchesSearch = !search || searchable.includes(q);
-    if (!matchesSearch) return false;
+const filterMap = { moderation: "all", pending: "PENDING", approved: "APPROVED", rejected: "REJECTED", featured: "featured" };
+const currentFilter = filterMap[active] || "all";
 
-    const location = getPropertyLocationMeta(p);
-    if (locationFilters.state && location.state !== locationFilters.state) return false;
-    if (locationFilters.city && location.city !== locationFilters.city) return false;
-    if (locationFilters.area && location.area !== locationFilters.area) return false;
+// Use filteredProperties (already filtered by city) for the table view
+const tableProperties = filteredProperties.filter(p => {
+  const q = search.toLowerCase();
+  const searchable = [p.title, p.location, p.submittedBy, p.type]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  const matchesSearch = !search || searchable.includes(q);
+  if (!matchesSearch) return false;
 
-    // Apply status filter to filteredProperties (source of truth)
-    if (currentFilter === "featured") {
-      if (!p.featured) return false;
-    } else if (currentFilter !== "all") {
-      if (p.status !== currentFilter) return false;
-    }
+  const location = getPropertyLocationMeta(p);
+  if (locationFilters.state && location.state !== locationFilters.state) return false;
+  if (locationFilters.city && location.city !== locationFilters.city) return false;
+  if (locationFilters.area && location.area !== locationFilters.area) return false;
 
-    return true;
-  });
+  // Apply status filter
+  if (currentFilter === "featured") {
+    if (!p.featured) return false;
+  } else if (currentFilter !== "all") {
+    if (p.status !== currentFilter) return false;
+  }
+
+  return true;
+});
+
 
   const isTablePage = ["moderation", "pending", "approved", "rejected", "featured"].includes(active);
-  const pendingCount = properties.filter(p => p.status === "PENDING").length;
+  const pendingCount = filteredProperties.filter(p => p.status === "PENDING").length;
 
   const sectionTitles = {
     moderation: { title: "All Properties", sub: `${filteredProperties.length} total listings` },
@@ -909,25 +942,25 @@ export default function EstateEliteAdmin() {
             value={locationFilters}
             onChange={setLocationFilters}
             onClear={() => setLocationFilters({ state: "", city: "", area: "" })}
-            resultCount={filteredProperties.length}
+            resultCount={tableProperties.length}
           />
         )}
 
-        {/* CONTENT */}
-        {active === "overview" && <OverviewPage properties={properties} onSetActive={setActive}/>}
+{active === "overview" && <OverviewPage properties={filteredProperties} onSetActive={setActive} />}
 
         {isTablePage && (
-          <PropertyTable
-            properties={filteredProperties}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onFeature={handleFeature}
-            onDelete={handleDelete}
-            onView={handleView}
-            loading={loading}
-            filterStatus={currentFilter}
-            mutationState={mutationState}
-          />
+         // Update the PropertyTable call (around line 730)
+<PropertyTable
+  properties={filteredProperties}
+  onApprove={handleApprove}
+  onReject={handleReject}
+  onFeature={handleFeature}
+  onDelete={handleDelete}
+  onView={handleView}
+  loading={loading}
+  filterStatus={currentFilter}
+  mutationState={mutationState}
+/>
         )}
 
         {active === "users" && <UsersPage users={users}/>} 

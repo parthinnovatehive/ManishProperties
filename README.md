@@ -1,241 +1,255 @@
 # EstateElite
 
-EstateElite is a premium real estate marketplace platform featuring a polished, interactive frontend built with **Next.js 15** and **React 19**, integrated with a lightweight and robust **Python Flask API** backend. The system utilizes a flat-file **JSON-based database** with thread-safe file operations for simple, portable, and secure persistence.
-
-The application includes a fully wired-up public marketplace (home, property lists, and detail page views), an authenticated multi-step property submission flow, and an administrative dashboard for property moderation, statistics tracking, and role-based actions.
+EstateElite is a premium, state-of-the-art real estate marketplace platform that seamlessly connects buyers, sellers, agents, and administrators. Built with a decoupled architecture, it features a polished, interactive frontend leveraging **Next.js 15** and **React 19** alongside a robust **Python Flask API** backend. The system utilizes a lightweight, flat-file **JSON-based database** with thread-safe file operations for simple, portable, and secure persistence without the overhead of external database servers.
 
 ---
 
-## Table of Contents
+## Overview
 
-- [Project Architecture](#project-architecture)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Directory Structure](#directory-structure)
-- [Application Routes](#application-routes)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Frontend Setup](#frontend-setup)
-  - [Backend Setup](#backend-setup)
-- [Environment Variables](#environment-variables)
-- [Data Model & Normalization](#data-model--normalization)
-- [API Reference](#api-reference)
-- [System Synchronization & State](#system-synchronization--state)
+### Platform Purpose
+EstateElite serves as an all-in-one real estate hub designed to streamline property discovery, listings verification, and communication. It replaces fragmented workflows (where property hunters, listing agents, and moderation teams use disconnected tools) with a unified workspace.
 
----
+### Business Problem Solved
+Traditional real estate platforms are often complex to deploy, configure, and maintain due to heavy database and infrastructure dependencies. EstateElite solves this by utilizing a thread-safe, local JSON collection storage model that requires zero external database configurations. It ensures high performance, transactional safety using Python's `threading.RLock`, and rapid load times, making it an excellent blueprint for portable enterprise-level prototypes and lightweight real estate systems.
 
-## Project Architecture
-
-```
-                 +-----------------------+
-                 |    Public & Admin     |
-                 |      Next.js UI       |
-                 +-----------+-----------+
-                             |
-                     apiClient (HTTP/JSON)
-                             |
-                             v
-                 +-----------+-----------+
-                 |   Python Flask API    |
-                 +-----------+-----------+
-                             |
-                   json_service (RLock)
-                             |
-                             v
-                 +-----------+-----------+
-                 |    JSON DB Storage    |
-                 |  (database/*.json)    |
-                 +-----------------------+
-```
-
-EstateElite is designed with a decoupled frontend-backend architecture:
-1. **Frontend Layer**: Built using the Next.js App Router. Communicates with the backend using a centralized, type-safe custom API client (`apiClient`) with built-in token-handling and timed requests.
-2. **Backend API Layer**: Built on Python/Flask. Exposes REST blueprints with token-based security and custom permission middleware.
-3. **Database Layer**: Comprises independent flat-file JSON collections. Read/write concurrency is managed securely on the backend using Python's `threading.RLock`.
+### Business Workflow
+1. **Discovery & Engagement:** Anonymous visitors browse the public marketplace, use dynamic multi-criteria search filters, calculate EMIs, and save listings.
+2. **Actionable Interaction:** Registered Users can schedule visits, submit complaints, message agents directly, and list their own properties.
+3. **Agent Management:** Registered Agents access a role-guarded dashboard to manage leads, respond to inquiries, and schedule property walkthroughs.
+4. **Moderation & Auditing:** Administrators review pending properties, approve or reject them with feedback, and highlight top properties by marking them as "Featured".
+5. **System Governance:** Super Administrators monitor service health, adjust system settings, and manage Administrator credentials.
 
 ---
 
 ## Key Features
 
-### Public Marketplace
-- **Premium Home Page**: Features a hero search, property category listings, featured homes, trending destinations, testimonials, and dynamic animation transitions.
-- **Interactive Listings Page**: Supported by URL search parameters. Features real-time multi-criteria filtering (by location state/city/area, price range, bedrooms, property type) and grid/list view toggling.
-- **Detailed Property Views**: Displays photo galleries, agent contact cards, site visit schedulers, a real EMI calculator widget, and a list of similar properties.
-- **Saved Properties**: Allows users to save properties locally with count badge indicators, persistent in `localStorage`.
-- **Public Post Property**: A step-by-step form (listing details, location selectors, custom amenities checklist, photo upload mockup, and summary verification) that creates a `PENDING` property moderation record on the backend.
-- **Unified Auth Portal**: Auth screen with sign-in, signup, simulated phone OTP registration/login verification, and Google OAuth UI placeholder.
+### User Features
+*   **Premium Marketplace Browsing:** Interactive listing layouts supporting grid/list toggle views, detailed photo galleries, and map markers.
+*   **Dynamic Search & Filtering:** Real-time property sorting and multi-criteria filters based on state, city, area, price range, property type, beds/baths, and amenities.
+*   **Interactive Property Submission:** A multi-step listing workflow (basic details, location mapping, custom checklists, mock image uploads, and validation summary) that stages a `PENDING` property moderation record.
+*   **Saved Properties List:** Keep track of favorite listings on a persistent client-side list synchronized via local storage and database-saved preferences.
+*   **Integrated Scheduling & Messaging:** Seamless site visit scheduling and direct inquiries sent directly to assigned agents.
+*   **OTP & OAuth Auth Portal:** Secure phone number-based simulated OTP login verification and Google OAuth frontend templates alongside standard password access.
 
-### Admin & Moderation Experience
-- **Central Layout Protection**: Automatic route guarding checks authentication state client-side. Invalid or expired tokens trigger redirection to the Admin Login path.
-- **Dashboard Hub**: Displays real-time statistics (total listings, pending reviews, approved, rejected, and featured properties) based directly on backend status metrics.
-- **Property Moderation Portal**:
-  - Filterable listings table.
-  - Approve, reject (with custom message), and delete capabilities.
-  - Optimistic updates: changes reflect immediately in the UI and automatically roll back with an error toast message if the API call fails.
-- **User & Agent Management**: Displays accounts registered under `users.json` and `agents.json` with filtering and status breakdown gauges.
+### Agent Features
+*   **Agent Dashboard:** An analytics hub showing total properties, active appointments, client messages, and total leads.
+*   **Client Lead Management:** Full CRUD operations over sales leads, including contact info, interest tracking, and follow-up status.
+*   **Inquiry Messaging System:** View, read, and manage direct buyer messages tied to listings.
+*   **Appointment Management:** Real-time appointment review and confirmation workflows.
+
+### Admin Features
+*   **Admin Moderation Hub:** A unified, route-guarded administrative interface.
+*   **Property Approval Workflow:** A filterable moderation table to dynamically `APPROVE`, `REJECT` (with a custom moderation message), and permanently delete listing documents.
+*   **Featured Status Toggles:** Instantly promote listings to the homepage's featured carousel directly from the management table.
+*   **Optimistic UI System:** Immediate user feedback on property updates with automatic backend rollback on API error.
+*   **User & Agent Directory:** Dynamic tracking and status gauges of registered buyers, sellers, and agents.
+
+### Super Admin Features
+*   **Super Admin Dashboard:** Full system data statistics covering users, agents, properties, complaints, appointments, and messages.
+*   **Infrastructure Monitoring:** A dedicated health portal reporting backend service indicators, storage layers, and active endpoints.
+*   **Global Settings Control:** System-wide settings dashboard to customize platform metadata and feature flags.
+*   **Admin Management:** Full CRUD operations for creating, updating, and removing moderation administrators.
 
 ---
 
 ## Tech Stack
 
-### Frontend
-- **Framework**: Next.js 15 (App Router) & React 19
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 3 & Vanilla CSS tokens
-- **Icons**: Lucide React
-- **Client State**: Centralized services and custom hooks
-
-### Backend
-- **Framework**: Python 3.10+ & Flask 3
-- **Authentication**: Flask-JWT-Extended
-- **Middleware**: Custom Python decorators for role-checking (`@admin_required`, `@role_required`)
-- **CORS Handling**: Flask-CORS
-
-### Database
-- **Type**: JSON flat-file collections
-- **Thread Safety**: Multithreaded safety via standard `threading.RLock`
-- **Location**: `/database/*.json`
+| Layer | Technology | Details |
+| :--- | :--- | :--- |
+| **Frontend Framework** | **Next.js 15 (App Router)** | Powered by React 19, utilizing Server & Client components for optimal hydration. |
+| **Language** | **TypeScript** | Strict type safety for request-response formatting and component interfaces. |
+| **Styling & Assets** | **Tailwind CSS v3 & Vanilla CSS** | Clean CSS tokens, custom gradients, glassmorphic UI, and responsive styles. |
+| **Client State & Sync** | **React Hooks & Context** | Optimized local state handlers (e.g. `useAdminProperties`) and Context-driven stores. |
+| **Backend Framework** | **Python 3.10+ & Flask 3** | Lightweight REST API using modular Blueprints and custom decorators. |
+| **Authentication** | **Flask-JWT-Extended** | Secure token handling with custom `@role_required` middleware guards. |
+| **Database / Storage** | **JSON Collections** | Thread-safe database emulation utilizing Python's `threading.RLock`. |
+| **CORS Handling** | **Flask-CORS** | Configured to support credentials and specify precise origins for secure access. |
 
 ---
 
-## Directory Structure
+## System Architecture
 
-```text
-.
-├── backend/                       # Python Flask API Application
-│   ├── app.py                     # App factory & route registrations
-│   ├── config.py                  # Configurations & environment loading
-│   ├── middleware/                # Custom auth & permissions decorators
-│   ├── routes/                    # API route blueprints
-│   │   ├── auth.py                # OTP, logins, registrations, token refreshes
-│   │   ├── properties.py          # Public submission & admin property moderation
-│   │   ├── users.py / agents.py   # Admin management of accounts
-│   │   └── messages.py / messages # Core user interactions
-│   ├── services/                  # Business logic services
-│   │   ├── auth_service.py        # Token issue, password hash checks, OTP storage
-│   │   ├── json_service.py        # Thread-safe JSON CRUD operations
-│   │   └── property_service.py    # Sanitization, creation & state updates
-│   ├── utils/                     # Helpers and request body validators
-│   └── requirements.txt           # Python backend dependencies
-│
-├── database/                      # Persistent JSON files (flat-file DB)
-│   ├── properties.json            # Property listing documents
-│   ├── users.json                 # Standard user records
-│   ├── admins.json                # Admin user credentials (seeded rootadmin)
-│   ├── agents.json                # Registered property agents
-│   └── (appointments / messages)  # Messaging & booking collections
-│
-└── frontend/                      # Next.js App Router Frontend
-    ├── app/                       # Application Routes & Pages
-    │   ├── (public)/              # Public routes (Home, Properties, Submit)
-    │   └── admin/                 # Admin routes (Dashboard, Login)
-    ├── components/                # Modular React UI components
-    │   ├── admin/                 # EstateEliteAdmin dashboard components
-    │   ├── forms/                 # SubmitPropertyForm and Auth components
-    │   └── ui/                    # Badges, toasts, and buttons
-    ├── hooks/                     # Custom React Hooks
-    │   └── useAdminProperties.ts  # Properties state, mutations, & optimistic updates
-    ├── lib/                       # Utility and API services
-    │   ├── api/                   # Core apiClient and route configs
-    │   ├── services/              # Property and Authentication client service layers
-    │   └── utils/                 # Singleton Toast Manager
-    ├── types/                     # Centralized TypeScript declarations
-    └── package.json               # Frontend dependencies & npm scripts
+EstateElite features a completely decoupled Frontend/Backend configuration, communicating over secure JSON payloads via standard RESTful interfaces.
+
+### Data Flow & Communication
+1. **UI Layer:** React components mount and fetch or mutate data through custom hooks (`useAdminProperties`, `useAuth`).
+2. **API Client:** Services (`propertyService`, `authService`, `adminService`) abstract the request payload format and rely on `apiClient` to automatically attach JWT authorization headers and enforce request timeouts.
+3. **Backend Middleware:** Python Flask decorators intercept requests to parse JWT claims, verify roles (`USER`, `AGENT`, `ADMIN`, `SUPER_ADMIN`), and check account statuses (e.g., block suspended accounts).
+4. **Service & Persistent Storage:** Verified requests query or update target JSON data models inside the database. A central mutex (`RLock`) intercepts database writes, blocking race conditions during concurrent accesses.
+
+### Architecture Diagrams
+
+#### 1. High-Level Communication flow
+```mermaid
+graph TD
+    A[Next.js Frontend Client] <-->|JSON over HTTP / REST APIs| B[Python Flask API Backend]
+    B <-->|Thread-Safe RLock CRUD| C[(JSON Flat-File DB Storage)]
+```
+
+#### 2. Detailed Platform Architecture
+```mermaid
+graph TB
+    subgraph Frontend [Next.js 15 & React 19 Frontend]
+        UI[Public Views / Dashboard Pages] --> Hooks[Custom React Hooks & Contexts]
+        Hooks --> Services[Frontend Client Service Layer]
+        Services --> APIClient[Centralized apiClient]
+    end
+
+    subgraph Backend [Python Flask API Backend]
+        APIClient -- HTTP / REST API Calls --> Routing[Blueprint Routes]
+        Routing --> Middleware[Role & Permission Middleware]
+        Middleware --> ServicesB[Business Logic Services]
+    end
+
+    subgraph Storage [JSON Flat-File DB Storage Layer]
+        ServicesB --> JSONServices[Thread-safe JSON Service]
+        JSONServices -- Read/Write with RLock --> FileStore[(database/*.json Collections)]
+    end
 ```
 
 ---
 
-## Application Routes
+## Folder Structure
 
-### Frontend Public Routes
-| Route | Description |
-| --- | --- |
-| `/` | Interactive home page |
-| `/properties` | Marketplace listings, search, and dynamic filters |
-| `/properties/[id]` | Detailed view page for specific listing |
-| `/submit-property` | Property poster workflow (saves as `PENDING`) |
-| `/auth` | Public login, signup, and phone OTP verification UI |
+```text
+estateelite/
+├── backend/                       # Python Flask API Application
+│   ├── app.py                     # App factory & blueprint registrations
+│   ├── config.py                  # Server configurations & environment variables loading
+│   ├── wsgi.py                    # WSGI entrypoint for production servers
+│   ├── requirements.txt           # Python backend dependencies
+│   ├── middleware/                # Route security & role decorators
+│   │   └── permissions.py         # Role verification and account status checks
+│   ├── routes/                    # API route blueprints
+│   │   ├── auth.py                # Registration, logins, OTP, and token refresh
+│   │   ├── properties.py          # Property creation, detail, and admin moderation
+│   │   ├── users.py               # User profile settings and saved properties
+│   │   ├── agents.py              # Agent dashboards, leads, and status updates
+│   │   ├── admins.py              # Admin dashboards and Admin account management
+│   │   ├── super_admin.py         # Super-admin settings and health monitoring
+│   │   ├── appointments.py        # Booking schedules for property tours
+│   │   ├── complaints.py          # User feedback and system ticketing
+│   │   ├── messages.py            # Chat messages and property inquiries
+│   │   └── content.py             # Public content (testimonials, cities, categories)
+│   ├── services/                  # Business logic services
+│   │   ├── auth_service.py        # Token signing, hashes, and OTP persistence
+│   │   ├── json_service.py        # Thread-safe JSON CRUD layer with RLock
+│   │   ├── property_service.py    # Submissions normalizer and validation checks
+│   │   ├── user_service.py        # Standard user profiles resolver
+│   │   ├── appointment_service.py # Appointment booking state management
+│   │   └── complaint_service.py   # System ticket persistence service
+│   └── utils/                     # Backend helper methods and schema validators
+│       ├── helpers.py             # Response formatters and ISO timestamp generator
+│       └── validators.py          # Request payload validators and models
+│
+├── database/                      # JSON Collections Database
+│   ├── admins.json                # Moderation administrator accounts
+│   ├── agents.json                # Registered agency accounts
+│   ├── appointments.json          # Site visit schedules
+│   ├── categories.json            # Property categorizations
+│   ├── cities.json                # Geographic selectors
+│   ├── complaints.json            # Support and bug tickets
+│   ├── leads.json                 # Agent sales inquiries
+│   ├── messages.json              # Direct messages between buyers and agents
+│   ├── properties.json            # Property listings data models
+│   ├── settings.json              # Global platform configurations
+│   ├── testimonials.json          # Customer review records
+│   └── users.json                 # Customer and guest credentials
+│
+└── frontend/                      # Next.js App Router Frontend
+    ├── app/                       # Page Router Pages & Layouts
+    │   ├── (public)/              # Public pages (Home, Properties, Submit Flow)
+    │   ├── admin/                 # Admin Login & Moderation Dashboard
+    │   ├── agent/                 # Agent Leads, Tour Bookings, and Messages
+    │   ├── user/                  # User Dashboard, saved listings, and tickets
+    │   ├── super-admin/           # Platform metrics and system settings
+    │   ├── auth/                  # Shared Sign-in & Register workflows
+    │   ├── unauthorized/          # Redirect layout for invalid security roles
+    │   └── globals.css            # Central styles and design variables
+    ├── components/                # Modular React UI components
+    │   ├── admin/                 # EstateEliteAdmin control panels
+    │   ├── agent/                 # Agent dashboard statistics cards
+    │   ├── user/                  # User complaints forms
+    │   ├── super-admin/           # Settings dashboards and security graphs
+    │   ├── forms/                 # Property submitting steps and Login input fields
+    │   ├── layout/                # Global Header, Footer, and Sidebar components
+    │   └── ui/                    # Custom badges, inputs, buttons, and toasts
+    ├── hooks/                     # Custom React Hooks
+    │   ├── useAuth.ts             # Auth state and token storage handlers
+    │   └── useAdminProperties.ts  # Moderation list mutations & optimistic rollbacks
+    ├── lib/                       # Utility functions & API clients
+    │   ├── api/                   # Base apiClient config and endpoints lists
+    │   ├── services/              # Client wrappers for property and user APIs
+    │   ├── api.ts                 # Main unified client API routing object
+    │   └── utils.ts               # Tail-wind style merger utilities
+    ├── types/                     # Central TypeScript declarations
+    └── package.json               # Frontend dependencies & npm execution scripts
+```
 
-### Frontend Admin Routes
-| Route | Description |
-| --- | --- |
-| `/admin/login` | Administrator credentials sign-in portal |
-| `/admin/dashboard` | Interactive moderation dashboard (guarded) |
+---
+
+## API Reference
+
+### Public Endpoints
+*   `GET /api/public/properties` — Retrieve approved properties.
+*   `GET /api/public/properties/<id>` — Retrieve specific approved property details.
+*   `POST /api/public/properties/submit` — Submit a property listing (stages as `PENDING`).
+*   `GET /api/public/content/cities` — Retrieve available geographic locations.
+*   `GET /api/public/content/testimonials` — Retrieve review testimonials.
+
+### Authentication Endpoints
+*   `POST /api/auth/login` — Sign in with credentials (returns access token, refresh token, role, and profile details).
+*   `POST /api/auth/register` — Standard registration for new buyers/sellers.
+*   `POST /api/auth/otp/send` — Triggers a 6-digit phone verification OTP (printed to backend console logs).
+*   `POST /api/auth/otp/verify` — Validates the phone OTP payload.
+*   `POST /api/auth/refresh` — Requests a new access token using a valid JWT refresh token.
+*   `POST /api/auth/logout` — Destroys current session.
+
+### Guarded User Endpoints (Requires `Bearer` token)
+*   `GET /api/users/me` — Retrieve current authenticated profile.
+*   `PATCH /api/users/me/saved-properties` — Toggle a property ID inside the user's `savedProperties` array.
+*   `POST /api/appointments` — Request a site visit tour.
+*   `GET /api/appointments/my` — Retrieve the user's booked site tours.
+
+### Guarded Agent Endpoints (Requires `AGENT` role)
+*   `GET /api/agents/dashboard` — Retrieve agent statistics.
+*   `GET /api/agents/leads` — List buyer/seller lead profiles.
+*   `POST /api/agents/leads` — Create a sales lead.
+*   `PATCH /api/agents/leads/<id>` — Update lead details.
+*   `DELETE /api/agents/leads/<id>` — Delete a lead document.
+
+### Guarded Admin Endpoints (Requires `ADMIN` or `SUPER_ADMIN` role)
+*   `GET /api/admin/properties` — List all properties regardless of status.
+*   `PATCH /api/admin/properties/<id>/approve` — Approve listing (status → `APPROVED`).
+*   `PATCH /api/admin/properties/<id>/reject` — Reject listing (status → `REJECTED`, optional reason support).
+*   `PATCH /api/admin/properties/<id>/feature` — Toggle property featured status.
+*   `DELETE /api/admin/properties/<id>` — Permanently delete listing document.
+
+### Guarded Super Admin Endpoints (Requires `SUPER_ADMIN` role)
+*   `GET /api/super-admin/dashboard` — Fetch complete platform collection statistics.
+*   `GET /api/super-admin/monitoring` — Fetch platform services and database health status.
+*   `GET /api/super-admin/settings` — Read global settings configurations.
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- **Node.js**: `v18.0.0` or higher
-- **Python**: `v3.10.0` or higher
+*   **Node.js**: `v18.0.0` or higher
+*   **Python**: `v3.10.0` or higher
 
-### Frontend Setup
+### Environment Variables
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install npm dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   The frontend will start at: `http://localhost:3000`
-
-4. Build for production:
-   ```bash
-   npm run build
-   ```
-
-5. Type-check TypeScript files:
-   ```bash
-   npm run type-check
-   ```
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a Python virtual environment:
-   ```bash
-   python -m venv venv
-   
-   # Windows:
-   venv\Scripts\activate
-   
-   # macOS/Linux:
-   source venv/bin/activate
-   ```
-3. Install required Python packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the API server:
-   ```bash
-   python app.py
-   ```
-   The API server will run at: `http://localhost:5000`
-
----
-
-## Environment Variables
-
-### Frontend Configuration (`frontend/.env.local`)
-Create `.env.local` inside the `frontend/` folder:
+#### Frontend Setup (`frontend/.env.local`)
+Create a `.env.local` file inside the `frontend/` folder:
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:5000"
 NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-oauth-client-id"
 JWT_SECRET="your-local-development-jwt-key"
 ```
 
-### Backend Configuration (`backend/.env`)
-Create `.env` inside the `backend/` folder:
+#### Backend Setup (`backend/.env`)
+Create a `.env` file inside the `backend/` folder:
 ```env
 SECRET_KEY=change-me-in-production
 JWT_SECRET_KEY=change-me-in-production
@@ -245,96 +259,54 @@ CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
 ---
 
-## Data Model & Normalization
+### Installation & Run
 
-The JSON database contains distinct schemas that are parsed and normalized on both ends.
+#### 1. Start the Flask API Backend
+1.  Navigate to the backend directory:
+    ```bash
+    cd backend
+    ```
+2.  Create and activate a Python virtual environment:
+    ```bash
+    # Windows:
+    python -m venv venv
+    venv\Scripts\activate
 
-### Property Document
-Properties in the database support both legacy properties from mocks and real backend submissions through fields normalization (`property_service.py`):
-```json
-{
-  "id": "prop_89b2512a...",
-  "title": "Luxury Sea-View Apartment",
-  "subtitle": "High-rise tower with panoramic views",
-  "description": "Premium 3BHK flat located in Worli...",
-  "price": "₹2.85 Cr",
-  "priceNum": 28500000.0,
-  "city": "Mumbai",
-  "location": "Worli, South Mumbai",
-  "pincode": "400018",
-  "type": "Apartment",
-  "listingType": "For Sale",
-  "beds": 3,
-  "bathrooms": 3,
-  "baths": 3,
-  "area": 1850,
-  "furnishing": "Fully Furnished",
-  "amenities": ["Swimming Pool", "Gymnasium", "24/7 Security"],
-  "images": ["https://images.unsplash.com/..."],
-  "imgs": ["https://images.unsplash.com/..."],
-  "image": "https://images.unsplash.com/...",
-  "img": "https://images.unsplash.com/...",
-  "builder": "Lodha Group",
-  "rating": 4.8,
-  "reviews": 24,
-  "featured": false,
-  "isNew": true,
-  "status": "APPROVED",
-  "moderationStatus": "APPROVED",
-  "createdAt": "2026-06-05T06:05:16.101742+00:00",
-  "updatedAt": "2026-06-05T06:27:00.262234+00:00"
-}
-```
+    # macOS/Linux:
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  Install backend dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  Run the Flask API Server:
+    ```bash
+    python app.py
+    ```
+    The API server will run at: `http://localhost:5000`
 
-### User & Agent Document
-```json
-{
-  "id": "user_74bfd9...",
-  "username": "client@estateelite.com",
-  "email": "client@estateelite.com",
-  "passwordHash": "pbkdf2:sha256:...",
-  "role": "USER",
-  "name": "Deepak Kumar",
-  "phone": "9876543210",
-  "savedProperties": ["prop_89b2512a..."],
-  "status": "ACTIVE"
-}
-```
+#### 2. Start the Next.js Frontend
+1.  Navigate to the frontend directory:
+    ```bash
+    cd frontend
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+    The frontend client will open at: `http://localhost:3000`
 
----
-
-## API Reference
-
-### Public API Endpoints
-- `GET /` — Health status check.
-- `GET /api/public/properties` — Fetch all properties marked as `APPROVED`.
-- `GET /api/public/properties/<id>` — Fetch details of a specific approved property.
-- `POST /api/public/properties/submit` — Submit a new property listing (defaults to status `PENDING`).
-- `GET /api/public/content/cities` — Fetch list of available cities.
-- `GET /api/public/content/testimonials` — Get testimonials.
-
-### Authentication Endpoints
-- `POST /api/auth/login` — Sign in with email & password. Expects user role verification.
-- `POST /api/auth/register` — Standard registration route.
-- `POST /api/auth/otp/send` — Triggers a 6-digit verification code to the phone (printed to console logs).
-- `POST /api/auth/otp/verify` — Validates the phone OTP.
-- `POST /api/auth/refresh` — Issue a fresh JWT access token using the refresh token.
-- `POST /api/auth/logout` — Invalidates/logs out the active session.
-
-### Protected Admin & Moderation Endpoints (Requires `Bearer` token)
-- `GET /api/admin/properties` — Get all properties (pending, approved, rejected).
-- `POST /api/admin/properties/create` — Create a property as an admin action.
-- `PATCH /api/admin/properties/<id>/approve` — Change moderation status of property to `APPROVED`.
-- `PATCH /api/admin/properties/<id>/reject` — Change moderation status of property to `REJECTED`.
-- `PATCH /api/admin/properties/<id>/feature` — Set featured boolean parameter.
-- `DELETE /api/admin/properties/<id>` — Delete a property document permanently.
-
----
-
-## System Synchronization & State
-
-EstateElite implements high-reliability data synchronization patterns in the front-end to ensure structural consistency:
-1. **Service Abstraction**: `auth-service`, `property-service`, and `admin-service` separate component view structures from raw apiClient request calls.
-2. **Central Hooks**: The `useAdminProperties` hook acts as the dashboard's property store, offering global actions (`approveProperty`, `rejectProperty`, `featureProperty`, `deleteProperty`).
-3. **Optimistic Updates & Rollbacks**: Actions like property deletion, status switches, or featured updates run optimistically. The UI updates instantly. If the network drops or backend returns an error code, the hook automatically reverts to the previous snapshot state and notifies the user via toast.
-4. **Toast Manager**: A singleton notification service triggers success, info, warning, and error toasts with dismiss indicators.
+#### 3. Build & Verify
+*   **Type-check TypeScript components:**
+    ```bash
+    npm run type-check
+    ```
+*   **Compile frontend production build:**
+    ```bash
+    npm run build
+    ```

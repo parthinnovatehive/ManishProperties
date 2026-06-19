@@ -8,7 +8,9 @@
     "role": "USER",
     "savedProperties": [
       "1"
-    ]
+    ],
+    "status": "suspended",
+    "updatedAt": "2026-06-12T18:14:42.552430+00:00"
   },
   {
     "id": "user_234bea7a65a545b7b409ac8a2b1b4b48",
@@ -18,7 +20,9 @@
     "role": "USER",
     "name": "Audit User",
     "phone": "+919999990001",
-    "savedProperties": []
+    "savedProperties": [],
+    "status": "active",
+    "updatedAt": "2026-06-13T08:04:44.574067+00:00"
   },
   {
     "id": "user_113d26695a264878a2d52a573f954f17",
@@ -101,5 +105,32 @@
       "1"
     ],
     "updatedAt": "2026-06-06T08:57:52.071982+00:00"
+  },
+  {
+    "id": "user_71670e4f29e94438800bedfa7131569e",
+    "username": "testuser@gmail.com",
+    "email": "testuser@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$KUj4Fvzm50fmpOR6$34f959b2c2ba1ee6f639cb9b8c43def9a66b47c605cd75568695146b051db458c61aa9934fe924dd7b6194204e4f2427bcf075562580ce464adbaf576f4306e4",
+    "role": "USER",
+    "name": "test",
+    "phone": "test",
+    "savedProperties": [
+      "1"
+    ],
+    "updatedAt": "2026-06-19T03:27:58.830378+00:00",
+    "agentRatings": {
+      "apt_1781760335679": {
+        "agentEmail": "testagent@gmail.com",
+        "agentName": "test",
+        "rating": 2,
+        "timestamp": "2026-06-18T07:16:10.954Z"
+      },
+      "apt1": {
+        "agentName": "test",
+        "agentEmail": "testagent@gmail.com",
+        "rating": 4,
+        "timestamp": "2026-06-18T07:18:56.479Z"
+      }
+    }
   }
 ]

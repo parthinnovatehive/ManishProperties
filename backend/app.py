@@ -14,7 +14,9 @@ from routes.properties import properties_bp
 from routes.super_admin import super_admin_bp
 from routes.users import users_bp
 from utils.helpers import error_response
-
+from routes.cities import cities_bp
+from routes.subareas import subareas_bp
+from routes.notifications import notifications_bp
 
 jwt = JWTManager()
 
@@ -23,13 +25,16 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Configure CORS properly - this is the only CORS configuration needed
     CORS(
         app,
-        origins=app.config["CORS_ORIGINS"],
+        origins=["http://localhost:3000", "http://127.0.0.1:3000"],
         supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization"],
-        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With"],
+        expose_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     )
+    
     jwt.init_app(app)
 
     @app.get("/")
@@ -56,6 +61,9 @@ def register_blueprints(app):
     app.register_blueprint(complaints_bp, url_prefix="/api/complaints")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(content_bp, url_prefix="/api/content")
+    app.register_blueprint(cities_bp, url_prefix="/api/cities")
+    app.register_blueprint(subareas_bp, url_prefix="/api/subareas")
+    app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
 
 
 def register_error_handlers(app):

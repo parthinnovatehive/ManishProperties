@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Building2, ChevronRight, Heart, LogOut, Menu, Plus, User, X } from "lucide-react";
@@ -10,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { getAdminData, clearAllAuthData, type AdminData } from "@/lib/utils/token";
 
 const links = [
-  { label: "Buy", href: "/properties" },
+  { label: "Buy", href: "/properties?status=For%20Sale" },
   { label: "Rent", href: "/properties?status=For%20Rent" },
-  { label: "New Projects", href: "/properties" },
+  // { label: "New Projects", href: "/properties?new=true" },
   { label: "Commercial", href: "/properties?type=Commercial" },
+  { label: "Browse all", href: "/properties" },
 ];
 
 function getRoleBadgeColor(role: string): string {
@@ -73,9 +75,14 @@ export function Navbar() {
 
   const handleSignOut = () => {
     clearAllAuthData();
+
+    window.dispatchEvent(
+      new Event("estate-auth-changed")
+    );
+
     setAdmin(null);
-    router.push("/");
-    router.refresh();
+
+    router.replace("/auth/login");
   };
 
   return (
@@ -88,16 +95,16 @@ export function Navbar() {
       )}
     >
       <div className={cn("container-wide flex items-center justify-between transition-[height] duration-300", scrolled ? "h-16" : "h-[68px]")}>
-        <Link href="/" className="flex min-w-0 items-center gap-2.5 rounded-xl py-1.5 pr-2">
-          <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-[14px] bg-estate-navy text-white shadow-[0_10px_24px_rgba(22,74,52,0.20)]">
-            <Building2 size={20} aria-hidden="true" />
-          </span>
-          <span className="min-w-0">
-            <span className="block font-serif text-xl font-bold leading-none text-estate-navy">EstateElite</span>
-            <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.06em] text-estate-blue">
-              Premium Real Estate
-            </span>
-          </span>
+        {/* Logo Section */}
+        <Link href="/" className="flex min-w-0 items-center rounded-xl py-1.5">
+          <Image
+            src="/logo.png"
+            alt="Manish Properties Logo"
+            width={220}
+            height={55}
+            className="object-contain"
+            priority
+          />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -114,7 +121,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2.5">
           <Link
-            href="/properties"
+            href="/user/saved-properties"
             aria-label="Saved properties"
             className="relative hidden h-10 w-10 items-center justify-center rounded-[10px] border-[1.5px] border-estate-border bg-white text-estate-text-sec shadow-sm transition hover:-translate-y-px hover:border-estate-red/30 hover:text-estate-red hover:shadow-estate sm:flex"
           >
@@ -145,11 +152,22 @@ export function Navbar() {
                   </span>
                 </div>
               </div>
-              {(admin.role === "ADMIN" || admin.role === "SUPER_ADMIN") && (
-                <Button href="/admin/dashboard" variant="outline" size="sm" className="text-xs">
-                  Dashboard
-                </Button>
-              )}
+              <Button
+                href={
+                  admin.role === "SUPER_ADMIN"
+                    ? "/super-admin/dashboard"
+                    : admin.role === "ADMIN"
+                      ? "/admin/dashboard"
+                      : admin.role === "AGENT"
+                        ? "/agent/dashboard"
+                        : "/user/dashboard"
+                }
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                Dashboard
+              </Button>
               <button
                 onClick={handleSignOut}
                 className="flex h-9 w-9 items-center justify-center rounded-[10px] border-[1.5px] border-estate-border bg-white text-estate-text-sec shadow-sm transition hover:-translate-y-px hover:border-estate-red/30 hover:text-estate-red hover:shadow-estate"
@@ -221,11 +239,23 @@ export function Navbar() {
                     </span>
                   </div>
                 </div>
-                {(admin.role === "ADMIN" || admin.role === "SUPER_ADMIN") && (
-                  <Button href="/admin/dashboard" variant="outline" size="sm" fullWidth onClick={() => setMobileOpen(false)}>
-                    Admin Dashboard
-                  </Button>
-                )}
+                <Button
+                  href={
+                    admin.role === "SUPER_ADMIN"
+                      ? "/super-admin/dashboard"
+                      : admin.role === "ADMIN"
+                        ? "/admin/dashboard"
+                        : admin.role === "AGENT"
+                          ? "/agent/dashboard"
+                          : "/"
+                  }
+                  variant="outline"
+                  size="sm"
+                  fullWidth
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Dashboard
+                </Button>
                 <Button
                   variant="danger"
                   size="sm"

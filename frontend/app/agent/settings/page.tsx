@@ -81,7 +81,7 @@ export default function AgentSettingsPage() {
               </span>
               <input
                 type="text"
-                defaultValue="EstateElite Mumbai Core"
+                defaultValue="Manish Properties Mumbai Core"
                 className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
               />
             </label>

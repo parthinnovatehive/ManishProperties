@@ -4,7 +4,12 @@
  */
 
 import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from "./config";
-import { getRefreshToken, getToken, setToken, clearAllAuthData } from "@/lib/utils/token";
+import {
+  getRefreshToken,
+  getToken,
+  setToken,
+  clearAllAuthData,
+} from "@/lib/utils/token";
 
 export interface ApiError {
   status: number;
@@ -36,7 +41,10 @@ export class ApiClient {
   /**
    * Build full URL with query parameters
    */
-  private buildUrl(endpoint: string, params?: Record<string, string | number | boolean>): string {
+  private buildUrl(
+    endpoint: string,
+    params?: Record<string, string | number | boolean>,
+  ): string {
     if (!this.baseUrl) {
       throw new Error("NEXT_PUBLIC_API_URL is not configured");
     }
@@ -63,7 +71,7 @@ export class ApiClient {
               ...acc,
               [key]: String(value),
             }),
-            {}
+            {},
           )
         : {}),
     };
@@ -108,7 +116,7 @@ export class ApiClient {
   private async requestWithTimeout(
     url: string,
     init: RequestInit,
-    timeout: number
+    timeout: number,
   ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -131,13 +139,16 @@ export class ApiClient {
     if (!refreshToken || !this.baseUrl) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}${API_ENDPOINTS.AUTH.REFRESH}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${refreshToken}`,
+      const response = await fetch(
+        `${this.baseUrl}${API_ENDPOINTS.AUTH.REFRESH}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${refreshToken}`,
+          },
         },
-      });
+      );
       if (!response.ok) return false;
       const data = (await response.json()) as { token?: string };
       if (!data.token) return false;
@@ -151,7 +162,7 @@ export class ApiClient {
   async request<T = unknown>(
     endpoint: string,
     config?: RequestConfig,
-    retry = true
+    retry = true,
   ): Promise<T> {
     const url = this.buildUrl(endpoint, config?.params);
     const timeout = config?.timeout ?? REQUEST_TIMEOUT;
@@ -163,11 +174,15 @@ export class ApiClient {
           ...config,
           headers: this.buildHeaders(config),
         },
-        timeout
+        timeout,
       );
 
       if (!response.ok) {
-        if (response.status === 401 && retry && await this.refreshAccessToken()) {
+        if (
+          response.status === 401 &&
+          retry &&
+          (await this.refreshAccessToken())
+        ) {
           return this.request<T>(endpoint, config, false);
         }
         if (response.status === 401) {
@@ -176,7 +191,8 @@ export class ApiClient {
         const error = await this.handleError(response);
         if (
           response.status === 403 &&
-          error.message === "Your account has been suspended. Please contact support."
+          error.message ===
+            "Your account has been suspended. Please contact support."
         ) {
           clearAllAuthData();
           if (typeof window !== "undefined") {
@@ -220,10 +236,7 @@ export class ApiClient {
   /**
    * GET request
    */
-  async get<T = unknown>(
-    endpoint: string,
-    config?: RequestConfig
-  ): Promise<T> {
+  async get<T = unknown>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: "GET",
@@ -236,7 +249,7 @@ export class ApiClient {
   async post<T = unknown>(
     endpoint: string,
     body?: unknown,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
@@ -251,7 +264,7 @@ export class ApiClient {
   async patch<T = unknown>(
     endpoint: string,
     body?: unknown,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
@@ -265,7 +278,7 @@ export class ApiClient {
    */
   async delete<T = unknown>(
     endpoint: string,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,

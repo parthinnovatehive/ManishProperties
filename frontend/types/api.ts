@@ -24,6 +24,8 @@ export interface AdminData {
   role: string;
   name?: string;
   phone?: string;
+  city_id?: string;
+  sub_area_ids?: string[]; // Added array of subarea IDs
 }
 
 export interface LoginResponse extends ApiResponse<never> {
@@ -36,6 +38,7 @@ export interface LoginResponse extends ApiResponse<never> {
   user?: AdminData;
   message?: string;
 }
+
 
 export interface LogoutResponse extends ApiResponse<never> {
   success: boolean;

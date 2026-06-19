@@ -13,15 +13,66 @@ export default function AgentDashboardPage() {
   const [agentLeads, setAgentLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentAgentId, setCurrentAgentId] = useState<string | null>(null);
+  const formatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return "Recently";
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Recently";
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleDateString("en-IN", { month: "short" });
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day} ${month} ${year}`;
+  } catch {
+    return "Recently";
+  }
+};
 
   const loadDashboard = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await estateApi.agents.dashboard<any>();
-      setAgentProperties(data.properties || []);
-      setAgentAppointments(data.appointments || []);
-      setAgentLeads(data.leads || []);
+      // Get current agent from localStorage
+      let storedUser = localStorage.getItem("userData");
+      let agentId = null;
+
+      if (!storedUser) {
+        storedUser = localStorage.getItem("adminData");
+      }
+
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        agentId = userData.id;
+        setCurrentAgentId(agentId);
+      }
+
+      if (!agentId) {
+        setAgentProperties([]);
+        setAgentAppointments([]);
+        setAgentLeads([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch all properties and filter by agent
+      const allProperties = await estateApi.adminProperties.list();
+      const myProperties = allProperties.filter(
+        (p) => p.lister_id === agentId && p.lister_type === "agent"
+      );
+      setAgentProperties(myProperties);
+
+      // Fetch all appointments and filter by agent
+      const allAppointments = await estateApi.appointments.list<any>();
+      const myAppointments = allAppointments.filter(
+        (a) => a.agentId === agentId || a.agent_id === agentId
+      );
+      setAgentAppointments(myAppointments);
+
+      // Fetch all leads and filter by agent
+      const allLeads = await estateApi.agents.leads<any>();
+      const myLeads = allLeads.filter((l) => l.agentId === agentId || l.agent_id === agentId);
+      setAgentLeads(myLeads);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load agent dashboard data.");
     } finally {
@@ -47,6 +98,7 @@ export default function AgentDashboardPage() {
   const leadTotal = Math.max(agentLeads.length, 1);
   const closedLeads = agentLeads.filter((lead) => ["Closed", "Converted", "Won"].includes(String(lead.status))).length;
   const conversionRate = agentLeads.length ? Math.round((closedLeads / agentLeads.length) * 1000) / 10 : 0;
+  
   const monthBuckets = Array.from({ length: 6 }, (_, index) => {
     const date = new Date();
     date.setMonth(date.getMonth() - (5 - index));
@@ -65,28 +117,28 @@ export default function AgentDashboardPage() {
   });
 
   const recentActivities: ActivityItem[] = [
-    ...agentLeads.map((lead) => ({
-      id: `lead-${lead.id}`,
-      type: "lead" as const,
-      title: "Lead updated",
-      description: `${lead.clientName || lead.userName || "A lead"} is marked ${lead.status || "New"}`,
-      time: lead.updatedAt || lead.createdAt || "Recently",
-    })),
-    ...agentAppointments.map((appointment) => ({
-      id: `appointment-${appointment.id}`,
-      type: "appointment" as const,
-      title: "Appointment scheduled",
-      description: `${appointment.clientName || appointment.userName || "Client"} for ${appointment.propertyName || "a property"}`,
-      time: appointment.date || appointment.createdAt || "Recently",
-    })),
-    ...agentProperties.map((property) => ({
-      id: `property-${property.id}`,
-      type: "update" as const,
-      title: "Listing status",
-      description: `${property.title || "Property"} is ${property.status || "pending"}`,
-      time: property.updatedAt || property.createdAt || "Recently",
-    })),
-  ].slice(0, 4);
+  ...agentLeads.map((lead) => ({
+    id: `lead-${lead.id}`,
+    type: "lead" as const,
+    title: "Lead updated",
+    description: `${lead.clientName || lead.userName || "A lead"} is marked ${lead.status || "New"}`,
+    time: formatDate(lead.updatedAt || lead.createdAt),
+  })),
+  ...agentAppointments.map((appointment) => ({
+    id: `appointment-${appointment.id}`,
+    type: "appointment" as const,
+    title: "Appointment scheduled",
+    description: `${appointment.clientName || appointment.userName || "Client"} for ${appointment.propertyName || "a property"}`,
+    time: formatDate(appointment.date || appointment.createdAt),
+  })),
+  ...agentProperties.map((property) => ({
+    id: `property-${property.id}`,
+    type: "update" as const,
+    title: "Listing status",
+    description: `${property.title || "Property"} is ${property.status || "pending"}`,
+    time: formatDate(property.updatedAt || property.createdAt),
+  })),
+].slice(0, 4);
 
   // Lists previews
   const upcomingAppointments = agentAppointments.filter((a) => a.status !== "Completed").slice(0, 3);
@@ -262,28 +314,32 @@ export default function AgentDashboardPage() {
             </div>
 
             <div className="space-y-3.5">
-              {upcomingAppointments.map((appt) => (
-                <div key={appt.id} className="p-3 bg-estate-surface/40 hover:bg-estate-surface/80 border border-estate-border/30 rounded-xl transition flex gap-3 items-start">
-                  <div className="p-2 bg-white rounded-lg border border-estate-border shadow-sm flex flex-col items-center justify-center flex-shrink-0 min-w-[50px]">
-                    <span className="text-[9px] font-bold text-estate-muted uppercase tracking-wider">
-                      {appt.date.split("-")[2]}
-                    </span>
-                    <span className="text-xs font-extrabold text-estate-navy">
-                      {new Date(appt.date).toLocaleDateString("en-IN", { month: "short" })}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-bold text-estate-text truncate">{appt.clientName || appt.userName}</h4>
-                    <p className="text-[10px] text-estate-text-sec truncate mt-0.5">{appt.propertyName}</p>
-                    <div className="flex items-center gap-1.5 mt-1.5 text-[9px] text-estate-muted font-bold">
-                      <Clock className="w-3 h-3 text-estate-navy-light" />
-                      <span>{appt.time}</span>
-                      <span>•</span>
-                      <span className="text-estate-navy-mid uppercase">{appt.type}</span>
+              {upcomingAppointments.length > 0 ? (
+                upcomingAppointments.map((appt) => (
+                  <div key={appt.id} className="p-3 bg-estate-surface/40 hover:bg-estate-surface/80 border border-estate-border/30 rounded-xl transition flex gap-3 items-start">
+                    <div className="p-2 bg-white rounded-lg border border-estate-border shadow-sm flex flex-col items-center justify-center flex-shrink-0 min-w-[50px]">
+                      <span className="text-[9px] font-bold text-estate-muted uppercase tracking-wider">
+                        {appt.date ? appt.date.split("-")[2] : appt.date?.split(" ")[0]}
+                      </span>
+                      <span className="text-xs font-extrabold text-estate-navy">
+                        {appt.date ? (appt.date.includes("-") ? new Date(appt.date).toLocaleDateString("en-IN", { month: "short" }) : appt.date.split(" ")[1]) : "N/A"}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs font-bold text-estate-text truncate">{appt.clientName || appt.userName}</h4>
+                      <p className="text-[10px] text-estate-text-sec truncate mt-0.5">{appt.propertyName}</p>
+                      <div className="flex items-center gap-1.5 mt-1.5 text-[9px] text-estate-muted font-bold">
+                        <Clock className="w-3 h-3 text-estate-navy-light" />
+                        <span>{appt.time}</span>
+                        <span>•</span>
+                        <span className="text-estate-navy-mid uppercase">{appt.type}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-xs text-estate-muted text-center py-6">No upcoming appointments</p>
+              )}
             </div>
           </div>
         </div>
@@ -299,20 +355,24 @@ export default function AgentDashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {recentLeadsList.map((lead) => (
-                <div key={lead.id} className="p-3 bg-estate-surface/40 hover:bg-estate-surface/80 border border-estate-border/30 rounded-xl transition flex justify-between items-center gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-bold text-estate-text truncate">{lead.clientName || lead.userName || "New Lead"}</h4>
-                    <p className="text-[10px] text-estate-text-sec truncate mt-0.5">{lead.propertyTitle || lead.propertyName || "Property inquiry"}</p>
-                    <p className="text-[10px] text-estate-navy font-bold mt-1">Budget: {lead.budget || "Not specified"}</p>
+              {recentLeadsList.length > 0 ? (
+                recentLeadsList.map((lead) => (
+                  <div key={lead.id} className="p-3 bg-estate-surface/40 hover:bg-estate-surface/80 border border-estate-border/30 rounded-xl transition flex justify-between items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs font-bold text-estate-text truncate">{lead.clientName || lead.userName || "New Lead"}</h4>
+                      <p className="text-[10px] text-estate-text-sec truncate mt-0.5">{lead.propertyTitle || lead.propertyName || "Property inquiry"}</p>
+                      <p className="text-[10px] text-estate-navy font-bold mt-1">Budget: {lead.budget || "Not specified"}</p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                        {lead.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0">
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                      {lead.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-xs text-estate-muted text-center py-6">No recent inquiries</p>
+              )}
             </div>
           </div>
         </div>

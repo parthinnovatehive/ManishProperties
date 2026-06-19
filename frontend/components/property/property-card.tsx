@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Bath, Bed, Heart, MapPin, Maximize2, ShieldCheck } from "lucide-react";
+import { Bath, Bed, Heart, MapPin, Maximize2, ShieldCheck, Scale, Plus, Check } from "lucide-react";
 import type { Property } from "@/types";
 import { useSavedProperties } from "@/lib/saved-properties-context";
 import { cn } from "@/lib/utils";
-
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { usePropertyComparison } from "@/hooks/usePropertyComparison";
 
 type PropertyCardProps = {
   property: Property;
   compact?: boolean;
+  showComparisonButton?: boolean;
 };
 
 function listingStatus(property: Property) {
@@ -22,38 +23,64 @@ function listingStatus(property: Property) {
   return "For Sale";
 }
 
-export function PropertyCard({ property, compact }: PropertyCardProps) {
+export function PropertyCard({ 
+  property, 
+  compact,
+  showComparisonButton = true 
+}: PropertyCardProps) {
   const { isSaved, toggleSaved } = useSavedProperties();
   const saved = isSaved(property.id);
-      const image =
-      property.img ||
-      property.image ||
-      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75";
+  
+  // ✅ Comparison hook
+  const { toggleProperty, isSelected, isMaxLimitReached, selectedCount, maxLimit } = usePropertyComparison();
+  
+  const image =
+    property.img ||
+    property.image ||
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75";
 
-    const beds = property.beds || 0;
+  const beds = property.beds || 0;
+  const baths = property.baths || property.bathrooms || 0;
+  const verified = property.verified || false;
+  const propertyType = property.type || "Property";
+  const propertyStatus = listingStatus(property);
+  const propertyLocation = property.location || property.city || "India";
+  const propertyPrice = property.price || "Price on Request";
 
-    const baths =
-      property.baths ||
-      property.bathrooms ||
-      0;
+  const isChecked = isSelected(property.id);
+  const isDisabled = !isChecked && isMaxLimitReached;
 
-    const verified =
-      property.verified || false;
+  // Button text and styles
+  const getButtonConfig = () => {
+    if (isChecked) {
+      return {
+        text: "Added ✓",
+        variant: "bg-estate-navy text-white",
+        icon: <Check className="w-3.5 h-3.5" />
+      };
+    }
+    if (isDisabled) {
+      return {
+        text: `Max ${maxLimit}`,
+        variant: "bg-gray-100 text-gray-400 cursor-not-allowed",
+        icon: null
+      };
+    }
+    return {
+      text: "Compare",
+      variant: "border border-estate-navy text-estate-navy hover:bg-estate-navy hover:text-white",
+      icon: <Plus className="w-3.5 h-3.5" />
+    };
+  };
 
-    const propertyType =
-      property.type || "Property";
-
-    const propertyStatus = listingStatus(property);
-
-    const propertyLocation =
-      property.location || property.city || "India";
-
-    const propertyPrice =
-      property.price || "Price on Request";
+  const buttonConfig = getButtonConfig();
 
   return (
-    <Card className="group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg flex flex-col h-full">
-      <div className="relative overflow-hidden bg-estate-navy">
+    <Card className={cn(
+      "group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg flex flex-col h-full relative transition-all duration-300",
+      isChecked && "ring-2 ring-estate-navy ring-offset-2 shadow-estate-lg"
+    )}>
+      <div className="relative overflow-hidden bg-estate-navy rounded-t-[20px]">
         <Link href={`/properties/${property.id}`} aria-label={`View ${property.title}`} className="block">
           <img
             src={image}
@@ -106,9 +133,49 @@ export function PropertyCard({ property, compact }: PropertyCardProps) {
         <div className="absolute bottom-3 left-3 rounded-xl border border-white/10 bg-estate-navy/95 px-3.5 py-2 text-[15px] font-extrabold leading-none text-white shadow-estate backdrop-blur">
           {propertyPrice}
         </div>
+
+        {/* ✅ Compare Button - Bottom Right on Image */}
+        {showComparisonButton && (
+  <div className="absolute bottom-3 right-3">
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isDisabled) {
+          toggleProperty(property.id);
+        }
+      }}
+      disabled={isDisabled && !isChecked}
+      className={cn(
+        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 shadow-lg",
+        // ✅ Always green when not selected, navy when selected
+        isChecked 
+          ? "bg-estate-navy text-white hover:bg-estate-navy-mid" 
+          : "bg-emerald-600 text-white hover:bg-emerald-700",
+        isDisabled && !isChecked ? "cursor-not-allowed opacity-60" : "hover:scale-105"
+      )}
+      title={isChecked ? "Remove from comparison" : isDisabled ? `Maximum ${maxLimit} properties selected` : "Add to compare"}
+    >
+      {isChecked ? (
+        <Check className="w-3.5 h-3.5" />
+      ) : (
+        <Plus className="w-3.5 h-3.5" />
+      )}
+      {isChecked ? "Added" : "Compare"}
+    </button>
+  </div>
+)}
+
+        {/* Selected indicator - subtle badge */}
+        {isChecked && (
+          <div className="absolute top-16 right-3 rounded-full bg-estate-navy/90 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg flex items-center gap-1 backdrop-blur-sm">
+            <Scale className="w-3 h-3" />
+            Selected
+          </div>
+        )}
       </div>
 
-      <Link href={`/properties/${property.id}`} className={cn("block", compact ? "p-5" : "p-6")}>
+      <Link href={`/properties/${property.id}`} className={cn("block flex-1", compact ? "p-5" : "p-6")}>
         <div className="mb-2 flex items-start justify-between gap-2.5">
           <h3 className={cn("flex-1 font-bold leading-snug text-estate-text transition group-hover:text-estate-navy", compact ? "text-[15px]" : "text-base")}>
             {property.title}
@@ -143,37 +210,27 @@ export function PropertyCard({ property, compact }: PropertyCardProps) {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
-
           {property.listingType && (
             <span className="rounded-full bg-estate-blue-pale px-3 py-1 text-xs font-semibold text-estate-blue">
               {property.listingType}
             </span>
           )}
-
           {property.furnishing && (
             <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
               {property.furnishing}
             </span>
           )}
-
         </div>
 
         {property.amenities?.length > 0 && (
-
           <div className="mt-3 flex flex-wrap gap-2">
-
             {property.amenities.slice(0, 3).map((item: string) => (
-
               <span key={item} className="rounded-full border border-estate-border bg-estate-bg px-2.5 py-1 text-xs text-estate-text-sec">
                 {item}
               </span>
-
             ))}
-
           </div>
-
         )}
-    
       </Link>
     </Card>
   );

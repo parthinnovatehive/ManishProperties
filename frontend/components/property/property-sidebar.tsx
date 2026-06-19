@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, Phone, ShieldCheck, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { AlertTriangle, BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, Phone, ShieldCheck, TrendingUp, X } from "lucide-react";
 import { getAdminData } from "@/lib/utils/token";
 import { estateApi } from "@/lib/api";
 
@@ -10,9 +11,48 @@ type PropertySidebarProps = {
   title: string;
   price: string;
   area?: number | null;
+  city?: string;
+  cityId?: string;
 };
 
 const visitDates = ["Today", "Tomorrow", "This Sat", "This Sun"];
+
+function resolveDateLabel(label: string): string {
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  let target: Date;
+
+  switch (label) {
+    case "Today":
+      target = today;
+      break;
+    case "Tomorrow":
+      target = new Date(today);
+      target.setUTCDate(target.getUTCDate() + 1);
+      break;
+    case "This Sat": {
+      target = new Date(today);
+      const satDelta = (6 - target.getUTCDay() + 7) % 7;
+      if (satDelta === 0) target.setUTCDate(target.getUTCDate() + 7);
+      else target.setUTCDate(target.getUTCDate() + satDelta);
+      break;
+    }
+    case "This Sun": {
+      target = new Date(today);
+      const sunDelta = (0 - target.getUTCDay() + 7) % 7;
+      if (sunDelta === 0) target.setUTCDate(target.getUTCDate() + 7);
+      else target.setUTCDate(target.getUTCDate() + sunDelta);
+      break;
+    }
+    default:
+      return label;
+  }
+
+  const y = target.getUTCFullYear();
+  const m = String(target.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(target.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
 function pricePerSqft(price: string, area?: number | null) {
   if (!area) return null;
@@ -27,19 +67,57 @@ function pricePerSqft(price: string, area?: number | null) {
   });
 }
 
-export function PropertySidebar({ propertyId, title, price, area }: PropertySidebarProps) {
+export function PropertySidebar({ propertyId, title, price, area, city, cityId }: PropertySidebarProps) {
   const [messageSent, setMessageSent] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState("Today");
   const [selectedTime, setSelectedTime] = useState("10:00 AM");
   const [selectedType, setSelectedType] = useState("In-Person");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [adminPhone, setAdminPhone] = useState("");
+  const [adminName, setAdminName] = useState("");
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [complaintSubject, setComplaintSubject] = useState("");
+  const [complaintDesc, setComplaintDesc] = useState("");
+  const [complaintStatus, setComplaintStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const sqftPrice = pricePerSqft(price, area);
   const shortTitle = title ? `${title.slice(0, 42)}${title.length > 42 ? "..." : ""}` : "this property";
 
+  useEffect(() => {
+    if (!cityId) return;
+    (async () => {
+      try {
+        const cities = await estateApi.content.cities<any>();
+        const match = cities.find((c: any) => c.id === cityId || c.name === city);
+        if (match?.admin_phone) {
+          setAdminPhone(match.admin_phone.replace(/\s+/g, ""));
+          setAdminName(match.admin_name || "City Admin");
+        }
+      } catch {
+        // silently fail
+      }
+    })();
+  }, [cityId, city]);
+
   const handleMessage = () => {
+    if (!adminPhone) {
+      alert("City admin contact not available.");
+      return;
+    }
+    const msg = encodeURIComponent(
+      `Hi, I'm interested in "${title}" listed at ${price}. Located in ${city}. Please share more details.`
+    );
+    window.open(`https://wa.me/${adminPhone}?text=${msg}`, "_blank");
     setMessageSent(true);
     window.setTimeout(() => setMessageSent(false), 3000);
+  };
+
+  const handleCall = () => {
+    if (!adminPhone) {
+      alert("City admin contact not available.");
+      return;
+    }
+    window.open(`tel:${adminPhone}`, "_blank");
   };
 
   const handleBookVisit = async () => {
@@ -58,7 +136,7 @@ export function PropertySidebar({ propertyId, title, price, area }: PropertySide
         userName: account.name || account.username || "User",
         agentName: "EstateElite Luxe",
         agentEmail: "luxe@estateelite.com",
-        date: selectedVisit,
+        date: resolveDateLabel(selectedVisit),
         time: selectedTime,
         type: selectedType,
         status: "Pending",
@@ -68,6 +146,46 @@ export function PropertySidebar({ propertyId, title, price, area }: PropertySide
       console.error("Failed to book site visit:", err);
       setBookingStatus("error");
       window.setTimeout(() => setBookingStatus("idle"), 4000);
+    }
+  };
+
+  const handleComplaintSubmit = async () => {
+    if (!complaintSubject.trim() || !complaintDesc.trim()) {
+      alert("Please fill in both subject and description.");
+      return;
+    }
+    const account = getAdminData();
+    if (!account) {
+      alert("Please log in to submit a complaint.");
+      window.location.href = `/auth/login?redirect=/properties/${propertyId}`;
+      return;
+    }
+
+    setComplaintStatus("loading");
+    try {
+      await estateApi.complaints.create({
+        id: `comp_${Date.now()}`,
+        propertyId,
+        userId: account.id,
+        subject: complaintSubject,
+        description: complaintDesc,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        resolvedAt: null,
+        resolutionNotes: null,
+        actionTaken: null,
+      });
+      setComplaintStatus("success");
+      setComplaintSubject("");
+      setComplaintDesc("");
+      setTimeout(() => {
+        setShowComplaintModal(false);
+        setComplaintStatus("idle");
+      }, 2000);
+    } catch {
+      setComplaintStatus("error");
+      setTimeout(() => setComplaintStatus("idle"), 4000);
     }
   };
 
@@ -84,7 +202,7 @@ export function PropertySidebar({ propertyId, title, price, area }: PropertySide
                 <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-estate-navy bg-estate-blue-light" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-[15px] leading-tight">EstateElite Luxe</h3>
+                <h3 className="text-white font-semibold text-[15px] leading-tight">Manish Properties Luxe</h3>
                 <p className="text-white/55 text-xs mt-1 font-light">Senior Property Consultant</p>
                 <div className="flex items-center gap-1.5 mt-2.5 bg-white/10 border border-white/15 rounded-full px-2.5 py-1 w-fit">
                   <BadgeCheck className="w-3 h-3 text-[#BFE6BF]" />
@@ -131,20 +249,21 @@ export function PropertySidebar({ propertyId, title, price, area }: PropertySide
             </button>
 
             <div className="grid grid-cols-2 gap-2.5">
-              <button className="flex items-center justify-center gap-2 rounded-xl border border-estate-border bg-white px-4 py-3 text-sm font-medium text-estate-text transition-all duration-200 hover:border-estate-border-med hover:bg-estate-bg">
+              <button
+                onClick={handleCall}
+                className="flex items-center justify-center gap-2 rounded-xl border border-estate-border bg-white px-4 py-3 text-sm font-medium text-estate-text transition-all duration-200 hover:border-estate-border-med hover:bg-estate-bg"
+              >
                 <Phone className="w-4 h-4" />
                 Call
               </button>
-              <button className="py-3 px-4 rounded-xl border border-emerald-200 hover:border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
-                <Phone className="w-4 h-4" />
-                WhatsApp
+              <button
+                onClick={() => setShowComplaintModal(true)}
+                className="py-3 px-4 rounded-xl border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Complain
               </button>
             </div>
-
-            <button className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-estate-border bg-white px-6 py-3 text-sm font-medium text-estate-text transition-all duration-200 hover:border-estate-navy hover:bg-estate-bg hover:text-estate-navy">
-              <Calendar className="w-4 h-4" />
-              Schedule Private Tour
-            </button>
 
             <div className="space-y-2.5 border-t border-estate-border pt-4">
               <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
@@ -266,6 +385,67 @@ export function PropertySidebar({ propertyId, title, price, area }: PropertySide
           </div>
         </div>
       </div>
+
+      {showComplaintModal && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Report a Complaint</h3>
+              <button
+                onClick={() => { setShowComplaintModal(false); setComplaintStatus("idle"); }}
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Subject</label>
+                <input
+                  type="text"
+                  value={complaintSubject}
+                  onChange={(e) => setComplaintSubject(e.target.value)}
+                  placeholder="e.g. Incorrect information"
+                  className="w-full rounded-xl border border-estate-border px-4 py-2.5 text-sm outline-none focus:border-estate-navy transition"
+                  disabled={complaintStatus === "loading" || complaintStatus === "success"}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Description</label>
+                <textarea
+                  value={complaintDesc}
+                  onChange={(e) => setComplaintDesc(e.target.value)}
+                  placeholder="Describe your issue in detail..."
+                  rows={4}
+                  className="w-full rounded-xl border border-estate-border px-4 py-2.5 text-sm outline-none focus:border-estate-navy transition resize-none"
+                  disabled={complaintStatus === "loading" || complaintStatus === "success"}
+                />
+              </div>
+              <button
+                onClick={handleComplaintSubmit}
+                disabled={complaintStatus === "loading" || complaintStatus === "success"}
+                className={`w-full py-3 rounded-xl font-semibold text-sm tracking-wide text-white transition-all duration-200 active:scale-[0.98] ${
+                  complaintStatus === "success"
+                    ? "bg-estate-success"
+                    : complaintStatus === "error"
+                    ? "bg-estate-red"
+                    : "bg-estate-navy hover:bg-estate-navy-mid"
+                }`}
+              >
+                {complaintStatus === "loading"
+                  ? "Submitting..."
+                  : complaintStatus === "success"
+                  ? "Complaint Submitted ✓"
+                  : complaintStatus === "error"
+                  ? "Error! Try Again"
+                  : "Submit Complaint"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </aside>
   );
 }

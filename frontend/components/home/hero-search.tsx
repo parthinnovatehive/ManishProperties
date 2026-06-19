@@ -18,8 +18,10 @@ export function HeroSearch() {
     const params = new URLSearchParams();
     const query = queryOverride ?? searchQuery;
 
+    if (searchType === "Buy") params.set("status", "For Sale");
     if (searchType === "Rent") params.set("status", "For Rent");
     if (searchType === "Commercial") params.set("type", "Commercial");
+    if (searchType === "New Projects") params.set("new", "true");
     if (searchCity) params.set("city", searchCity);
     if (query) params.set("q", query);
 
