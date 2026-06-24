@@ -7,8 +7,11 @@ import { Building2, Lock, Mail, Phone, User, MapPin, Building, X, Plus } from "l
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { getAdminData } from "@/lib/utils/token";
 import { estateApi } from "@/lib/api";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { GoogleRegistrationForm } from "@/components/auth/GoogleRegistrationForm";
 
 type AuthMode = "login" | "register";
 type PublicRole = "USER" | "AGENT";
@@ -59,11 +62,36 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const [filteredSubareas, setFilteredSubareas] = useState<Subarea[]>([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
 
+  const [googleStep, setGoogleStep] = useState<"idle" | "form">("idle");
+  const {
+    googleLogin: triggerGoogleLogin,
+    googleRegister: submitGoogleRegistration,
+    loading: googleLoading,
+    error: googleError,
+    googleUser: googleUserInfo,
+    requiresRegistration,
+    clearError: clearGoogleError,
+    reset: resetGoogle,
+  } = useGoogleAuth();
+
   const isLogin = mode === "login";
   const title = isLogin ? "Sign in to Manish Properties" : "Create your Manish Properties account";
   const subtitle = isLogin
     ? "Use your registered email and password to continue."
     : "Register as a buyer/owner, agent, or admin.";
+
+  // When Google requires registration, show the Google registration form (register mode)
+  // or show an error (login mode - no account exists)
+  useEffect(() => {
+    if (requiresRegistration && googleUserInfo) {
+      if (isLogin) {
+        setLocalError("No account found with this email. Please register first.");
+        resetGoogle();
+      } else {
+        setGoogleStep("form");
+      }
+    }
+  }, [requiresRegistration, googleUserInfo, isLogin, resetGoogle]);
 
   // Fetch cities and subareas on component mount
   useEffect(() => {
@@ -215,217 +243,233 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             </div>
           )}
 
-          <form onSubmit={submit}>
-            {!isLogin && (
-              <>
-                <Input
-                  label="Full Name"
-                  value={form.name}
-                  onChange={(event) => update("name", event.target.value)}
-                  icon={<User size={15} />}
-                  required
-                  disabled={loading}
-                />
+          {!isLogin && googleStep === "form" ? (
+            <GoogleRegistrationForm
+              googleUser={googleUserInfo!}
+              loading={googleLoading}
+              error={googleError}
+              onSubmit={async (name, phone, role, city_id, sub_area_ids) => {
+                await submitGoogleRegistration(name, phone, role, city_id, sub_area_ids);
+              }}
+              onCancel={() => {
+                setGoogleStep("idle");
+                resetGoogle();
+              }}
+            />
+          ) : (
+            <form onSubmit={submit}>
+              {!isLogin && (
+                <>
+                  <Input
+                    label="Full Name"
+                    value={form.name}
+                    onChange={(event) => update("name", event.target.value)}
+                    icon={<User size={15} />}
+                    required
+                    disabled={loading}
+                  />
 
-                <Input
-                  label="Phone Number"
-                  type="tel"
-                  value={form.phone}
-                  onChange={(event) => update("phone", event.target.value)}
-                  icon={<Phone size={15} />}
-                  required
-                  disabled={loading}
-                />
+                  <Input
+                    label="Phone Number"
+                    type="tel"
+                    value={form.phone}
+                    onChange={(event) => update("phone", event.target.value)}
+                    icon={<Phone size={15} />}
+                    required
+                    disabled={loading}
+                  />
 
-                <div className="mb-4">
-                  <span className="mb-2 block text-[13px] font-semibold text-estate-text">Role</span>
-                  <div className="grid grid-cols-3 gap-2 rounded-xl bg-estate-bg p-1">
-                    {[
-                      ["USER", "User"],
-                      ["AGENT", "Agent"],
-                    ].map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => {
-                          setRole(value as PublicRole);
-                          // Reset location fields when switching to USER
-                          if (value === "USER") {
-                            setForm((prev) => ({ ...prev, city_id: "" }));
-                            setSelectedSubareas([]);
-                          }
-                        }}
-                        className={`rounded-[9px] py-2.5 text-sm font-bold transition ${
-                          role === value ? "bg-estate-navy text-white shadow-estate" : "text-estate-muted hover:text-estate-navy"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* City and Subarea dropdowns - only for AGENT role */}
-                {role === "AGENT" && (
-                  <div className="space-y-4 mb-4">
-                    <div>
-                      <label className="mb-1.5 block text-[13px] font-semibold text-estate-text">
-                        City <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-estate-muted" />
-                        <select
-                          value={form.city_id}
-                          onChange={(e) => update("city_id", e.target.value)}
-                          className="w-full rounded-xl border border-estate-border bg-white py-2.5 pl-10 pr-3 text-sm font-medium text-estate-text outline-none transition focus:border-estate-navy focus:ring-2 focus:ring-estate-navy/20 disabled:bg-gray-100"
-                          disabled={loading || loadingLocations}
+                  <div className="mb-4">
+                    <span className="mb-2 block text-[13px] font-semibold text-estate-text">Role</span>
+                    <div className="grid grid-cols-3 gap-2 rounded-xl bg-estate-bg p-1">
+                      {[
+                        ["USER", "User"],
+                        ["AGENT", "Agent"],
+                      ].map(([value, label]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            setRole(value as PublicRole);
+                            if (value === "USER") {
+                              setForm((prev) => ({ ...prev, city_id: "" }));
+                              setSelectedSubareas([]);
+                            }
+                          }}
+                          className={`rounded-[9px] py-2.5 text-sm font-bold transition ${
+                            role === value ? "bg-estate-navy text-white shadow-estate" : "text-estate-muted hover:text-estate-navy"
+                          }`}
                         >
-                          <option value="">Select a city</option>
-                          {cities
-                            .filter((city) => city.status === "active")
-                            .map((city) => (
-                              <option key={city.id} value={city.id}>
-                                {city.name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
+                          {label}
+                        </button>
+                      ))}
                     </div>
+                  </div>
 
-                    <div>
-                      <label className="mb-1.5 block text-[13px] font-semibold text-estate-text">
-                        Subareas <span className="text-red-500">*</span>
-                        <span className="text-xs text-estate-muted font-normal ml-1">(Select multiple)</span>
-                      </label>
-                      
-                      {/* Selected Subareas Tags */}
-                      {selectedSubareas.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {selectedSubareas.map((id) => {
-                            const subarea = subareas.find((s) => s.id === id);
-                            return subarea ? (
-                              <span
-                                key={id}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-estate-navy/10 text-estate-navy rounded-full text-xs font-medium"
-                              >
-                                {subarea.name}
-                                <button
-                                  type="button"
-                                  onClick={() => toggleSubarea(id)}
-                                  className="hover:text-red-500 transition"
-                                >
-                                  <X size={14} />
-                                </button>
-                              </span>
-                            ) : null;
-                          })}
+                  {role === "AGENT" && (
+                    <div className="space-y-4 mb-4">
+                      <div>
+                        <label className="mb-1.5 block text-[13px] font-semibold text-estate-text">
+                          City <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-estate-muted" />
+                          <select
+                            value={form.city_id}
+                            onChange={(e) => update("city_id", e.target.value)}
+                            className="w-full rounded-xl border border-estate-border bg-white py-2.5 pl-10 pr-3 text-sm font-medium text-estate-text outline-none transition focus:border-estate-navy focus:ring-2 focus:ring-estate-navy/20 disabled:bg-gray-100"
+                            disabled={loading || loadingLocations}
+                          >
+                            <option value="">Select a city</option>
+                            {cities
+                              .filter((city) => city.status === "active")
+                              .map((city) => (
+                                <option key={city.id} value={city.id}>{city.name}</option>
+                              ))}
+                          </select>
                         </div>
-                      )}
+                      </div>
 
-                      {/* Subarea Selection Grid */}
-                      <div className="relative">
-                        <Building size={15} className="absolute left-3 top-3 text-estate-muted z-10" />
-                        <div className="w-full rounded-xl border border-estate-border bg-white overflow-hidden focus-within:border-estate-navy focus-within:ring-2 focus-within:ring-estate-navy/20 transition">
-                          <div className="max-h-40 overflow-y-auto p-1">
-                            {loadingLocations ? (
-                              <div className="py-3 text-center text-sm text-estate-muted">Loading subareas...</div>
-                            ) : !form.city_id ? (
-                              <div className="py-3 text-center text-sm text-estate-muted">Select a city first</div>
-                            ) : filteredSubareas.length === 0 ? (
-                              <div className="py-3 text-center text-sm text-amber-600">No subareas available for this city.</div>
-                            ) : (
-                              filteredSubareas.map((subarea) => {
-                                const isSelected = selectedSubareas.includes(subarea.id);
-                                return (
-                                  <button
-                                    key={subarea.id}
-                                    type="button"
-                                    onClick={() => toggleSubarea(subarea.id)}
-                                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
-                                      isSelected
-                                        ? "bg-estate-navy text-white"
-                                        : "hover:bg-estate-bg text-estate-text"
-                                    }`}
-                                  >
-                                    <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                                      isSelected
-                                        ? "border-white bg-white/20"
-                                        : "border-estate-border"
-                                    }`}>
-                                      {isSelected && <span className="text-white text-xs">✓</span>}
-                                    </div>
-                                    <span className="flex-1 text-left">{subarea.name}</span>
-                                    {isSelected && <Plus size={14} className="rotate-45" />}
+                      <div>
+                        <label className="mb-1.5 block text-[13px] font-semibold text-estate-text">
+                          Subareas <span className="text-red-500">*</span>
+                          <span className="text-xs text-estate-muted font-normal ml-1">(Select multiple)</span>
+                        </label>
+
+                        {selectedSubareas.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {selectedSubareas.map((id) => {
+                              const subarea = subareas.find((s) => s.id === id);
+                              return subarea ? (
+                                <span key={id} className="inline-flex items-center gap-1 px-3 py-1.5 bg-estate-navy/10 text-estate-navy rounded-full text-xs font-medium">
+                                  {subarea.name}
+                                  <button type="button" onClick={() => toggleSubarea(id)} className="hover:text-red-500 transition">
+                                    <X size={14} />
                                   </button>
-                                );
-                              })
-                            )}
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
+                        )}
+
+                        <div className="relative">
+                          <Building size={15} className="absolute left-3 top-3 text-estate-muted z-10" />
+                          <div className="w-full rounded-xl border border-estate-border bg-white overflow-hidden focus-within:border-estate-navy focus-within:ring-2 focus-within:ring-estate-navy/20 transition">
+                            <div className="max-h-40 overflow-y-auto p-1">
+                              {loadingLocations ? (
+                                <div className="py-3 text-center text-sm text-estate-muted">Loading subareas...</div>
+                              ) : !form.city_id ? (
+                                <div className="py-3 text-center text-sm text-estate-muted">Select a city first</div>
+                              ) : filteredSubareas.length === 0 ? (
+                                <div className="py-3 text-center text-sm text-amber-600">No subareas available for this city.</div>
+                              ) : (
+                                filteredSubareas.map((subarea) => {
+                                  const isSelected = selectedSubareas.includes(subarea.id);
+                                  return (
+                                    <button
+                                      key={subarea.id}
+                                      type="button"
+                                      onClick={() => toggleSubarea(subarea.id)}
+                                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
+                                        isSelected ? "bg-estate-navy text-white" : "hover:bg-estate-bg text-estate-text"
+                                      }`}
+                                    >
+                                      <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                        isSelected ? "border-white bg-white/20" : "border-estate-border"
+                                      }`}>
+                                        {isSelected && <span className="text-white text-xs">✓</span>}
+                                      </div>
+                                      <span className="flex-1 text-left">{subarea.name}</span>
+                                      {isSelected && <Plus size={14} className="rotate-45" />}
+                                    </button>
+                                  );
+                                })
+                              )}
+                            </div>
                           </div>
                         </div>
+                        <p className="text-xs text-estate-muted mt-1">
+                          Click to select/deselect subareas. Selected: {selectedSubareas.length}
+                        </p>
                       </div>
-                      <p className="text-xs text-estate-muted mt-1">
-                        Click to select/deselect subareas. Selected: {selectedSubareas.length}
-                      </p>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
+                  )}
+                </>
+              )}
 
-            <Input
-              label="Email"
-              type="email"
-              value={form.email}
-              onChange={(event) => update("email", event.target.value)}
-              icon={<Mail size={15} />}
-              required
-              disabled={loading}
-            />
-
-            <Input
-              label="Password"
-              type="password"
-              value={form.password}
-              onChange={(event) => update("password", event.target.value)}
-              icon={<Lock size={15} />}
-              required
-              disabled={loading}
-            />
-
-            {!isLogin && (
               <Input
-                label="Confirm Password"
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(event) => update("email", event.target.value)}
+                icon={<Mail size={15} />}
+                required
+                disabled={loading}
+              />
+
+              <Input
+                label="Password"
                 type="password"
-                value={form.confirmPassword}
-                onChange={(event) => update("confirmPassword", event.target.value)}
+                value={form.password}
+                onChange={(event) => update("password", event.target.value)}
                 icon={<Lock size={15} />}
                 required
                 disabled={loading}
               />
-            )}
 
-            {isLogin && (
-              <div className="-mt-1 mb-5 flex items-center justify-between gap-4">
-                <label className="flex items-center gap-2 text-sm font-semibold text-estate-text-sec">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(event) => setRemember(event.target.checked)}
-                    className="h-4 w-4 rounded border-estate-border text-estate-navy"
-                    disabled={loading}
-                  />
-                  Remember me
-                </label>
-                <Link href="/auth/forgot-password" className="text-sm font-semibold text-estate-blue hover:underline">
-                  Forgot Password?
-                </Link>
+              {!isLogin && (
+                <Input
+                  label="Confirm Password"
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(event) => update("confirmPassword", event.target.value)}
+                  icon={<Lock size={15} />}
+                  required
+                  disabled={loading}
+                />
+              )}
+
+              {isLogin && (
+                <div className="-mt-1 mb-5 flex items-center justify-between gap-4">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-estate-text-sec">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(event) => setRemember(event.target.checked)}
+                      className="h-4 w-4 rounded border-estate-border text-estate-navy"
+                      disabled={loading}
+                    />
+                    Remember me
+                  </label>
+                  <Link href="/auth/forgot-password" className="text-sm font-semibold text-estate-blue hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
+              )}
+
+              <Button type="submit" variant="navy" fullWidth className="py-3.5 text-[15px]" disabled={loading}>
+                {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
+              </Button>
+            </form>
+          )}
+
+          {(isLogin || googleStep !== "form") && (
+            <div className="mt-6">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-estate-border" />
+                <span className="text-xs font-semibold text-estate-muted uppercase tracking-wider">OR</span>
+                <div className="flex-1 h-px bg-estate-border" />
               </div>
-            )}
 
-            <Button type="submit" variant="navy" fullWidth className="py-3.5 text-[15px]" disabled={loading}>
-              {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
-            </Button>
-          </form>
+              <div className="mt-6">
+                <GoogleSignInButton
+                  onClick={triggerGoogleLogin}
+                  disabled={loading || googleLoading}
+                  loading={googleLoading}
+                />
+              </div>
+            </div>
+          )}
 
           <p className="mt-6 text-center text-sm text-estate-text-sec">
             {isLogin ? "New to Manish Properties?" : "Already have an account?"}{" "}

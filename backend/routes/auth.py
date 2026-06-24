@@ -7,6 +7,7 @@ from services.auth_service import (
     create_and_send_otp,
     find_account_by_id,
     google_login,
+    google_register,
     is_suspended,
     register_account,
     verify_otp,
@@ -47,9 +48,24 @@ def register():
 def google():
     result, error = google_login(request.get_json(silent=True) or {})
     if error:
-        status = 400 if "required" in error else 401
-        return error_response(error, status)
+        return error_response(error, 401)
+    if isinstance(result, dict) and result.get("requiresRegistration"):
+        return success_response(
+            "Google user requires registration",
+            data=result,
+            requiresRegistration=True,
+            googleUser=result.get("googleUser"),
+        )
     return success_response("Login successful", data=result, token=result["token"], refreshToken=result["refreshToken"], admin=result["admin"], user=result["user"])
+
+
+@auth_bp.post("/google-register")
+def google_register_route():
+    payload = request.get_json(silent=True) or {}
+    result, error = google_register(payload)
+    if error:
+        return error_response(error, 400)
+    return success_response("Registration successful", data=result, status_code=201, token=result["token"], refreshToken=result["refreshToken"], admin=result["admin"], user=result["user"])
 
 
 @auth_bp.post("/otp/send")

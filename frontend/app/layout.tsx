@@ -1,5 +1,6 @@
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
+import { GoogleOAuthWrapper } from "@/components/auth/GoogleOAuthWrapper";
 import { ComparisonGlobalWrapper } from "@/components/property/ComparisonGlobalWrapper";
 
 export default function RootLayout({
@@ -10,9 +11,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <AuthProvider>
-          <ComparisonGlobalWrapper>{children}</ComparisonGlobalWrapper>
-        </AuthProvider>
+        <GoogleOAuthWrapper>
+          <AuthProvider>
+            <ComparisonGlobalWrapper>{children}</ComparisonGlobalWrapper>
+          </AuthProvider>
+        </GoogleOAuthWrapper>
       </body>
     </html>
   );

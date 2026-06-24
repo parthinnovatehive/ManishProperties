@@ -1,9 +1,11 @@
 import random
 import time
 
+import requests
 from flask_jwt_extended import create_access_token, create_refresh_token
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from config import Config
 from services.json_service import append_json, find_one, load_json, save_json
 from utils.helpers import generate_id
 from utils.validators import normalize_role, role_matches
@@ -76,7 +78,7 @@ def ensure_default_admin():
 def authenticate(username, password, requested_role=None):
     ensure_default_admin()
     account = find_account_by_username(username)
-    if not account or not check_password_hash(account.get("passwordHash", ""), password):
+    if not account or not account.get("passwordHash") or not check_password_hash(account.get("passwordHash"), password):
         return None, "Invalid credentials", 401
 
     if requested_role and not role_matches(requested_role, account.get("role")):
@@ -176,12 +178,115 @@ def register_account(payload, default_role="USER"):
     return issue_tokens(account), None
 
 
+def _verify_google_token(token):
+    """Verify a Google access token and return user info."""
+    response = requests.get(
+        "https://www.googleapis.com/oauth2/v1/userinfo",
+        params={"access_token": token},
+        timeout=10,
+    )
+    if response.status_code != 200:
+        return None, "Invalid or expired Google token"
+    return response.json(), None
+
+
 def google_login(payload):
     token = payload.get("token")
     if not token:
-        return None, "Google ID Token is required"
+        return None, "Google access token is required"
 
-    return None, "Google login requires a configured Google token verifier"
+    user_info, error = _verify_google_token(token)
+    if error:
+        return None, error
+
+    email = user_info.get("email")
+    if not email:
+        return None, "Google account has no email associated"
+
+    existing = find_account_by_username(email)
+    if existing:
+        if is_suspended(existing):
+            return None, SUSPENDED_ACCOUNT_MESSAGE
+
+        requested_role = payload.get("role")
+        if requested_role and not role_matches(requested_role, existing.get("role")):
+            return None, f"Account exists with a different role"
+
+        return issue_tokens(existing), None
+
+    return {
+        "requiresRegistration": True,
+        "googleUser": {
+            "email": email,
+            "name": user_info.get("name"),
+        },
+    }, None
+
+
+def google_register(payload):
+    token = payload.get("token")
+    if not token:
+        return None, "Google access token is required"
+
+    user_info, error = _verify_google_token(token)
+    if error:
+        return None, error
+
+    email = user_info.get("email")
+    if not email:
+        return None, "Google account has no email"
+
+    if find_account_by_username(email):
+        return None, "An account with this email already exists. Please sign in."
+
+    name = payload.get("name") or user_info.get("name")
+    phone = payload.get("phone")
+    role = normalize_role(payload.get("role", "USER"))
+
+    if not phone:
+        return None, "Phone number is required"
+    if role not in ("USER", "AGENT"):
+        return None, "Invalid role. Must be USER or AGENT."
+
+    status = "PENDING" if role == "AGENT" else "ACTIVE"
+    collection = collection_for_role(role)
+
+    account = {
+        "id": generate_id(f"{role.lower()}_"),
+        "username": email,
+        "email": email,
+        "passwordHash": None,
+        "role": role,
+        "name": name,
+        "phone": phone,
+        "status": status,
+        "savedProperties": [],
+        "createdAt": __import__("datetime").datetime.now().isoformat(),
+    }
+
+    if role == "AGENT":
+        city_id = payload.get("city_id")
+        sub_area_ids = payload.get("sub_area_ids", [])
+        if isinstance(sub_area_ids, str):
+            if sub_area_ids.startswith("["):
+                try:
+                    import json
+                    sub_area_ids = json.loads(sub_area_ids)
+                except Exception:
+                    sub_area_ids = [sub_area_ids]
+            else:
+                sub_area_ids = [sub_area_ids]
+        if not isinstance(sub_area_ids, list):
+            sub_area_ids = []
+        else:
+            sub_area_ids = [str(sid) for sid in sub_area_ids if sid]
+        if city_id:
+            account["city_id"] = str(city_id)
+        if sub_area_ids:
+            account["sub_area_ids"] = sub_area_ids
+
+    append_json(collection, account)
+    return issue_tokens(account), None
 
 
 def issue_tokens(account):

@@ -132,5 +132,17 @@
         "timestamp": "2026-06-18T07:18:56.479Z"
       }
     }
+  },
+  {
+    "id": "user_bcc213f144004bcb818059d223a31938",
+    "username": "parth.innovatehive@gmail.com",
+    "email": "parth.innovatehive@gmail.com",
+    "passwordHash": null,
+    "role": "USER",
+    "name": "Parth Darda",
+    "phone": "9404977161",
+    "status": "ACTIVE",
+    "savedProperties": [],
+    "createdAt": "2026-06-24T16:40:49.818705"
   }
 ]

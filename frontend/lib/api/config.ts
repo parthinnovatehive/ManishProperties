@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
     REFRESH: "/api/auth/refresh",
     REGISTER: "/api/auth/register",
     GOOGLE: "/api/auth/google-login",
+    GOOGLE_REGISTER: "/api/auth/google-register",
     OTP_SEND: "/api/auth/otp/send",
     OTP_VERIFY: "/api/auth/otp/verify",
   },

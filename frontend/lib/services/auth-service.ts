@@ -117,12 +117,12 @@ export class AuthService {
   }
 
   /**
-   * Authenticate user with Google
+   * Authenticate user with Google (login or check registration status)
    */
-  async googleLogin(token: string, role: string): Promise<LoginResponse> {
-    let response: LoginResponse;
+  async googleLogin(token: string, role: string): Promise<LoginResponse & { requiresRegistration?: boolean; googleUser?: { email: string; name: string } }> {
+    let response: LoginResponse & { requiresRegistration?: boolean; googleUser?: { email: string; name: string } };
     try {
-      response = await apiClient.post<LoginResponse>(
+      response = await apiClient.post<LoginResponse & { requiresRegistration?: boolean; googleUser?: { email: string; name: string } }>(
         API_ENDPOINTS.AUTH.GOOGLE,
         { token, role }
       );
@@ -130,6 +130,34 @@ export class AuthService {
       this.clearOnSuspended(error);
       throw error;
     }
+
+    if (response.success && !response.requiresRegistration) {
+      this.persistAuth(response);
+    }
+
+    return response;
+  }
+
+  /**
+   * Complete Google registration with additional user fields
+   */
+  async googleRegister(
+    token: string,
+    name: string,
+    email: string,
+    phone: string,
+    role: string,
+    city_id?: string,
+    sub_area_ids?: string[]
+  ): Promise<LoginResponse> {
+    setAuthPersistence(true);
+    const payload: any = { token, name, email, phone, role };
+    if (city_id) payload.city_id = city_id;
+    if (sub_area_ids && sub_area_ids.length > 0) payload.sub_area_ids = sub_area_ids;
+    const response = await apiClient.post<LoginResponse>(
+      API_ENDPOINTS.AUTH.GOOGLE_REGISTER,
+      payload
+    );
 
     if (response.success) {
       this.persistAuth(response);

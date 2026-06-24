@@ -25,5 +25,8 @@ class Config:
     CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
     CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
     
+    # Google OAuth Configuration
+    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+
     # Google Places Configuration
     GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY')
