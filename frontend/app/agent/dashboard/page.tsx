@@ -5,6 +5,7 @@ import { StatsCard } from "@/components/agent/StatsCard";
 import { ActivityCard, ActivityItem } from "@/components/agent/ActivityCard";
 import { estateApi } from "@/lib/api";
 import { Building2, Calendar, Users, Star, ArrowUpRight, TrendingUp, Clock, UserPlus } from "lucide-react";
+import { FeaturedExpiryNotification } from "@/components/dashboard/FeaturedExpiryNotification";
 import Link from "next/link";
 
 export default function AgentDashboardPage() {
@@ -157,6 +158,8 @@ export default function AgentDashboardPage() {
           Loading agent dashboard data...
         </div>
       )}
+      <FeaturedExpiryNotification />
+
       {/* Welcome Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

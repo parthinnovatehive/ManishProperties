@@ -142,7 +142,10 @@
     "name": "Parth Darda",
     "phone": "9404977161",
     "status": "ACTIVE",
-    "savedProperties": [],
-    "createdAt": "2026-06-24T16:40:49.818705"
+    "savedProperties": [
+      "prop_commercial_001"
+    ],
+    "createdAt": "2026-06-24T16:40:49.818705",
+    "updatedAt": "2026-06-24T15:32:23.750806+00:00"
   }
 ]

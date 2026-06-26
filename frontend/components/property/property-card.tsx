@@ -99,6 +99,17 @@ export function PropertyCard({
         </Link>
 
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+          {/* {property.category && (
+            <Badge
+              variant={property.category === "commercial" ? "muted" : "navy"}
+              className={cn(
+                "shadow-[0_8px_22px_rgba(0,0,0,0.12)]",
+                property.category === "commercial" && "bg-purple-100 text-purple-700",
+              )}
+            >
+              {property.category === "residential" ? "🏠 Residential" : "🏢 Commercial"}
+            </Badge>
+          )} */}
           {verified && (
             <Badge variant="success" className="shadow-[0_8px_22px_rgba(0,0,0,0.12)]">
               <ShieldCheck size={10} aria-hidden="true" /> Verified

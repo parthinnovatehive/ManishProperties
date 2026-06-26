@@ -285,9 +285,11 @@ const loadDashboard = async () => {
   const propertiesAddedToday = data.properties.filter(
     (p) => p.createdAt && p.createdAt.split("T")[0] === today
   ).length;
-  const appointmentsToday = data.appointments.filter(
-    (a) => a.date && new Date(a.date).toISOString().split("T")[0] === today
-  ).length;
+  const appointmentsToday = data.appointments.filter((a) => {
+    if (!a.date) return false;
+    const d = new Date(a.date);
+    return !isNaN(d.getTime()) && d.toISOString().split("T")[0] === today;
+  }).length;
 
   if (loading) {
     return (

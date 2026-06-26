@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
@@ -26,6 +27,7 @@ interface UserSidebarProps {
 
 const MENU_ITEMS = [
   { href: "/user/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/user/my-properties", label: "My Properties", icon: List },
   { href: "/user/appointments", label: "Appointments", icon: Calendar },
   { href: "/user/saved-properties", label: "Saved Properties", icon: Building2 },
   { href: "/user/complaints", label: "Complaints", icon: Users },

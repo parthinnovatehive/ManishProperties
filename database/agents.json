@@ -226,5 +226,22 @@
     "city_id": "city_pune",
     "sub_area_ids": [],
     "updatedAt": "2026-06-17T08:58:38.172215+00:00"
+  },
+  {
+    "id": "agent_5d55d68406da4fa88c0d9b01e393ba31",
+    "username": "parthdarda642@gmail.com",
+    "email": "parthdarda642@gmail.com",
+    "passwordHash": null,
+    "role": "AGENT",
+    "name": "Parth Darda",
+    "phone": "7410852963",
+    "status": "PENDING",
+    "savedProperties": [],
+    "createdAt": "2026-06-24T21:06:42.512813",
+    "city_id": "city_nashik",
+    "sub_area_ids": [
+      "sub_govind_nagar",
+      "sub_tide_colony"
+    ]
   }
 ]

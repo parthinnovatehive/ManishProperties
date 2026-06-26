@@ -8,6 +8,7 @@ import { estateApi } from "@/lib/api";
 import { getAdminData } from "@/lib/utils/token";
 import { BarChart3, Calendar, Heart, Eye, Clock, User, Phone, MapPin, ExternalLink, Video, Star, Loader2 } from "lucide-react";
 import { StarRating } from "@/components/ui/StarRating";
+import { FeaturedExpiryNotification } from "@/components/dashboard/FeaturedExpiryNotification";
 import type { Property } from "@/types";
 
 export default function UserDashboardPage() {
@@ -137,6 +138,8 @@ export default function UserDashboardPage() {
         Loading dashboard data...
       </div>
     )}
+    <FeaturedExpiryNotification />
+
     {/* Welcome Banner */}
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>

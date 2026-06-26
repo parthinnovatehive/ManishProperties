@@ -9,6 +9,7 @@ REQUIRED_PROPERTY_FIELDS = [
     "city",
     "location",
     "type",
+    "category",
     "beds",
     "bathrooms",
     "area",

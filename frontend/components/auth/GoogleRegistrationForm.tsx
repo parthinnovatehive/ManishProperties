@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect, useCallback } from "react";
-import { User, Mail, Phone, MapPin, Building, X, Plus } from "lucide-react";
+import { User, Mail, Phone, MapPin, Building, X, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { estateApi } from "@/lib/api";
@@ -50,6 +50,7 @@ export function GoogleRegistrationForm({
   const [filteredSubareas, setFilteredSubareas] = useState<Subarea[]>([]);
   const [cityId, setCityId] = useState("");
   const [selectedSubareas, setSelectedSubareas] = useState<string[]>([]);
+  const [subareaSearch, setSubareaSearch] = useState("");
   const [loadingLocations, setLoadingLocations] = useState(false);
 
   const displayError = localError || error;
@@ -84,6 +85,10 @@ export function GoogleRegistrationForm({
       setSelectedSubareas([]);
     }
   }, [cityId, subareas]);
+
+  const displaySubareas = filteredSubareas.filter((s) =>
+    s.name.toLowerCase().includes(subareaSearch.toLowerCase())
+  );
 
   const toggleSubarea = useCallback((subareaId: string) => {
     setSelectedSubareas((prev) => {
@@ -247,41 +252,55 @@ export function GoogleRegistrationForm({
                 </div>
               )}
 
-              <div className="relative">
-                <Building size={15} className="absolute left-3 top-3 text-estate-muted z-10" />
-                <div className="w-full rounded-xl border border-estate-border bg-white overflow-hidden focus-within:border-estate-navy focus-within:ring-2 focus-within:ring-estate-navy/20 transition">
-                  <div className="max-h-40 overflow-y-auto p-1">
-                    {loadingLocations ? (
-                      <div className="py-3 text-center text-sm text-estate-muted">Loading subareas...</div>
-                    ) : !cityId ? (
-                      <div className="py-3 text-center text-sm text-estate-muted">Select a city first</div>
-                    ) : filteredSubareas.length === 0 ? (
-                      <div className="py-3 text-center text-sm text-amber-600">No subareas available for this city.</div>
-                    ) : (
-                      filteredSubareas.map((subarea) => {
-                        const isSelected = selectedSubareas.includes(subarea.id);
-                        return (
-                          <button
-                            key={subarea.id}
-                            type="button"
-                            onClick={() => toggleSubarea(subarea.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
-                              isSelected
-                                ? "bg-estate-navy text-white"
-                                : "hover:bg-estate-bg text-estate-text"
-                            }`}
-                          >
-                            <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? "border-white bg-white/20" : "border-estate-border"
-                            }`}>
-                              {isSelected && <span className="text-white text-xs">✓</span>}
-                            </div>
-                            <span className="flex-1 text-left">{subarea.name}</span>
-                            {isSelected && <Plus size={14} className="rotate-45" />}
-                          </button>
-                        );
-                      })
-                    )}
+              <div className="space-y-2">
+                {cityId && filteredSubareas.length > 0 && (
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-estate-muted" />
+                    <input
+                      type="text"
+                      value={subareaSearch}
+                      onChange={(e) => setSubareaSearch(e.target.value)}
+                      placeholder="Search subareas..."
+                      className="w-full rounded-xl border border-estate-border bg-white py-2 pl-9 pr-3 text-sm text-estate-text outline-none transition focus:border-estate-navy focus:ring-2 focus:ring-estate-navy/20"
+                    />
+                  </div>
+                )}
+                <div className="relative">
+                  <Building size={15} className="absolute left-3 top-3 text-estate-muted z-10" />
+                  <div className="w-full rounded-xl border border-estate-border bg-white overflow-hidden focus-within:border-estate-navy focus-within:ring-2 focus-within:ring-estate-navy/20 transition">
+                    <div className="max-h-40 overflow-y-auto p-1">
+                      {loadingLocations ? (
+                        <div className="py-3 text-center text-sm text-estate-muted">Loading subareas...</div>
+                      ) : !cityId ? (
+                        <div className="py-3 text-center text-sm text-estate-muted">Select a city first</div>
+                      ) : displaySubareas.length === 0 ? (
+                        <div className="py-3 text-center text-sm text-amber-600">No subareas match your search.</div>
+                      ) : (
+                        displaySubareas.map((subarea) => {
+                          const isSelected = selectedSubareas.includes(subarea.id);
+                          return (
+                            <button
+                              key={subarea.id}
+                              type="button"
+                              onClick={() => toggleSubarea(subarea.id)}
+                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
+                                isSelected
+                                  ? "bg-estate-navy text-white"
+                                  : "hover:bg-estate-bg text-estate-text"
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? "border-white bg-white/20" : "border-estate-border"
+                              }`}>
+                                {isSelected && <span className="text-white text-xs">✓</span>}
+                              </div>
+                              <span className="flex-1 text-left">{subarea.name}</span>
+                              {isSelected && <Plus size={14} className="rotate-45" />}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

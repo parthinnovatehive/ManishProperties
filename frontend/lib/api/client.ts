@@ -59,31 +59,36 @@ export class ApiClient {
     return url.toString();
   }
 
-  /**
-   * Build request headers with Authorization token
-   */
   private buildHeaders(config?: RequestConfig): HeadersInit {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...(typeof config?.headers === "object" && config?.headers !== null
-        ? Object.entries(config.headers).reduce(
-            (acc, [key, value]) => ({
-              ...acc,
-              [key]: String(value),
-            }),
-            {},
-          )
-        : {}),
-    };
-
-    const token = getToken();
-    if (token !== null) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    return headers;
+  // Check if we're sending FormData
+  const isFormData = config?.body instanceof FormData;
+  
+  const headers: Record<string, string> = {};
+  
+  // Only set Content-Type for JSON requests
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  // Add custom headers (skip Content-Type for FormData)
+  if (config?.headers) {
+    Object.entries(config.headers).forEach(([key, value]) => {
+      // Skip Content-Type for FormData (browser will set it with boundary)
+      if (key.toLowerCase() === "content-type" && isFormData) {
+        return;
+      }
+      headers[key] = String(value);
+    });
   }
 
+  // Add Authorization token
+  const token = getToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
   /**
    * Handle API errors with proper error objects
    */
@@ -160,19 +165,19 @@ export class ApiClient {
   }
 
   async request<T = unknown>(
-    endpoint: string,
-    config?: RequestConfig,
-    retry = true,
-  ): Promise<T> {
-    const url = this.buildUrl(endpoint, config?.params);
-    const timeout = config?.timeout ?? REQUEST_TIMEOUT;
+  endpoint: string,
+  config?: RequestConfig,
+  retry = true,
+): Promise<T> {
+  const url = this.buildUrl(endpoint, config?.params);
+  const timeout = config?.timeout ?? REQUEST_TIMEOUT;
 
-    try {
-      const response = await this.requestWithTimeout(
-        url,
-        {
-          ...config,
-          headers: this.buildHeaders(config),
+  try {
+    const response = await this.requestWithTimeout(
+      url,
+      {
+        ...config,
+        headers: this.buildHeaders(config),
         },
         timeout,
       );
@@ -251,10 +256,15 @@ export class ApiClient {
     body?: unknown,
     config?: RequestConfig,
   ): Promise<T> {
+    const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
     return this.request<T>(endpoint, {
       ...config,
       method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
+      body: body
+        ? isFormData
+          ? body
+          : JSON.stringify(body)
+        : undefined,
     });
   }
 

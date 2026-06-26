@@ -605,7 +605,7 @@ export default function AgentAppointmentsPage() {
 
       {/* CALENDAR VIEW */}
 {viewMode === "calendar" && (
-  <div className="bg-white border border-estate-border rounded-2xl p-6 shadow-estate space-y-6">
+  <div className="bg-white border border-estate-border rounded-2xl p-4 lg:p-6 shadow-estate space-y-4 lg:space-y-6 lg:max-w-4xl xl:max-w-3xl mx-auto">
     {/* Calendar Header */}
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -640,9 +640,9 @@ export default function AgentAppointmentsPage() {
     </div>
 
     {/* Calendar Grid */}
-    <div className="grid grid-cols-7 gap-2 text-center">
+    <div className="grid grid-cols-7 gap-1.5 lg:gap-2 text-center">
       {dayNames.map((dayName) => (
-        <div key={dayName} className="text-xs font-extrabold text-estate-muted uppercase tracking-wider py-2">
+        <div key={dayName} className="text-[10px] lg:text-xs font-extrabold text-estate-muted uppercase tracking-wider py-1.5 lg:py-2">
           {dayName}
         </div>
       ))}
@@ -663,12 +663,12 @@ export default function AgentAppointmentsPage() {
         return (
           <div
             key={`day-${day}`}
-            className={`aspect-square p-2 border flex flex-col rounded-xl transition ${
+            className={`aspect-square p-1.5 lg:p-2 border flex flex-col rounded-lg lg:rounded-xl transition ${
               isToday ? "border-estate-navy bg-estate-blue-pale/40" : "border-estate-border/50 hover:bg-estate-surface/30"
             }`}
           >
             <div className="flex justify-between items-center">
-              <span className={`text-sm font-semibold ${isToday ? "text-estate-navy font-extrabold" : "text-estate-text"}`}>
+              <span className={`text-[11px] lg:text-sm font-semibold ${isToday ? "text-estate-navy font-extrabold" : "text-estate-text"}`}>
                 {day}
               </span>
               {dailyMeetings.length > 0 && (

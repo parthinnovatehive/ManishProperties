@@ -1,9 +1,11 @@
-from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt_identity, get_jwt
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from middleware.permissions import role_required
 from services.json_service import append_json, delete_json, load_json, update_json
 from services.property_service import list_properties
+from services.auth_service import find_account_by_id
 from utils.helpers import error_response, generate_id, now_iso, success_response
 from utils.validators import normalize_role
 
@@ -218,3 +220,99 @@ def update_agent_subareas_endpoint(agent_id):
         "Agent subareas updated",
         data={"agent_id": agent_id, "subarea_ids": subarea_ids}
     )
+
+
+@agents_bp.route("/<agent_id>/request-subareas", methods=["OPTIONS", "POST"])
+def request_subareas(agent_id):
+    """Request new subareas for an agent"""
+    if request.method == "OPTIONS":
+        return "", 200
+
+    verify_jwt_in_request()
+    current_user_id = str(get_jwt_identity())
+    payload = request.get_json(silent=True) or {}
+
+    # Verify agent exists
+    agent = next((item for item in load_json("agents") if str(item.get("id")) == str(agent_id)), None)
+    if not agent:
+        return jsonify({"success": False, "message": "Agent not found"}), 404
+
+    # Verify agent owns the account
+    if str(agent.get("id")) != current_user_id:
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    new_subarea_ids = payload.get("sub_area_ids", [])
+    if not isinstance(new_subarea_ids, list) or len(new_subarea_ids) == 0:
+        return jsonify({"success": False, "message": "At least one subarea must be selected"}), 400
+
+    # Merge with existing sub_area_ids (no duplicates)
+    existing_ids = agent.get("sub_area_ids", [])
+    merged_ids = list(set(existing_ids + new_subarea_ids))
+    merged_ids.sort()
+
+    # Validate all subareas exist
+    subareas = load_json("sub_areas")
+    subarea_names = []
+    for sid in new_subarea_ids:
+        found = next((s for s in subareas if str(s.get("id")) == str(sid)), None)
+        if not found:
+            return jsonify({"success": False, "message": f"Subarea with id '{sid}' not found"}), 400
+        subarea_names.append(found.get("name", sid))
+
+    # Update agent
+    update_json("agents", agent_id, {"sub_area_ids": merged_ids})
+
+    # Find all admin users to notify
+    admins = load_json("admins")
+    from services.notification_service import add_notification
+    for admin in admins:
+        add_notification({
+            "userId": str(admin.get("id")),
+            "userType": "ADMIN",
+            "title": "New Subarea Request",
+            "message": f"Agent {agent.get('name', 'Unknown')} has requested new subareas: {', '.join(subarea_names)}",
+            "type": "subarea_request",
+            "relatedId": agent_id,
+            "actionUrl": "/admin/agents",
+            "icon": "MapPin",
+        })
+
+    return jsonify({
+        "success": True,
+        "message": "Subarea request submitted successfully",
+        "data": {"sub_area_ids": merged_ids}
+    })
+
+
+@agents_bp.post("/change-password")
+@jwt_required()
+def change_password():
+    """Change the password for the authenticated agent"""
+    current_user_id = str(get_jwt_identity())
+    payload = request.get_json(silent=True) or {}
+    
+    current_password = payload.get("currentPassword")
+    new_password = payload.get("newPassword")
+    
+    if not current_password or not new_password:
+        return jsonify({"success": False, "message": "Current password and new password are required"}), 400
+    
+    if len(new_password) < 6:
+        return jsonify({"success": False, "message": "New password must be at least 6 characters"}), 400
+    
+    # Find the agent in agents collection
+    agent = find_account_by_id(current_user_id)
+    if not agent:
+        return jsonify({"success": False, "message": "Agent not found"}), 404
+    
+    # Verify current password
+    if not agent.get("passwordHash") or not check_password_hash(agent["passwordHash"], current_password):
+        return jsonify({"success": False, "message": "Current password is incorrect"}), 400
+    
+    # Update password
+    update_json("agents", current_user_id, {
+        "passwordHash": generate_password_hash(new_password),
+        "updatedAt": now_iso(),
+    })
+    
+    return jsonify({"success": True, "message": "Password changed successfully"})

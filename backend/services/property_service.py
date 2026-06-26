@@ -9,8 +9,9 @@ def _normalize_property(payload, status="PENDING"):
         images = payload.get("imgs", [])
     image = payload.get("image") or payload.get("img") or (images[0] if images else "")
 
-    return {
+    result = {
         "id": str(payload.get("id") or generate_id("prop_")),
+        "category": payload.get("category", "residential"),
         "title": payload.get("title"),
         "subtitle": payload.get("subtitle"),
         "description": payload.get("description"),
@@ -41,6 +42,17 @@ def _normalize_property(payload, status="PENDING"):
         "createdAt": payload.get("createdAt") or now_iso(),
         "updatedAt": now_iso(),
     }
+
+    category = result["category"]
+    if category == "commercial":
+        result["officeType"] = payload.get("officeType")
+        result["pantry"] = bool(payload.get("pantry", False))
+        result["washrooms"] = int(float(payload.get("washrooms", 0)))
+        result["powerBackup"] = bool(payload.get("powerBackup", False))
+        result["cabinCount"] = int(float(payload.get("cabinCount", 0)))
+        result["conferenceRoom"] = bool(payload.get("conferenceRoom", False))
+
+    return result
 
 
 def list_properties(status=None, public_only=False):

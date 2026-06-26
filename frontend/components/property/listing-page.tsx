@@ -1,15 +1,23 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, Grid3X3, List, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Filter, Grid3X3, List, Search, X } from "lucide-react";
 import type { ListingFilters, Property } from "@/types";
 import { cn, uniqueValues } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { PropertyCard } from "./property-card";
 import { PropertyFilters } from "./property-filters";
+import { PropertyQuestionnaireModal } from "./PropertyQuestionnaireModal";
+import {
+  shouldShowQuestionnaire,
+  markQuestionnaireShown,
+  answersToFilters,
+  type QuestionnaireAnswers,
+} from "@/lib/utils/propertyFilters";
+import { fetchSubAreas, getSubAreaIdByName, groupSubAreasByCity } from "@/lib/subareas";
 
-const blankFilters: ListingFilters = { type: "", status: "", minPrice: "", maxPrice: "", beds: "", city: "", isNew: "" };
+const blankFilters: ListingFilters = { type: "", status: "", minPrice: "", maxPrice: "", beds: "", city: "", subarea: "", isNew: "", category: "" };
 const sortOptions = ["Relevance", "Price: Low to High", "Price: High to Low", "Newest First", "Most Popular"];
 
 function listingStatus(property: Property) {
@@ -25,16 +33,31 @@ export function ListingPage({ properties }: { properties: Property[] }) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState("Relevance");
   const [currentPage, setCurrentPage] = useState(1);
-const PROPERTIES_PER_PAGE = 12;
+  const PROPERTIES_PER_PAGE = 12;
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const autoOpenedRef = useRef(false);
   const [filters, setFilters] = useState<ListingFilters>({
     ...blankFilters,
     type: searchParams?.get("type") ?? "",
     status: searchParams?.get("status") ?? "",
     city: searchParams?.get("city") ?? "",
+    subarea: searchParams?.get("subarea") ?? "",
     isNew: searchParams?.get("new") ?? "",
+    category: searchParams?.get("category") ?? "",
+    beds: searchParams?.get("beds") ?? "",
+    minPrice: searchParams?.get("minPrice") ?? "",
+    maxPrice: searchParams?.get("maxPrice") ?? "",
   });
   const query = searchParams?.get("q")?.toLowerCase() ?? "";
+
+  // Show questionnaire modal on first visit (no pre-applied filters)
+  useEffect(() => {
+    if (searchParams && shouldShowQuestionnaire(searchParams)) {
+      autoOpenedRef.current = true;
+      setShowQuestionnaire(true);
+    }
+  }, [searchParams]);
 
   // Sync URL search params to filter state whenever URL changes
   useEffect(() => {
@@ -43,15 +66,21 @@ const PROPERTIES_PER_PAGE = 12;
       type: searchParams?.get("type") ?? "",
       status: searchParams?.get("status") ?? "",
       city: searchParams?.get("city") ?? "",
+      subarea: searchParams?.get("subarea") ?? "",
       isNew: searchParams?.get("new") ?? "",
+      category: searchParams?.get("category") ?? "",
+      beds: searchParams?.get("beds") ?? "",
+      minPrice: searchParams?.get("minPrice") ?? "",
+      maxPrice: searchParams?.get("maxPrice") ?? "",
     });
   }, [searchParams]);
   useEffect(() => {
-  setCurrentPage(1);
-}, [filters, query, sort]);
+    setCurrentPage(1);
+  }, [filters, query, sort]);
 
   const cities = useMemo(() => uniqueValues(properties.map((property) => property.city)), [properties]);
   const types = useMemo(() => uniqueValues(properties.map((property) => property.type)), [properties]);
+  const subareaGroups = useMemo(() => groupSubAreasByCity(fetchSubAreas()), []);
 
   const filtered = useMemo(() => {
     const next = properties.filter((property) => {
@@ -61,6 +90,12 @@ const PROPERTIES_PER_PAGE = 12;
       if (filters.beds && property.beds < Number.parseInt(filters.beds, 10)) return false;
       if (filters.minPrice && property.priceNum < Number.parseInt(filters.minPrice, 10)) return false;
       if (filters.maxPrice && property.priceNum > Number.parseInt(filters.maxPrice, 10)) return false;
+      if (filters.category && property.category !== filters.category) return false;
+      if (filters.subarea) {
+        const selectedNames = filters.subarea.split(",").filter(Boolean);
+        const selectedIds = selectedNames.map((n) => getSubAreaIdByName(n)).filter(Boolean) as string[];
+        if (selectedIds.length > 0 && !selectedIds.includes(property.sub_area_id ?? "")) return false;
+      }
       if (filters.isNew && property.isNew !== true) return false;
       if (query) {
         const haystack = `${property.title} ${property.subtitle} ${property.type} ${property.builder} ${property.location} ${property.city}`.toLowerCase();
@@ -81,17 +116,53 @@ const PROPERTIES_PER_PAGE = 12;
       return String(a.id).localeCompare(String(b.id));
     });
   }, [filters, properties, query, sort]);
-const totalPages = Math.max(
-  1,
-  Math.ceil(filtered.length / PROPERTIES_PER_PAGE)
-);
-
-const paginatedProperties =
-  filtered.slice(
-    (currentPage - 1) * PROPERTIES_PER_PAGE,
-    currentPage * PROPERTIES_PER_PAGE
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / PROPERTIES_PER_PAGE)
   );
+
+  const paginatedProperties =
+    filtered.slice(
+      (currentPage - 1) * PROPERTIES_PER_PAGE,
+      currentPage * PROPERTIES_PER_PAGE
+    );
   const clearFilters = () => setFilters(blankFilters);
+  const activeFilterCount = Object.values(filters).filter((v) => v !== "").length;
+
+  const handleQuestionnaireClose = useCallback(() => {
+    if (autoOpenedRef.current) {
+      markQuestionnaireShown();
+    }
+    autoOpenedRef.current = false;
+    setShowQuestionnaire(false);
+  }, []);
+
+  const handleQuestionnaireSkip = useCallback(() => {
+    markQuestionnaireShown();
+    autoOpenedRef.current = false;
+    setShowQuestionnaire(false);
+  }, []);
+
+  const handleQuestionnaireComplete = useCallback(
+    (answers: QuestionnaireAnswers) => {
+      markQuestionnaireShown();
+      autoOpenedRef.current = false;
+      setShowQuestionnaire(false);
+      const filterParams = answersToFilters(answers);
+      if (Object.keys(filterParams).length > 0) {
+        setFilters((prev) => ({
+          ...prev,
+          ...filterParams,
+        }));
+      }
+    },
+    []
+  );
+
+  const handleOpenQuestionnaire = useCallback(() => {
+    autoOpenedRef.current = false;
+    setShowQuestionnaire(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-estate-bg">
@@ -107,10 +178,24 @@ const paginatedProperties =
 
             <div className="flex items-center gap-2.5">
               <button
-                className="flex items-center gap-2 rounded-xl border-[1.5px] border-estate-border bg-white px-3.5 py-2.5 text-[13px] font-semibold text-estate-text-sec shadow-estate lg:hidden"
+                onClick={handleOpenQuestionnaire}
+                className="flex items-center gap-2 rounded-xl bg-estate-navy px-4 py-2.5 text-[13px] font-semibold text-white shadow-md transition hover:bg-estate-navy/90"
+              >
+                <Search size={15} aria-hidden="true" />
+                <span className="hidden sm:inline">Find My Property</span>
+              </button>
+
+              <button
+                className="flex items-center gap-2 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-[13px] font-semibold text-estate-text-sec shadow-estate lg:hidden"
                 onClick={() => setShowMobileFilters((value) => !value)}
               >
-                <Filter size={15} aria-hidden="true" /> Filters
+                <Filter size={15} aria-hidden="true" />
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="w-5 h-5 bg-estate-navy text-white text-xs rounded-full flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
               </button>
 
               <label className="relative block">
@@ -147,14 +232,44 @@ const paginatedProperties =
       </div>
 
       <div className="container-wide grid gap-8 py-10 lg:grid-cols-[320px_1fr] lg:py-12">
-        <aside className={cn("lg:block", showMobileFilters ? "block" : "hidden")}>
-          <PropertyFilters
-            filters={filters}
-            cities={cities}
-            types={types}
-            onChange={setFilters}
-            onClear={clearFilters}
-          />
+        {showMobileFilters && (
+          <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filters">
+            <div className="fixed inset-0 bg-black/30" onClick={() => setShowMobileFilters(false)} />
+            <div className="fixed inset-y-0 left-0 w-[320px] max-w-[85vw] bg-white overflow-y-auto shadow-estate-lg animate-fade-up">
+              <div className="sticky top-0 z-10 flex items-center justify-between bg-white p-4 border-b border-estate-border">
+                <span className="text-sm font-bold text-estate-navy">Filters</span>
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="p-1.5 rounded-lg hover:bg-estate-bg transition"
+                  aria-label="Close filters"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-4">
+                <PropertyFilters
+                  filters={filters}
+                  cities={cities}
+                  types={types}
+                  subareaGroups={subareaGroups}
+                  onChange={setFilters}
+                  onClear={clearFilters}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        <aside className="hidden lg:block">
+          <div className="sticky top-[96px]">
+            <PropertyFilters
+              filters={filters}
+              cities={cities}
+              types={types}
+              subareaGroups={subareaGroups}
+              onChange={setFilters}
+              onClear={clearFilters}
+            />
+          </div>
         </aside>
 
         <div>
@@ -175,67 +290,74 @@ const paginatedProperties =
             </div>
           )}
           {filtered.length > 0 && (
-  <>
-    <div className="mb-5 text-center text-sm text-estate-muted">
-      Showing{" "}
-      {(currentPage - 1) * PROPERTIES_PER_PAGE + 1}
-      -
-      {Math.min(
-        currentPage * PROPERTIES_PER_PAGE,
-        filtered.length
-      )}{" "}
-      of {filtered.length} properties
-    </div>
+            <>
+              <div className="mb-5 text-center text-sm text-estate-muted">
+                Showing{" "}
+                {(currentPage - 1) * PROPERTIES_PER_PAGE + 1}
+                -
+                {Math.min(
+                  currentPage * PROPERTIES_PER_PAGE,
+                  filtered.length
+                )}{" "}
+                of {filtered.length} properties
+              </div>
 
-    <div className="mt-12 flex items-center justify-center gap-2">
-      <button
-        disabled={currentPage === 1}
-        onClick={() =>
-          setCurrentPage((p) =>
-            Math.max(1, p - 1)
-          )
-        }
-        className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-medium text-estate-text-sec shadow-estate disabled:opacity-50"
-      >
-        <ChevronLeft size={15} />
-        Previous
-      </button>
+              <div className="mt-12 flex items-center justify-center gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((p) =>
+                      Math.max(1, p - 1)
+                    )
+                  }
+                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-medium text-estate-text-sec shadow-estate disabled:opacity-50"
+                >
+                  <ChevronLeft size={15} />
+                  Previous
+                </button>
 
-      {Array.from(
-        { length: totalPages },
-        (_, i) => i + 1
-      ).map((page) => (
-        <button
-          key={page}
-          onClick={() => setCurrentPage(page)}
-          className={cn(
-            "h-10 w-10 rounded-xl border-[1.5px] text-sm font-semibold shadow-estate",
-            page === currentPage
-              ? "border-estate-blue bg-estate-blue text-white"
-              : "border-estate-border bg-white text-estate-text-sec"
+                {Array.from(
+                  { length: totalPages },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={cn(
+                      "h-10 w-10 rounded-xl border-[1.5px] text-sm font-semibold shadow-estate",
+                      page === currentPage
+                        ? "border-estate-blue bg-estate-blue text-white"
+                        : "border-estate-border bg-white text-estate-text-sec"
+                    )}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((p) =>
+                      Math.min(totalPages, p + 1)
+                    )
+                  }
+                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-estate disabled:opacity-50"
+                >
+                  Next
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+            </>
           )}
-        >
-          {page}
-        </button>
-      ))}
-
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() =>
-          setCurrentPage((p) =>
-            Math.min(totalPages, p + 1)
-          )
-        }
-        className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-estate disabled:opacity-50"
-      >
-        Next
-        <ChevronRight size={15} />
-      </button>
-    </div>
-  </>
-)}
         </div>
       </div>
+      <PropertyQuestionnaireModal
+        open={showQuestionnaire}
+        cities={cities}
+        onComplete={handleQuestionnaireComplete}
+        onSkip={handleQuestionnaireSkip}
+        onClose={handleQuestionnaireClose}
+      />
     </div>
   );
 }

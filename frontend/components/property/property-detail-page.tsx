@@ -119,6 +119,14 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
               <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-start">
                 <div className="flex-1">
                   <div className="mb-2.5 flex flex-wrap gap-2">
+                    {property.category && (
+                      <Badge
+                        variant={property.category === "commercial" ? "muted" : "navy"}
+                        className={property.category === "commercial" ? "bg-purple-100 text-purple-700" : ""}
+                      >
+                        {property.category === "residential" ? "🏠 Residential" : "🏢 Commercial"}
+                      </Badge>
+                    )}
                     <Badge variant={property.status === "For Sale" ? "blue" : "amber"}>{property.status}</Badge>
                     <Badge variant="muted">{property.type}</Badge>
                     {highlights.slice(0, 2).map((highlight) => (
@@ -212,16 +220,29 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
 
                 {tab === "details" && (
                   <div className="grid md:grid-cols-2">
-                    {[
-                      ["Property Type", property.type],
-                      ["Builder/Developer", property.builder],
-                      ["Year Built", property.yearBuilt],
-                      ["Furnishing", property.furnishing],
-                      ["Floor", property.floor],
-                      ["Facing", property.facing],
-                      ["Possession", property.possession],
-                      ["RERA No.", property.rera],
-                    ].map(([label, value], index) => (
+                    {(property.category === "commercial"
+                      ? [
+                          ["Property Type", property.type],
+                          ["Office Type", property.officeType || "N/A"],
+                          ["Pantry", property.pantry ? "Available" : "Not Available"],
+                          ["Washrooms", property.washrooms ? `${property.washrooms}` : "N/A"],
+                          ["Power Backup", property.powerBackup ? "Available" : "Not Available"],
+                          ["Cabins", property.cabinCount ? `${property.cabinCount}` : "N/A"],
+                          ["Conference Room", property.conferenceRoom ? "Available" : "Not Available"],
+                          ["Area", `${property.area.toLocaleString("en-IN")} ft²`],
+                          ["Builder/Developer", property.builder],
+                        ]
+                      : [
+                          ["Property Type", property.type],
+                          ["Builder/Developer", property.builder],
+                          ["Year Built", property.yearBuilt],
+                          ["Furnishing", property.furnishing],
+                          ["Floor", property.floor],
+                          ["Facing", property.facing],
+                          ["Possession", property.possession],
+                          ["RERA No.", property.rera],
+                        ]
+                    ).map(([label, value], index) => (
                       <div
                         key={label}
                         className={`flex justify-between gap-4 border-b border-estate-border px-4 py-3 text-[13px] ${

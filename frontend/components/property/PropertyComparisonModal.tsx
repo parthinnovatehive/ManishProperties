@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Scale, Download, Printer, Share2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropertyComparisonTable } from "./PropertyComparisonTable";
@@ -51,8 +52,8 @@ export function PropertyComparisonModal({ isOpen, onClose }: PropertyComparisonM
     toast.success("Comparison link copied to clipboard!");
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-estate-border flex-shrink-0">
@@ -138,6 +139,7 @@ export function PropertyComparisonModal({ isOpen, onClose }: PropertyComparisonM
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

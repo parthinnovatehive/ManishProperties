@@ -91,6 +91,10 @@ export default function PropertyDetailsPage() {
           const savedIds = (user?.savedProperties || []).map(String);
           setSaved(savedIds.includes(String(params.id)));
         }
+        // Track view
+        if (found) {
+          estateApi.adminProperties.trackView(params.id).catch(() => {});
+        }
       } catch (err) {
         console.error("Error loading property page data:", err);
       } finally {

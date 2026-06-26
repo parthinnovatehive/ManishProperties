@@ -1,5 +1,7 @@
 export type PropertyId = string | number;
 
+export type PropertyCategory = "residential" | "commercial";
+
 export type PropertyStatus = "For Sale" | "For Rent" | "PENDING" | "APPROVED" | "REJECTED" | (string & {});
 
 export type PropertyType =
@@ -24,6 +26,8 @@ export type Agent = {
 
 export type Property = {
   id: PropertyId;
+  category: PropertyCategory;
+
   title: string;
   subtitle?: string | null;
   description?: string | null;
@@ -33,6 +37,8 @@ export type Property = {
   rent?: number | null;
 
   city: string;
+  city_id?: string;
+  sub_area_id?: string;
   location: string;
   pincode?: string | null;
   latitude?: number | null;
@@ -70,6 +76,19 @@ export type Property = {
   rating: number;
   reviews: number;
   featured: boolean;
+  featuredRequested?: boolean;
+  requested_for?: number | null;
+  granted_for?: number | null;
+  featuredRequestDate?: string | null;
+  featuredPaymentStatus?: string | null;
+  featuredPaymentProof?: string | null;
+  featuredPaymentAmount?: number | null;
+  featuredApprovedBy?: string | null;
+  featuredApprovedAt?: string | null;
+  featuredExpiryDate?: string | null;
+  featuredExpired?: boolean;
+  featuredRejectionReason?: string | null;
+
   verified?: boolean;
   isNew: boolean;
 
@@ -78,97 +97,44 @@ export type Property = {
   updatedAt?: string | Date;
 
   submittedBy?: string | null;
-submitterEmail?: string | null;
-views?: number | null;
-inquiries?: number | null;
-rejectReason?: string | null;
+  submitterEmail?: string | null;
+  views?: number | null;
+  inquiries?: number | null;
+  rejectReason?: string | null;
 
-/* NEW */
+  lister_id?: string;
+  lister_type?: string;
+  lister_name?: string;
 
-coordinates?: {
-  lat: number;
-  lng: number;
-};
+  officeType?: string | null;
+  pantry?: boolean | null;
+  washrooms?: number | null;
+  powerBackup?: boolean | null;
+  cabinCount?: number | null;
+  conferenceRoom?: boolean | null;
 
-nearbyAmenities?: {
-  hospital?: {
-    name: string;
-    distance: number;
-    travelTime: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
   };
 
-  school?: {
-    name: string;
-    distance: number;
-    travelTime: string;
+  nearbyAmenities?: {
+    hospital?: { name: string; distance: number; travelTime: string };
+    school?: { name: string; distance: number; travelTime: string };
+    supermarket?: { name: string; distance: number; travelTime: string };
+    petrol?: { name: string; distance: number; travelTime: string };
+    station?: { name: string; distance: number; travelTime: string };
+    bank?: { name: string; distance: number; travelTime: string };
+    restaurant?: { name: string; distance: number; travelTime: string };
+    atm?: { name: string; distance: number; travelTime: string };
+    pharmacy?: { name: string; distance: number; travelTime: string };
+    busStation?: { name: string; distance: number; travelTime: string };
+    college?: { name: string; distance: number; travelTime: string };
+    park?: { name: string; distance: number; travelTime: string };
+    airport?: { name: string; distance: number; travelTime: string };
   };
 
-  supermarket?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  petrol?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  station?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  bank?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  restaurant?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  atm?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  pharmacy?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  busStation?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  college?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  park?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-
-  airport?: {
-    name: string;
-    distance: number;
-    travelTime: string;
-  };
-};
+  cloudinaryImages?: { url: string; public_id: string }[];
 };
 
 export type ListingFilters = {
@@ -178,5 +144,7 @@ export type ListingFilters = {
   maxPrice: string;
   beds: string;
   city: string;
+  subarea: string;
   isNew: string;
+  category: string;
 };

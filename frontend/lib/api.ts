@@ -52,6 +52,7 @@ export const estateApi = {
     checkFeaturedExpiry: async () => {
     return await apiClient.post("/api/properties/check-featured-expiry");
   },
+    trackView: async (id: string | number) => apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/view`, {}),
   },
   users: {
   list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.USERS), "users"),

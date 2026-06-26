@@ -13,7 +13,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  LogOut
+  LogOut,
+  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getAdminData } from "@/lib/utils/token";
@@ -29,7 +30,8 @@ interface AgentSidebarProps {
 
 const MENU_ITEMS = [
   { href: "/agent/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/agent/properties", label: "Properties", icon: Building2 },
+  { href: "/agent/my-properties", label: "My Properties", icon: Building2 },
+  // { href: "/agent/properties", label: "Properties", icon: Building2 },
   { href: "/agent/appointments", label: "Appointments", icon: Calendar },
   // { href: "/agent/leads", label: "Leads", icon: Users },
   { href: "/agent/profile", label: "Profile", icon: User },

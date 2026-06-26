@@ -12,6 +12,7 @@
     "city_id": "city_aurangabad",
     "sub_area_id": "sub_aurangpura",
     "location": "Worli, South Aurangabad",
+    "category": "residential",
     "type": "Apartment",
     "listingType": "For Sale",
     "beds": 3,
@@ -35,24 +36,24 @@
     "builder": "Lodha Group",
     "rating": 4.8,
     "reviews": 24,
-    "featured": false,
-    "featuredRequested": true,
-    "requested_for": 1,
+    "featured": true,
+    "featuredRequested": false,
+    "requested_for": 2,
     "granted_for": 1,
-    "featuredRequestDate": "2026-03-13T10:30:00+00:00",
+    "featuredRequestDate": "2026-06-25T09:41:26.393Z",
     "featuredPaymentStatus": "approved",
-    "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
-    "featuredPaymentAmount": 499,
-    "featuredApprovedBy": "admin_d8e4eb35a37d472c87e7a0b55fab8129",
-    "featuredApprovedAt": "2026-03-13T10:30:00+00:00",
-    "featuredExpiryDate": "2026-04-10T17:39:36.195Z",
-    "featuredExpired": true,
+    "featuredPaymentProof": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1782380481/properties/general/dhizgkujru4ffrijj0ix.jpg",
+    "featuredPaymentAmount": 899,
+    "featuredApprovedBy": "admin_084516d1225c4d8a9c737c1db856bdba",
+    "featuredApprovedAt": "2026-06-25T09:42:46.625Z",
+    "featuredExpiryDate": "2026-07-25T18:29:59.999Z",
+    "featuredExpired": false,
     "featuredRejectionReason": null,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-03-28T00:00:00+00:00",
-    "updatedAt": "2026-06-13T18:34:04.806403+00:00",
+    "updatedAt": "2026-06-25T09:42:46.949787+00:00",
     "coordinates": {
       "lat": 18.9976,
       "lng": 72.8174
@@ -138,6 +139,7 @@
     "city_id": "city_aurangabad",
     "sub_area_id": "sub_gulmandi",
     "location": "Whitefield, East Bangalore",
+    "category": "residential",
     "type": "Villa",
     "listingType": "For Sale",
     "beds": 4,
@@ -164,13 +166,13 @@
     "featuredRequested": false,
     "requested_for": 1,
     "granted_for": 1,
-    "featuredRequestDate": "2026-06-13T10:30:00+00:00",
+    "featuredRequestDate": "2026-05-13T10:30:00+00:00",
     "featuredPaymentStatus": "approved",
     "featuredPaymentProof": "https://example.com/payment-screenshot.jpg",
     "featuredPaymentAmount": 499,
     "featuredApprovedBy": null,
     "featuredApprovedAt": null,
-    "featuredExpiryDate": "2026-07-13T17:40:41.720Z",
+    "featuredExpiryDate": "2026-06-13T17:40:41.720Z",
     "featuredExpired": false,
     "featuredRejectionReason": null,
     "isNew": false,
@@ -263,6 +265,7 @@
     "city_id": "city_nashik",
     "sub_area_id": "sub_college_road",
     "location": "Koregaon NSK, Nsk",
+    "category": "residential",
     "type": "Apartment",
     "listingType": "For Rent",
     "beds": 2,
@@ -384,6 +387,7 @@
     "sub_area_id": "sub_karve_nagar",
     "location": "Audit Nagar, Mumbai",
     "pincode": null,
+    "category": "residential",
     "type": "Apartment",
     "listingType": null,
     "beds": 2,
@@ -501,19 +505,20 @@
     "subtitle": "3BHK",
     "description": "Luxury 3BHK apartment in Mumbai with parking and security.",
     "price": "₹2.45cr",
-    "priceNum": 245.0,
+    "priceNum": 245,
     "city": "Pune",
     "city_id": "city_pune",
     "sub_area_id": "sub_karve_nagar",
     "location": "Pune",
-    "pincode": null,
+    "pincode": "",
     "type": "Apartment",
+    "category": "residential",
     "listingType": null,
     "beds": 3,
     "bathrooms": 3,
     "baths": 3,
-    "area": 1500,
-    "furnishing": null,
+    "area": 1509,
+    "furnishing": "",
     "amenities": [],
     "images": [],
     "imgs": [],
@@ -539,7 +544,7 @@
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
     "createdAt": "2026-06-05T06:05:16.101742+00:00",
-    "updatedAt": "2026-06-18T13:01:13.487461+00:00",
+    "updatedAt": "2026-06-25T09:30:25.353901+00:00",
     "rera": "",
     "coordinates": {
       "lat": 18.9976,
@@ -610,6 +615,144 @@
         "name": "Mumbai Airport",
         "distance": 15.4,
         "travelTime": "35 min"
+      }
+    },
+    "views": 2
+  },
+  {
+    "id": "prop_commercial_001",
+    "lister_type": "agent",
+    "lister_id": "agent_a3b4daf6ec4d46f9a933087740d12f98",
+    "title": "Premium Commercial Office Space",
+    "subtitle": "Prime location in business district",
+    "description": "Fully furnished commercial office space in the heart of the business district. Ideal for startups, IT companies, and corporate offices. Located in a high-rise commercial tower with 24/7 security and modern amenities.",
+    "price": "₹1.85 Cr",
+    "priceNum": 18500000,
+    "city": "Pune",
+    "city_id": "city_pune",
+    "sub_area_id": "sub_koregaon_park",
+    "location": "Koregaon Park, Pune",
+    "pincode": "411001",
+    "category": "commercial",
+    "type": "Commercial",
+    "listingType": "For Sale",
+    "officeType": "Office Space",
+    "pantry": true,
+    "washrooms": 4,
+    "parking": 6,
+    "powerBackup": true,
+    "cabinCount": 5,
+    "conferenceRoom": true,
+    "area": 2800,
+    "furnishing": "Fully Furnished",
+    "amenities": [
+      "24/7 Security",
+      "High-Speed Elevators",
+      "Visitor Parking",
+      "CCTV Surveillance",
+      "Fire Safety Systems",
+      "Backup Generator"
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=900&auto=format&q=80",
+      "https://images.unsplash.com/photo-1577412647305-99122c7fee3b?w=900&auto=format&q=80"
+    ],
+    "imgs": [
+      "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=900&auto=format&q=80",
+      "https://images.unsplash.com/photo-1577412647305-99122c7fee3b?w=900&auto=format&q=80"
+    ],
+    "image": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=700&auto=format&q=75",
+    "img": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=700&auto=format&q=75",
+    "builder": "K. Raheja Corp",
+    "rating": 4.6,
+    "reviews": 18,
+    "featured": true,
+    "featuredRequested": true,
+    "requested_for": 1,
+    "granted_for": 1,
+    "featuredRequestDate": "2026-06-20T10:00:00+00:00",
+    "featuredPaymentStatus": "approved",
+    "featuredPaymentProof": "https://example.com/payment-commercial.jpg",
+    "featuredPaymentAmount": 499,
+    "featuredApprovedBy": "admin_d8e4eb35a37d472c87e7a0b55fab8129",
+    "featuredApprovedAt": "2026-06-20T10:30:00+00:00",
+    "featuredExpiryDate": "2026-07-20T17:39:36.195Z",
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-06-20T09:00:00+00:00",
+    "updatedAt": "2026-06-20T09:00:00+00:00",
+    "coordinates": {
+      "lat": 18.5397,
+      "lng": 73.9277
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Jehangir Hospital",
+        "distance": 1.2,
+        "travelTime": "4 min"
+      },
+      "school": {
+        "name": "Bishop's School",
+        "distance": 0.8,
+        "travelTime": "3 min"
+      },
+      "supermarket": {
+        "name": "Star Bazaar",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "petrol": {
+        "name": "Indian Oil Petrol Pump",
+        "distance": 0.6,
+        "travelTime": "2 min"
+      },
+      "station": {
+        "name": "Pune Railway Station",
+        "distance": 3.2,
+        "travelTime": "10 min"
+      },
+      "bank": {
+        "name": "HDFC Bank",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "restaurant": {
+        "name": "The O Hotel",
+        "distance": 0.4,
+        "travelTime": "2 min"
+      },
+      "atm": {
+        "name": "ICICI ATM",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Apollo Pharmacy",
+        "distance": 0.4,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Koregaon Park Bus Stop",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "college": {
+        "name": "Symbiosis Institute",
+        "distance": 1.5,
+        "travelTime": "5 min"
+      },
+      "park": {
+        "name": "Nehru Park",
+        "distance": 0.7,
+        "travelTime": "3 min"
+      },
+      "airport": {
+        "name": "Pune Airport",
+        "distance": 6.8,
+        "travelTime": "20 min"
       }
     }
   }

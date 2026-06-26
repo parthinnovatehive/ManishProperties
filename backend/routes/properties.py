@@ -9,10 +9,10 @@ from services.property_service import (
     set_property_status,
     update_property,
 )
-from flask_jwt_extended import jwt_required 
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt 
 from utils.helpers import error_response, success_response
 from utils.validators import MODERATION_STATUSES
-from services.cloudinary_service import upload_image, delete_image, upload_multiple_images
+from services.cloudinary_service import upload_image, delete_image, upload_multiple_images, validate_image
 from services.google_places_service import get_nearby_amenities, get_address_from_coordinates
 
 
@@ -101,12 +101,39 @@ def create_property_route():
 @properties_bp.patch("/<property_id>")
 @properties_bp.put("/properties/<property_id>")
 @properties_bp.patch("/properties/<property_id>")
-@role_required(["AGENT", "ADMIN", "SUPER_ADMIN"])
+@jwt_required()
 def update_property_route(property_id):
+    current_user_id = str(get_jwt_identity())
+    claims = get_jwt()
+    user_role = (claims.get("role") or "").upper()
+
+    # Allow AGENT, ADMIN, SUPER_ADMIN, or the property owner (USER)
+    if user_role not in {"AGENT", "ADMIN", "SUPER_ADMIN"}:
+        prop = get_property(property_id)
+        if not prop:
+            return error_response("Property not found", 404)
+        if str(prop.get("lister_id")) != current_user_id:
+            return error_response("Insufficient permissions!", 403)
+
     property_item = update_property(property_id, request.get_json(silent=True) or {})
     if not property_item:
         return error_response("Property not found", 404)
     return success_response("Property updated", data=property_item, property=property_item)
+
+
+@properties_bp.patch("/<property_id>/view")
+@properties_bp.patch("/properties/<property_id>/view")
+def track_view(property_id):
+    """Increment view count for a property"""
+    from services.json_service import load_json, save_json
+
+    properties = load_json("properties")
+    for prop in properties:
+        if str(prop.get("id")) == str(property_id):
+            prop["views"] = (prop.get("views") or 0) + 1
+            save_json("properties", properties)
+            return success_response("View tracked", data={"views": prop["views"]})
+    return error_response("Property not found", 404)
 
 
 @properties_bp.patch("/<property_id>/approve")
@@ -155,15 +182,23 @@ def delete_property_route(property_id):
 @properties_bp.post("/upload-image")
 @jwt_required()
 def upload_property_image():
-    """Upload a single image to Cloudinary"""
+    """Upload a single image to Cloudinary with category-based optimization"""
     try:
         if 'image' not in request.files:
             return error_response("No image file provided", 400)
         
         file = request.files['image']
+        category = request.args.get('category', 'default')
         folder = f"properties/{request.args.get('folder', 'general')}"
         
-        result = upload_image(file, folder)
+        if category not in ("property", "payment_proof", "default"):
+            return error_response("Invalid category. Use 'property', 'payment_proof', or 'default'", 400)
+        
+        validation = validate_image(file, category)
+        if not validation['valid']:
+            return error_response(validation['error'], 400)
+        
+        result = upload_image(file, folder, category=category)
         
         if result['success']:
             return success_response(
@@ -184,15 +219,24 @@ def upload_property_image():
 @properties_bp.post("/upload-images")
 @jwt_required()
 def upload_property_images():
-    """Upload multiple images to Cloudinary"""
+    """Upload multiple images to Cloudinary with category-based optimization"""
     try:
         if 'images' not in request.files:
             return error_response("No images provided", 400)
         
         files = request.files.getlist('images')
+        category = request.args.get('category', 'default')
         folder = f"properties/{request.args.get('folder', 'general')}"
         
-        results = upload_multiple_images(files, folder)
+        if category not in ("property", "payment_proof", "default"):
+            return error_response("Invalid category. Use 'property', 'payment_proof', or 'default'", 400)
+        
+        for file in files:
+            validation = validate_image(file, category)
+            if not validation['valid']:
+                return error_response(validation['error'], 400)
+        
+        results = upload_multiple_images(files, folder, category=category)
         
         success_results = [r for r in results if r['success']]
         

@@ -34,10 +34,18 @@ import { estateApi } from "@/lib/api";
 import { MapPicker } from "@/components/ui/MapPicker";
 
 const states = State.getStatesOfCountry("IN");
+
 type SubmitForm = {
+  category: string;
   listingType: string;
   propertyType: string;
   bedrooms: string;
+  officeType: string;
+  pantry: string;
+  washrooms: string;
+  powerBackup: string;
+  cabinCount: string;
+  conferenceRoom: string;
   title: string;
   description: string;
   price: string;
@@ -54,6 +62,9 @@ type SubmitForm = {
 };
 
 const totalSteps = 5;
+const residentialTypes = ["Apartment", "Villa", "Plot", "Penthouse", "Studio", "Row House", "Farmhouse"];
+const commercialTypes = ["Commercial", "Office", "Retail Space", "Warehouse", "Showroom", "Industrial", "Coworking", "Commercial Plot"];
+
 const amenityOptions = [
   "Swimming Pool",
   "Gymnasium",
@@ -120,9 +131,16 @@ export function SubmitPropertyPage() {
   };
   
   const [form, setForm] = useState<SubmitForm>({
+    category: "",
     listingType: "Sell",
     propertyType: "Apartment",
     bedrooms: "3",
+    officeType: "",
+    pantry: "no",
+    washrooms: "1",
+    powerBackup: "no",
+    cabinCount: "0",
+    conferenceRoom: "no",
     title: "",
     description: "",
     state: "",
@@ -187,14 +205,15 @@ export function SubmitPropertyPage() {
     formData.append('images', file);
 
     try {
-      const response = await apiClient.post('/api/properties/upload-images', formData, {
+      const response = await apiClient.post('/api/properties/upload-images?category=payment_proof', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      if (response.success && response.images && response.images.length > 0) {
-        const img = response.images[0];
+      const images = response.data?.images || response.images;
+      if (response.success && images && images.length > 0) {
+        const img = images[0];
         setPaymentProof({
           url: img.url,
           public_id: img.public_id,
@@ -239,7 +258,7 @@ export function SubmitPropertyPage() {
         });
       }, 200);
 
-      const response = await apiClient.post('/api/properties/upload-images', formData, {
+      const response = await apiClient.post('/api/properties/upload-images?category=property', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -248,8 +267,10 @@ export function SubmitPropertyPage() {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (response.success && response.images) {
-        const newImages = response.images.map((img: any) => ({
+      const images = response.data?.images || response.images;
+      const uploaded = response.data?.uploaded ?? response.uploaded ?? 0;
+      if (response.success && images && images.length > 0) {
+        const newImages = images.map((img: any) => ({
           url: img.url,
           public_id: img.public_id,
           width: img.width,
@@ -258,7 +279,7 @@ export function SubmitPropertyPage() {
         setUploadedImages(prev => [...prev, ...newImages]);
         toast.success(`${newImages.length} image(s) uploaded successfully!`);
       } else {
-        toast.error(response.message || "Failed to upload images");
+        toast.error(response.data?.message || response.message || `Uploaded ${uploaded} image(s), but no image data returned`);
       }
     } catch (error: any) {
       console.error('Upload failed:', error);
@@ -341,7 +362,12 @@ export function SubmitPropertyPage() {
     setError(null);
 
     switch (stepNumber) {
-      case 1: // Property Type
+      case 1: // Category + Property Type
+        if (!form.category) {
+          setError("Please select a property category (Residential or Commercial)");
+          toast.error("Please select a property category");
+          return false;
+        }
         if (!form.listingType) {
           setError("Please select a listing type (Sell, Rent, or PG)");
           toast.error("Please select a listing type");
@@ -352,9 +378,14 @@ export function SubmitPropertyPage() {
           toast.error("Please select a property type");
           return false;
         }
-        if (!form.bedrooms) {
+        if (form.category === "residential" && !form.bedrooms) {
           setError("Please select number of bedrooms");
           toast.error("Please select number of bedrooms");
+          return false;
+        }
+        if (form.category === "commercial" && !form.officeType) {
+          setError("Please select an office/space type");
+          toast.error("Please select an office/space type");
           return false;
         }
         return true;
@@ -507,6 +538,7 @@ export function SubmitPropertyPage() {
 
       const propertyPayload = {
         id: crypto.randomUUID(),
+        category: form.category || "residential",
         lister_id: userId,
         lister_type: userRole,
         lister_name: userName,
@@ -522,12 +554,20 @@ export function SubmitPropertyPage() {
         fullLocation: `${form.address}, ${form.city}, ${form.state}, ${form.pincode}`,
         type: form.propertyType,
         listingType: form.listingType === "Sell" ? "For Sale" : form.listingType === "Rent" ? "For Rent" : "PG",
-        beds: Number(form.bedrooms),
-        bathrooms: Number(form.bedrooms),
+        beds: form.category === "residential" ? Number(form.bedrooms) : 0,
+        bathrooms: form.category === "residential" ? Number(form.bedrooms) : 1,
         area: Number(form.area),
         price: `₹${form.price}`,
         priceNum: Number(form.price),
         furnishing: form.furnishing,
+        ...(form.category === "commercial" && {
+          officeType: form.officeType,
+          pantry: form.pantry === "yes",
+          washrooms: Number(form.washrooms),
+          powerBackup: form.powerBackup === "yes",
+          cabinCount: Number(form.cabinCount),
+          conferenceRoom: form.conferenceRoom === "yes",
+        }),
         amenities: form.amenities,
         coordinates: finalCoords,
         nearbyAmenities: finalAmenities,
@@ -549,7 +589,7 @@ export function SubmitPropertyPage() {
         // ✅ Featured fields
         featured: featuredOption === "plan",
         featuredRequested: featuredOption === "plan",
-        requested_for: featuredOption === "plan" ? selectedPlanData?.duration || 0 : 0,
+        requested_for: featuredOption === "plan" ? selectedPlanData?.requested_for || 0 : 0,
         granted_for: null,
         featuredRequestDate: featuredOption === "plan" ? new Date().toISOString() : null,
         featuredPaymentStatus: featuredOption === "plan" ? "pending" : null,
@@ -654,6 +694,51 @@ export function SubmitPropertyPage() {
               <h2 className="mb-1.5 font-serif text-[22px] text-estate-navy">What are you listing?</h2>
               <p className="mb-7 text-sm text-estate-text-sec">Tell us about the nature of your property listing</p>
 
+              {/* Category Selection */}
+              <div className="mb-6">
+                <div className="mb-3 text-[13px] font-bold uppercase tracking-[0.04em] text-estate-text">Category</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      update("category", "residential");
+                      if (form.category !== "residential") {
+                        update("propertyType", "Apartment");
+                        update("bedrooms", "3");
+                      }
+                    }}
+                    className={`p-6 rounded-xl border-2 text-center transition ${
+                      form.category === "residential"
+                        ? "border-estate-navy bg-estate-blue-pale"
+                        : "border-estate-border hover:border-estate-navy/50"
+                    }`}
+                  >
+                    <span className="text-4xl block mb-2">🏠</span>
+                    <span className="font-bold text-estate-navy">Residential</span>
+                    <p className="text-xs text-estate-muted mt-1">Apartments, Villas, Studios</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      update("category", "commercial");
+                      if (form.category !== "commercial") {
+                        update("propertyType", "Commercial");
+                        update("officeType", "Office Space");
+                      }
+                    }}
+                    className={`p-6 rounded-xl border-2 text-center transition ${
+                      form.category === "commercial"
+                        ? "border-estate-navy bg-estate-blue-pale"
+                        : "border-estate-border hover:border-estate-navy/50"
+                    }`}
+                  >
+                    <span className="text-4xl block mb-2">🏢</span>
+                    <span className="font-bold text-estate-navy">Commercial</span>
+                    <p className="text-xs text-estate-muted mt-1">Offices, Shops, Warehouses</p>
+                  </button>
+                </div>
+              </div>
+
               <ChoiceGroup
                 title="I want to"
                 values={["Sell", "Rent", "PG"]}
@@ -663,23 +748,47 @@ export function SubmitPropertyPage() {
                 strong
               />
 
-              <ChoiceGroup
-                title="Property Type"
-                values={["Apartment", "Villa", "Plot", "Commercial", "Penthouse", "Studio", "Row House", "Farmhouse"]}
-                active={form.propertyType}
-                onSelect={(value) => update("propertyType", value)}
-                columns="grid-cols-2 sm:grid-cols-4"
-              />
+              {form.category === "residential" && (
+                <>
+                  <ChoiceGroup
+                    title="Property Type"
+                    values={residentialTypes}
+                    active={form.propertyType}
+                    onSelect={(value) => update("propertyType", value)}
+                    columns="grid-cols-2 sm:grid-cols-4"
+                  />
 
-              {["Apartment", "Villa", "Studio", "Row House"].includes(form.propertyType) && (
-                <ChoiceGroup
-                  title="Bedrooms"
-                  values={["1", "2", "3", "4", "5", "6+"]}
-                  active={form.bedrooms}
-                  onSelect={(value) => update("bedrooms", value)}
-                  columns="grid-cols-6"
-                  navy
-                />
+                  {["Apartment", "Villa", "Studio", "Row House"].includes(form.propertyType) && (
+                    <ChoiceGroup
+                      title="Bedrooms"
+                      values={["1", "2", "3", "4", "5", "6+"]}
+                      active={form.bedrooms}
+                      onSelect={(value) => update("bedrooms", value)}
+                      columns="grid-cols-6"
+                      navy
+                    />
+                  )}
+                </>
+              )}
+
+              {form.category === "commercial" && (
+                <>
+                  <ChoiceGroup
+                    title="Property Type"
+                    values={commercialTypes}
+                    active={form.propertyType}
+                    onSelect={(value) => update("propertyType", value)}
+                    columns="grid-cols-2 sm:grid-cols-4"
+                  />
+
+                  <ChoiceGroup
+                    title="Office / Space Type"
+                    values={["Office Space", "Retail Space", "Warehouse", "Showroom", "Industrial", "Coworking", "Commercial Plot"]}
+                    active={form.officeType}
+                    onSelect={(value) => update("officeType", value)}
+                    columns="grid-cols-2 sm:grid-cols-4"
+                  />
+                </>
               )}
             </div>
           )}
@@ -937,6 +1046,69 @@ export function SubmitPropertyPage() {
                 />
               </div>
 
+              {form.category === "commercial" && (
+                <div className="mb-6 rounded-[18px] border border-estate-border/80 bg-estate-bg p-4">
+                  <div className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-estate-muted">Commercial Details</div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">Pantry / Kitchen</span>
+                      <select
+                        value={form.pantry}
+                        onChange={(e) => update("pantry", e.target.value)}
+                        className="focus-field w-full rounded-lg border-[1.5px] border-estate-border py-2.5 px-3 text-sm"
+                      >
+                        <option value="no">Not Available</option>
+                        <option value="yes">Available</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">Washrooms</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={form.washrooms}
+                        onChange={(e) => update("washrooms", e.target.value)}
+                        placeholder="e.g. 2"
+                        className="focus-field w-full rounded-lg border-[1.5px] border-estate-border py-2.5 px-3 text-sm"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">Power Backup</span>
+                      <select
+                        value={form.powerBackup}
+                        onChange={(e) => update("powerBackup", e.target.value)}
+                        className="focus-field w-full rounded-lg border-[1.5px] border-estate-border py-2.5 px-3 text-sm"
+                      >
+                        <option value="no">Not Available</option>
+                        <option value="yes">Available</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">Cabins / Offices</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={form.cabinCount}
+                        onChange={(e) => update("cabinCount", e.target.value)}
+                        placeholder="e.g. 4"
+                        className="focus-field w-full rounded-lg border-[1.5px] border-estate-border py-2.5 px-3 text-sm"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">Conference Room</span>
+                      <select
+                        value={form.conferenceRoom}
+                        onChange={(e) => update("conferenceRoom", e.target.value)}
+                        className="focus-field w-full rounded-lg border-[1.5px] border-estate-border py-2.5 px-3 text-sm"
+                      >
+                        <option value="no">Not Available</option>
+                        <option value="yes">Available</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+              )}
+
               <ChoiceGroup
                 title="Furnishing Status"
                 values={["Unfurnished", "Semi-Furnished", "Fully Furnished"]}
@@ -1075,8 +1247,9 @@ export function SubmitPropertyPage() {
               <div className="rounded-[14px] bg-estate-bg p-5">
                 <div className="mb-3.5 text-sm font-bold text-estate-navy">Listing Summary</div>
                 {[
+                  ["Category", form.category === "residential" ? "Residential" : form.category === "commercial" ? "Commercial" : "Not set"],
                   ["Listing Type", form.listingType || "Not set"],
-                  ["Property Type", `${form.bedrooms ? `${form.bedrooms} BHK ` : ""}${form.propertyType}`],
+                  ["Property Type", form.category === "commercial" ? form.propertyType : `${form.bedrooms ? `${form.bedrooms} BHK ` : ""}${form.propertyType}`],
                   ["Location", form.city ? `${form.address || "-"}, ${form.city}, ${form.state}` : "Not set"],
                   ["Price", form.price ? `₹${Number(form.price).toLocaleString("en-IN")}` : "Not set"],
                   ["Images", `${uploadedImages.length} uploaded`],
@@ -1127,7 +1300,7 @@ export function SubmitPropertyPage() {
               {/* Featured Plans */}
               <div className="space-y-4">
                 <h3 className="text-sm font-bold uppercase text-estate-text">Featured Plans</h3>
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   {featuredPlans.map((plan) => (
                     <button
                       key={plan.id}
