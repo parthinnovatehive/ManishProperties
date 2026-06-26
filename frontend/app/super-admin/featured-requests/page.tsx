@@ -45,7 +45,10 @@ interface Notification {
   message: string;
 }
 
-export default function SuperAdminFeaturedRequestsPage({ role = "super-admin" }: { role?: string }) { 
+export default function SuperAdminFeaturedRequestsPage() {
+  // ✅ Role defined inside component
+  const role = "super-admin";
+  
   const [properties, setProperties] = useState<Property[]>([]);
   const [featuredRequests, setFeaturedRequests] = useState<Property[]>([]);
   const [approvedFeatured, setApprovedFeatured] = useState<Property[]>([]);
