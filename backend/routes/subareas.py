@@ -58,7 +58,7 @@ def update_subarea(subarea_id):
     
     try:
         token = token.split(' ')[1]
-        data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+        data = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
         role = data.get('role', '').upper()
         if role not in ['ADMIN', 'SUPER_ADMIN']:
             return jsonify({'message': 'Admin access required!'}), 403

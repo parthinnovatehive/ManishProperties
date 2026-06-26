@@ -99,7 +99,7 @@ def dashboard():
 def show(admin_id):
     token = request.headers.get('Authorization', '').split(' ')[-1]
     try:
-        payload = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
         requester_id = payload.get("sub") or payload.get("identity")
         requester_role = (payload.get("role") or "").upper()
         if requester_role != "SUPER_ADMIN" and requester_id != admin_id:
@@ -119,7 +119,7 @@ def show(admin_id):
 def update(admin_id):
     token = request.headers.get('Authorization', '').split(' ')[-1]
     try:
-        payload = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
         requester_id = payload.get("sub") or payload.get("identity")
         requester_role = (payload.get("role") or "").upper()
         if requester_role != "SUPER_ADMIN" and requester_id != admin_id:

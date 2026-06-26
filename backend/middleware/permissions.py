@@ -15,7 +15,7 @@ def role_required(allowed_roles):
             
             try:
                 token = token.split(' ')[1]
-                data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
+                data = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
                 if data.get('role', '').upper() not in allowed_set:
                     return jsonify({'message': 'Insufficient permissions!'}), 403
             except jwt.InvalidTokenError:
