@@ -151,15 +151,15 @@ export default function AdminAgentsPage() {
   };
 
   const fetchSubareasForCity = async (cityId: string) => {
-    try {
-      const allSubareas = await estateApi.content.subareas.list();
-      const citySubareas = allSubareas.filter(s => s.city_id === cityId);
-      setSubareas(citySubareas);
-    } catch (error) {
-      console.error("Error fetching subareas for city:", error);
-      setSubareas([]);
-    }
-  };
+  try {
+    const allSubareas = await estateApi.content.subareas.list<Subarea>();
+    const citySubareas = allSubareas.filter((s) => s.city_id === cityId);
+    setSubareas(citySubareas);
+  } catch (error) {
+    console.error("Error fetching subareas for city:", error);
+    setSubareas([]);
+  }
+};
 
   const fetchCities = () => {
     estateApi.cities.list<City>().then((data) => {
@@ -240,7 +240,8 @@ export default function AdminAgentsPage() {
 
       // If subareas is empty or stale, fetch fresh data
       if (currentSubareas.length === 0 && adminCity) {
-        const freshSubareas = await estateApi.content.subareas.list();
+const freshSubareas = await estateApi.content.subareas.list<Subarea>();
+
         const citySubareas = freshSubareas.filter(s => s.city_id === adminCity.id);
         setSubareas(citySubareas);
         currentSubareas = citySubareas;
