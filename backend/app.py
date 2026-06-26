@@ -6,20 +6,36 @@ try:
     from config import Config
 except ImportError:
     from .config import Config
-from routes.admins import admins_bp
-from routes.agents import agents_bp
-from routes.appointments import appointments_bp
-from routes.auth import auth_bp
-from routes.complaints import complaints_bp
-from routes.content import content_bp
-from routes.messages import messages_bp
-from routes.properties import properties_bp
-from routes.super_admin import super_admin_bp
-from routes.users import users_bp
-from utils.helpers import error_response
-from routes.cities import cities_bp
-from routes.subareas import subareas_bp
-from routes.notifications import notifications_bp
+try:
+    from routes.admins import admins_bp
+    from routes.agents import agents_bp
+    from routes.appointments import appointments_bp
+    from routes.auth import auth_bp
+    from routes.complaints import complaints_bp
+    from routes.content import content_bp
+    from routes.messages import messages_bp
+    from routes.properties import properties_bp
+    from routes.super_admin import super_admin_bp
+    from routes.users import users_bp
+    from utils.helpers import error_response
+    from routes.cities import cities_bp
+    from routes.subareas import subareas_bp
+    from routes.notifications import notifications_bp
+except ImportError:
+    from .routes.admins import admins_bp
+    from .routes.agents import agents_bp
+    from .routes.appointments import appointments_bp
+    from .routes.auth import auth_bp
+    from .routes.complaints import complaints_bp
+    from .routes.content import content_bp
+    from .routes.messages import messages_bp
+    from .routes.properties import properties_bp
+    from .routes.super_admin import super_admin_bp
+    from .routes.users import users_bp
+    from .utils.helpers import error_response
+    from .routes.cities import cities_bp
+    from .routes.subareas import subareas_bp
+    from .routes.notifications import notifications_bp
 
 jwt = JWTManager()
 
