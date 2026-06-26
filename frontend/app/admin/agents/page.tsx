@@ -15,7 +15,7 @@ interface Agent {
   rating: number;
   totalRatings?: number;
   experience?: string;
-  status?: "active" | "inactive" | "pending";
+  status?: string;
   city_id?: string;
   sub_area_ids?: string[];
   propertyCount?: number;
@@ -365,13 +365,13 @@ export default function AdminAgentsPage() {
         }
       }
 
-      // ✅ Check if all requested subareas are assigned
-      const remainingRequests = (agent?.sub_area_ids || []).filter(id => id !== subareaId);
-      if (remainingRequests.length === 0 && agent?.status === "pending") {
-        alert("✅ All requested subareas assigned! You can now approve this agent.");
-      } else {
-        alert(`✅ Subarea assigned successfully! ${remainingRequests.length} subarea(s) remaining to assign.`);
-      }
+     // ✅ Check if all requested subareas are assigned
+const remainingRequests = (agent?.sub_area_ids || []).filter(id => id !== subareaId);
+if (remainingRequests.length === 0 && agent?.status === "pending") {
+  alert("✅ All requested subareas assigned! You can now approve this agent.");
+} else {
+  alert(`✅ Subarea assigned successfully! ${remainingRequests.length} subarea(s) remaining to assign.`);
+}
 
       // ✅ Refresh data
       if (adminCity) {
@@ -584,7 +584,7 @@ export default function AdminAgentsPage() {
     const agent = agentsList.find((item) => item.id === id);
     if (!agent) return;
 
-    let newStatus: "active" | "inactive" | "pending";
+    let newStatus: string;
     let statusMessage: string;
 
     if (agent.status === "pending") {
