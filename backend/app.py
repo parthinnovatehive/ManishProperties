@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Flask, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -93,7 +95,7 @@ def register_error_handlers(app):
     @app.errorhandler(Exception)
     def unhandled_error(error):
         app.logger.exception(error)
-        return error_response("Server error", 500)
+        return error_response(f"Server error: {str(error)}", 500, error_detail=traceback.format_exc())
 
 
 def register_jwt_handlers(jwt_manager):

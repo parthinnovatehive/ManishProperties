@@ -11,12 +11,16 @@ cities_bp = Blueprint("cities", __name__)
 @cities_bp.get("/")
 @cities_bp.get("")
 def list_cities():
-    cities = load_json("cities")
-    return success_response(
-        "Cities fetched",
-        data=cities,
-        cities=cities,
-    )
+    try:
+        cities = load_json("cities")
+        return success_response(
+            "Cities fetched",
+            data=cities,
+            cities=cities,
+        )
+    except Exception as e:
+        current_app.logger.exception(f"Error in list_cities: {e}")
+        return error_response(str(e), 500)
 
 
 @cities_bp.post("/")

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import os
+import traceback
 from threading import RLock
 from pathlib import Path
 from flask import current_app
@@ -9,10 +10,31 @@ from flask import current_app
 _LOCK = RLock()
 
 
+def _resolve_data_dir():
+    configured = Path(current_app.config["JSON_DATA_DIR"])
+    if configured.exists():
+        return configured
+
+    candidates = [
+        configured,
+        Path.cwd() / "database",
+        Path(__file__).resolve().parent.parent.parent / "database",
+        Path(__file__).resolve().parent.parent / "database",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    configured.mkdir(parents=True, exist_ok=True)
+    return configured
+
+
 def _data_dir():
-    data_dir = Path(current_app.config["JSON_DATA_DIR"])
-    data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir
+    try:
+        return _resolve_data_dir()
+    except Exception as e:
+        current_app.logger.error(f"_resolve_data_dir failed: {e}")
+        raise
 
 
 def _path(collection):
@@ -22,7 +44,11 @@ def _path(collection):
 
 def load_json(collection, default=None):
     default_value = [] if default is None else default
-    path = _path(collection)
+    try:
+        path = _path(collection)
+    except Exception as e:
+        current_app.logger.error(f"load_json({collection}) - path resolution failed: {e}")
+        return default_value
     if not path.exists():
         save_json(collection, default_value)
         return default_value

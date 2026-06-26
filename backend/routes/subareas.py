@@ -15,29 +15,33 @@ def list_subareas():
     if request.method == "OPTIONS":
         return "", 200
     
-    subareas = load_json("sub_areas")
-    
-    # ✅ Ensure all subareas have agent_ids (migration from agent_id to agent_ids)
-    updated = False
-    for subarea in subareas:
-        if "agent_id" in subarea and "agent_ids" not in subarea:
-            # Migrate from single agent to multiple
-            subarea["agent_ids"] = [subarea["agent_id"]] if subarea.get("agent_id") else []
-            del subarea["agent_id"]
-            updated = True
-        elif "agent_ids" not in subarea:
-            subarea["agent_ids"] = []
-            updated = True
-    
-    if updated:
-        from services.json_service import save_json
-        save_json("sub_areas", subareas)
-    
-    return success_response(
-        "Subareas fetched successfully",
-        data=subareas,
-        subareas=subareas
-    )
+    try:
+        subareas = load_json("sub_areas")
+        
+        # ✅ Ensure all subareas have agent_ids (migration from agent_id to agent_ids)
+        updated = False
+        for subarea in subareas:
+            if "agent_id" in subarea and "agent_ids" not in subarea:
+                # Migrate from single agent to multiple
+                subarea["agent_ids"] = [subarea["agent_id"]] if subarea.get("agent_id") else []
+                del subarea["agent_id"]
+                updated = True
+            elif "agent_ids" not in subarea:
+                subarea["agent_ids"] = []
+                updated = True
+        
+        if updated:
+            from services.json_service import save_json
+            save_json("sub_areas", subareas)
+        
+        return success_response(
+            "Subareas fetched successfully",
+            data=subareas,
+            subareas=subareas
+        )
+    except Exception as e:
+        current_app.logger.exception(f"Error in list_subareas: {e}")
+        return error_response(str(e), 500)
 
 
 @subareas_bp.route("/<subarea_id>", methods=["PATCH", "OPTIONS"])

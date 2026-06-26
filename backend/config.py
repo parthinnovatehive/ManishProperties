@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = BASE_DIR.parent
+PROJECT_ROOT = BASE_DIR.parent.resolve()
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -15,7 +15,11 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or os.getenv("JWT_SECRET") or "estateelite-jwt-dev-secret"
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-    JSON_DATA_DIR = Path(os.getenv("JSON_DATA_DIR", PROJECT_ROOT / "database"))
+    _env_data_dir = os.getenv("JSON_DATA_DIR")
+    if _env_data_dir:
+        JSON_DATA_DIR = Path(_env_data_dir)
+    else:
+        JSON_DATA_DIR = (PROJECT_ROOT / "database").resolve()
     CORS_ORIGINS = os.getenv(
         "CORS_ORIGINS",
         "http://localhost:3000,http://127.0.0.1:3000",
