@@ -65,7 +65,7 @@ export function PropertyAmenitiesMap({ lat, lng, onAmenitiesFetched }: PropertyA
   const fetchAmenities = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiClient.post('/api/properties/fetch-amenities', {
+      const response = await apiClient.post<{ success: boolean; data: Amenities }>('/api/properties/fetch-amenities', {
         lat,
         lng,
         radius: 2000,
@@ -144,7 +144,7 @@ export function PropertyAmenitiesMap({ lat, lng, onAmenitiesFetched }: PropertyA
 
           {/* Amenity Markers - Show top 3 from each category */}
           {amenities && Object.entries(amenities).map(([category, items]) => 
-            items.slice(0, 3).map((item, index) => {
+            items.slice(0, 3).map((item: Amenity, index: number) => {
               // We need to geocode the address to get coordinates
               // For now, we'll use a placeholder marker
               // In production, you'd use Google Places API to get coordinates
@@ -197,7 +197,7 @@ export function PropertyAmenitiesMap({ lat, lng, onAmenitiesFetched }: PropertyA
                   {category}
                 </p>
                 <div className="space-y-1">
-                  {items.slice(0, 3).map((item, index) => (
+                  {items.slice(0, 3).map((item: Amenity, index: number) => (
                     <div key={index} className="text-xs text-gray-600">
                       {item.name} ({item.distance}km)
                     </div>

@@ -33,7 +33,7 @@ export const estateApi = {
     getByIds: async (ids: string[]) => {
       if (!ids || ids.length === 0) return [];
       try {
-        const response = await apiClient.get(`${API_ENDPOINTS.PROPERTIES_COMPARE}?ids=${ids.join(",")}`);
+        const response = await apiClient.get<{ properties: Property[] }>(`${API_ENDPOINTS.PROPERTIES_COMPARE}?ids=${ids.join(",")}`);
         return response.properties || [];
       } catch (error) {
         console.error("Failed to fetch properties for comparison:", error);

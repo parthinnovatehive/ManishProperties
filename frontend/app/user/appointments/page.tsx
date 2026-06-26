@@ -286,7 +286,7 @@ export default function UserAppointmentsPage() {
     return date < today;
   };
 
-  const getPropertyImage = (property: Property | null): string => {
+  const getPropertyImage = (property: Property | null | undefined): string => {
     if (!property) return "https://placehold.co/400x300?text=No+Image";
     return property.image || 
            (property.images && property.images[0]) || 

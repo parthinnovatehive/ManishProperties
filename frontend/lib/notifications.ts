@@ -9,7 +9,9 @@ export type NotificationType =
   | "complaint_update"
   | "property_approved"
   | "property_rejected"
-  | "lead_assigned";
+  | "lead_assigned"
+  | "account_update";
+
 
 export interface Notification {
   id: string;

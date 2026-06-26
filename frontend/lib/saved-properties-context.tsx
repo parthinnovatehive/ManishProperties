@@ -7,8 +7,8 @@ import { getAdminData, clearAllAuthData, type AdminData } from "@/lib/utils/toke
 interface SavedPropertiesContextType {
   savedProperties: string[];
   savedCount: number;
-  toggleSaved: (propertyId: string) => Promise<void>;
-  isSaved: (propertyId: string) => boolean;
+  toggleSaved: (propertyId: string | number) => Promise<void>;
+  isSaved: (propertyId: string | number) => boolean;
   loading: boolean;
 }
 
@@ -71,7 +71,7 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
     };
   }, [fetchSavedProperties]);
 
-  const toggleSaved = async (propertyId: string) => {
+  const toggleSaved = async (propertyId: string | number) => {
     const admin = getAdminData();
     if (!admin) {
       // Redirect to login if not authenticated
@@ -79,10 +79,11 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
       return;
     }
 
-    const isCurrentlySaved = savedProperties.includes(propertyId);
+    const strPropertyId = String(propertyId);
+    const isCurrentlySaved = savedProperties.includes(strPropertyId);
     const updatedSaved = isCurrentlySaved
-      ? savedProperties.filter((id) => id !== propertyId)
-      : [...savedProperties, propertyId];
+      ? savedProperties.filter((id) => id !== strPropertyId)
+      : [...savedProperties, strPropertyId];
 
     // Optimistic update
     setSavedProperties(updatedSaved);
@@ -108,7 +109,7 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
   };
 
   const isSaved = useCallback(
-    (propertyId: string) => savedProperties.includes(propertyId),
+    (propertyId: string | number) => savedProperties.includes(String(propertyId)),
     [savedProperties]
   );
 

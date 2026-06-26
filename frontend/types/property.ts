@@ -101,6 +101,7 @@ export type Property = {
   views?: number | null;
   inquiries?: number | null;
   rejectReason?: string | null;
+  moderationStatus?: string;
 
   lister_id?: string;
   lister_type?: string;

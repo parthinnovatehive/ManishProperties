@@ -49,7 +49,7 @@ export function PropertyImageUpload({
         });
       }, 200);
 
-      const response = await apiClient.post('/api/properties/upload-images', formData, {
+      const response = await apiClient.post<{ success: boolean; images: { url: string }[] }>('/api/properties/upload-images', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

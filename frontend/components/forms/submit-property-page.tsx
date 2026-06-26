@@ -103,7 +103,7 @@ export function SubmitPropertyPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [coords, setCoords] = useState<any>(null);
-  const { user } = useAuth();
+  useAuth();
   const [nearbyAmenities, setNearbyAmenities] = useState<any>(null);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -184,7 +184,7 @@ export function SubmitPropertyPage() {
   useEffect(() => {
     const fetchFeaturedPlans = async () => {
       try {
-        const response = await apiClient.get('/api/content/featured-plans');
+        const response = await apiClient.get<{ success: boolean; plans: any[] }>('/api/content/featured-plans');
         if (response.success) {
           setFeaturedPlans(response.plans || []);
         }
@@ -205,7 +205,7 @@ export function SubmitPropertyPage() {
     formData.append('images', file);
 
     try {
-      const response = await apiClient.post('/api/properties/upload-images?category=payment_proof', formData, {
+      const response = await apiClient.post<{ success: boolean; data?: { images?: { url: string; public_id: string; width: number; height: number }[] }; images?: { url: string; public_id: string; width: number; height: number }[] }>('/api/properties/upload-images?category=payment_proof', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -258,7 +258,7 @@ export function SubmitPropertyPage() {
         });
       }, 200);
 
-      const response = await apiClient.post('/api/properties/upload-images?category=property', formData, {
+      const response = await apiClient.post<{ success: boolean; data?: { images?: { url: string; public_id: string; width: number; height: number }[]; uploaded?: number; message?: string }; images?: { url: string; public_id: string; width: number; height: number }[]; uploaded?: number; message?: string }>('/api/properties/upload-images?category=property', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

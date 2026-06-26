@@ -59,7 +59,7 @@ export default function AdminAgentsPage() {
   const [availableSubareas, setAvailableSubareas] = useState<Subarea[]>([]);
   const [adminCity, setAdminCity] = useState<City | null>(null);
   const [adminData, setAdminData] = useState<AdminData | null>(null);
-  const [activeTab, setActiveTab] = useState<"assigned" | "requested">("assigned");
+  const [activeTab, setActiveTab] = useState<"assigned" | "requested" | "available">("assigned");
   const [properties, setProperties] = useState<any[]>([]);
 
   // Filter & Sort States

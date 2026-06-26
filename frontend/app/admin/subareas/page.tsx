@@ -113,11 +113,11 @@ export default function AdminSubareasPage() {
 
   const toggleAgentAssignment = async (subareaId: string, agentId: string, isAssigned: boolean) => {
     try {
-      const payload = isAssigned
+      const payload: { remove_agent?: string; add_agent?: string } = isAssigned
         ? { remove_agent: agentId }
         : { add_agent: agentId };
 
-      await estateApi.content.subareas.update(subareaId, payload);
+      await estateApi.content.subareas.update<{ remove_agent?: string; add_agent?: string }>(subareaId, payload);
 
       setSubareas(prev =>
         prev.map(s => {

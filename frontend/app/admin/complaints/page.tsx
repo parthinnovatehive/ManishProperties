@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import { X, AlertCircle, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import type { Property } from "@/types";
 
 interface Complaint {
   id: string;
@@ -16,27 +17,6 @@ interface Complaint {
   resolvedAt: string | null;
   resolutionNotes: string | null;
   actionTaken: string | null;
-}
-
-interface Property {
-  id: string;
-  title: string;
-  location: string;
-  city: string;
-  price: string;
-  priceNum?: number;
-  type: string;
-  listingType?: string;
-  beds?: number;
-  bathrooms?: number;
-  area?: number;
-  status: string;
-  moderationStatus: string;
-  image?: string;
-  images?: string[];
-  lister_type: string;
-  lister_id: string;
-  lister_name?: string;
 }
 
 interface User {

@@ -10,6 +10,7 @@ import { MapPin, Award, ShieldCheck, Star, KeyRound, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getAdminData } from "@/lib/utils/token";
 import { toast } from "sonner";
+import type { Property } from "@/types";
 
 interface Subarea {
   id: string;
@@ -22,13 +23,6 @@ interface Subarea {
 interface City {
   id: string;
   name: string;
-}
-
-interface Property {
-  id: string;
-  status: string;
-  lister_id: string;
-  lister_type: string;
 }
 
 interface Appointment {
@@ -122,7 +116,7 @@ export default function AgentProfilePage() {
       ).length;
       setCompletedDeals(completedProps);
 
-      const allAppointments = await estateApi.appointments.list();
+      const allAppointments = await estateApi.appointments.list<Appointment>();
       const agentAppointments = allAppointments.filter(
         (a: Appointment) => a.agentId === agentId
       );

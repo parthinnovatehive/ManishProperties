@@ -38,10 +38,9 @@ interface AppointmentCardProps {
   appointment: Appointment;
   onStatusChange: (id: string, newStatus: Appointment["status"]) => void;
   properties: any[];
-  users: User[];
 }
 
-function AppointmentCard({ appointment, onStatusChange, properties, users }: AppointmentCardProps) {
+function AppointmentCard({ appointment, onStatusChange, properties }: AppointmentCardProps) {
   
   const property = properties?.find(p => String(p.id) === String(appointment.propertyId));
 // Use the client fields directly from appointment
@@ -249,7 +248,7 @@ export default function AgentAppointmentsPage() {
     }
 
     // Fetch all appointments
-    let allAppointments = [];
+    let allAppointments: Appointment[] = [];
     try {
       allAppointments = await estateApi.appointments.list<Appointment>();
     } catch (appointmentError) {

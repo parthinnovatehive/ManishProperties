@@ -70,14 +70,13 @@ export default function AdminAgentsPage() {
       estateApi.users.list<any>().catch(() => [] as any[]),
     ]).then(([items, allProperties, users]) => {
       setProperties(allProperties);
-      const agentRatings = new Map<string, { rating: number; totalRatings: number }>();
+      const agentRatings = new Map<string, { rating: number; totalRatings: number; sum: number }>();
       for (const user of users) {
         const ratings = (user as any).agentRatings;
         if (!ratings) continue;
         for (const entry of Object.values(ratings) as any[]) {
           if (!entry?.agentEmail || !entry?.rating) continue;
-          const existing = agentRatings.get(entry.agentEmail) || { rating: 0, totalRatings: 0, sum: 0 };
-          existing.sum = (existing as any).sum || 0;
+          const existing: { rating: number; totalRatings: number; sum: number } = agentRatings.get(entry.agentEmail) || { rating: 0, totalRatings: 0, sum: 0 };
           existing.sum += Number(entry.rating);
           existing.totalRatings += 1;
           existing.rating = Math.round((existing.sum / existing.totalRatings) * 10) / 10;
@@ -105,10 +104,10 @@ export default function AdminAgentsPage() {
 
   const fetchSubareas = async () => {
     try {
-      const data = await estateApi.content.subareas.list();
+      const data = await estateApi.content.subareas.list<any>();
       console.log("Subareas loaded:", data);
-      console.log("Subareas with agents:", data.filter(s => (s.agent_ids || []).length > 0));
-      console.log("Subareas without agents:", data.filter(s => (s.agent_ids || []).length === 0));
+      console.log("Subareas with agents:", data.filter((s: any) => (s.agent_ids || []).length > 0));
+      console.log("Subareas without agents:", data.filter((s: any) => (s.agent_ids || []).length === 0));
       setSubareas(data);
     } catch (error: any) {
       console.error("Error loading subareas from API:", error);

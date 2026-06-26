@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import Link from "next/link";
+import type { Property } from "@/types";
 
 interface User {
   id: string;
@@ -15,37 +16,6 @@ interface User {
   joinedDate?: string;
   savedProperties: string[];
   status?: "active" | "suspended";
-}
-
-interface Property {
-  id: string;
-  title: string;
-  subtitle?: string;
-  description?: string;
-  price: string;
-  priceNum?: number;
-  location: string;
-  city?: string;
-  type?: string;
-  listingType?: string;
-  beds?: number;
-  bathrooms?: number;
-  baths?: number;
-  area?: number;
-  amenities?: string[];
-  status: string;
-  moderationStatus?: string;
-  image?: string;
-  images?: string[];
-  lister_type?: string;
-  lister_id?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  builder?: string;
-  rating?: number;
-  reviews?: number;
-  featured?: boolean;
-  isNew?: boolean;
 }
 
 export default function AdminUsersPage() {
@@ -133,8 +103,8 @@ export default function AdminUsersPage() {
           ? a.email.localeCompare(b.email)
           : b.email.localeCompare(a.email);
       } else if (sortBy === "joinedDate") {
-        const dateA = new Date(a.joinedDate === "Not available" ? "1970-01-01" : a.joinedDate);
-        const dateB = new Date(b.joinedDate === "Not available" ? "1970-01-01" : b.joinedDate);
+        const dateA = new Date(a.joinedDate === "Not available" ? "1970-01-01" : (a.joinedDate || "1970-01-01"));
+        const dateB = new Date(b.joinedDate === "Not available" ? "1970-01-01" : (b.joinedDate || "1970-01-01"));
         return sortOrder === "asc"
           ? dateA.getTime() - dateB.getTime()
           : dateB.getTime() - dateA.getTime();

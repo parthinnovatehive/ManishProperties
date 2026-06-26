@@ -7,10 +7,10 @@ const STORAGE_KEY = "property_comparison_selection";
 
 interface ComparisonContextType {
   selectedIds: string[];
-  toggleProperty: (id: string) => void;
+  toggleProperty: (id: string | number) => void;
   selectAll: (ids: string[]) => void;
   deselectAll: () => void;
-  isSelected: (id: string) => boolean;
+  isSelected: (id: string | number) => boolean;
   clearSelection: () => void;
   canSelectMore: boolean;
   selectedCount: number;
@@ -60,11 +60,12 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
     }
   }, [selectedIds]);
 
-  const toggleProperty = useCallback((id: string) => {
+  const toggleProperty = useCallback((id: string | number) => {
+    const strId = String(id);
     setSelectedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((item) => item !== id);
+      if (prev.includes(strId)) return prev.filter((item) => item !== strId);
       if (prev.length >= MAX_COMPARISON_LIMIT) return prev;
-      return [...prev, id];
+      return [...prev, strId];
     });
   }, []);
 
@@ -80,7 +81,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
   const deselectAll = useCallback(() => setSelectedIds([]), []);
   const clearSelection = useCallback(() => setSelectedIds([]), []);
 
-  const isSelected = useCallback((id: string) => selectedIds.includes(id), [selectedIds]);
+  const isSelected = useCallback((id: string | number) => selectedIds.includes(String(id)), [selectedIds]);
 
   const removeProperty = useCallback((id: string) => {
     setSelectedIds((prev) => prev.filter((item) => item !== id));
@@ -153,11 +154,12 @@ export function usePropertyComparison(): ComparisonContextType {
     }
   }, [selectedIds]);
 
-  const toggleProperty = useCallback((id: string) => {
+  const toggleProperty = useCallback((id: string | number) => {
+    const strId = String(id);
     setSelectedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((item) => item !== id);
+      if (prev.includes(strId)) return prev.filter((item) => item !== strId);
       if (prev.length >= MAX_COMPARISON_LIMIT) return prev;
-      return [...prev, id];
+      return [...prev, strId];
     });
   }, []);
 
@@ -172,7 +174,7 @@ export function usePropertyComparison(): ComparisonContextType {
 
   const deselectAll = useCallback(() => setSelectedIds([]), []);
   const clearSelection = useCallback(() => setSelectedIds([]), []);
-  const isSelected = useCallback((id: string) => selectedIds.includes(id), [selectedIds]);
+  const isSelected = useCallback((id: string | number) => selectedIds.includes(String(id)), [selectedIds]);
   const removeProperty = useCallback((id: string) => {
     setSelectedIds((prev) => prev.filter((item) => item !== id));
   }, []);

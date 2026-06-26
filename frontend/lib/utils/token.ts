@@ -15,6 +15,7 @@ export interface AdminData {
   status?: string;
   city_id?: string;
   sub_area_id?: string;
+  createdAt?: string;
 }
 
 const AUTH_PERSISTENCE_KEY = "estate_auth_persistence";

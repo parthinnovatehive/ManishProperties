@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import { notificationService } from "@/lib/notifications";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
+import type { Property } from "@/types";
 
 interface Appointment {
   id: string;
@@ -19,25 +20,6 @@ interface Appointment {
   time: string;
   status: "Pending" | "Confirmed" | "Cancelled" | "Scheduled";
   type: "In-Person" | "Video Call";
-}
-
-interface Property {
-  id: string;
-  title: string;
-  city_id: string;
-  sub_area_id?: string;
-  location: string;
-  description?: string;
-  price?: string;
-  type?: string;
-  listingType?: string;
-  beds?: number;
-  bathrooms?: number;
-  area?: number;
-  image?: string;
-  images?: string[];
-  status?: string;
-  createdAt?: string;
 }
 
 interface Subarea {
@@ -119,7 +101,7 @@ export default function AdminAppointmentsPage() {
         const allProperties = await estateApi.adminProperties.list();
         setProperties(allProperties);
 
-        const allSubareas = await estateApi.content.subareas.list();
+        const allSubareas = await estateApi.content.subareas.list<Subarea>();
         setSubareas(allSubareas);
 
         const allAgents = await estateApi.agents.list<Agent>();

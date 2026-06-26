@@ -3,35 +3,7 @@
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import { X, AlertCircle, CheckCircle, AlertTriangle, Info } from "lucide-react";
-
-interface Property {
-  id: string;
-  title: string;
-  price: string;
-  location: string;
-  city: string;
-  image?: string;
-  images?: string[];
-  lister_type: string;
-  lister_id: string;
-  status: string;
-  moderationStatus: string;
-  featured: boolean;
-  
-  // Featured request fields
-  featuredRequested?: boolean;
-  featuredRequestDate?: string;
-  featuredPaymentStatus?: "pending" | "paid" | "approved" | "rejected";
-  featuredPaymentProof?: string;
-  featuredPaymentAmount?: number;
-  featuredApprovedBy?: string | null;
-  featuredApprovedAt?: string | null;
-  featuredExpiryDate?: string | null;
-  featuredExpired?: boolean;   
-  featuredRejectionReason?: string | null;
-  requested_for?: 1 | 2;
-  granted_for?: 1 | 2 | null;
-}
+import type { Property } from "@/types";
 
 interface AdminUser {
   id: string;
@@ -59,7 +31,7 @@ export default function SuperAdminFeaturedRequestsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [selectedPlan, setSelectedPlan] = useState<1 | 2>(1);
+  const [selectedPlan, setSelectedPlan] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -279,7 +251,7 @@ export default function SuperAdminFeaturedRequestsPage() {
     return admin?.name || adminId;
   };
 
-  const getPlanText = (plan: 1 | 2 | undefined | null): string => {
+  const getPlanText = (plan: number | undefined | null): string => {
     if (plan === 1) return "1 Month (30 days)";
     if (plan === 2) return "2 Months (60 days)";
     return "N/A";

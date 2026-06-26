@@ -60,7 +60,7 @@ export function FeatureRequestModal({
 
   const fetchPlans = async () => {
     try {
-      const response = await apiClient.get("/api/content/featured-plans");
+      const response = await apiClient.get<{ success: boolean; plans: any[] }>("/api/content/featured-plans");
       if (response.success) {
         setPlans(response.plans || []);
       }
@@ -75,7 +75,7 @@ export function FeatureRequestModal({
     formData.append("images", file);
 
     try {
-      const response = await apiClient.post(
+      const response = await apiClient.post<{ success: boolean; data?: { images?: { url: string; public_id: string; width: number; height: number }[] }; images?: { url: string; public_id: string; width: number; height: number }[] }>(
         "/api/properties/upload-images?category=payment_proof",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }

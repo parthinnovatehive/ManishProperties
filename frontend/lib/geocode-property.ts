@@ -3,10 +3,10 @@ export async function geocodeProperty(
   city: string
 ) {
   const queries = [
-  location,
-  `${location}, India`,
-  city ? `${city}, India` : null,
-].filter(Boolean);
+    location,
+    `${location}, India`,
+    city ? `${city}, India` : null,
+  ].filter((s): s is string => typeof s === "string");
 
   for (const q of queries) {
     try {

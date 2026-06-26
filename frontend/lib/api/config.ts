@@ -3,9 +3,14 @@
  * Centralized configuration for all API calls
  */
 
-const rawApiBaseUrl = `${process.env.NEXT_PUBLIC_API_URL ?? ""}`;
+const rawEnvUrl = process.env.NEXT_PUBLIC_API_URL;
 
-export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, "");
+let apiBaseUrl = "";
+if (rawEnvUrl && rawEnvUrl !== "null" && rawEnvUrl !== "undefined") {
+  apiBaseUrl = String(rawEnvUrl).replace(/\/+$/, "");
+}
+
+export const API_BASE_URL = apiBaseUrl;
 
 export const API_ENDPOINTS = {
   // Auth endpoints
