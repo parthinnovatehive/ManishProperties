@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
@@ -20,21 +20,35 @@ from utils.helpers import error_response
 
 jwt = JWTManager()
 
+CORS_ALLOW_ORIGINS = ["http://localhost:3000"]
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     # Configure CORS
-    cors_origins = Config.CORS_ORIGINS if hasattr(Config, 'CORS_ORIGINS') else ["http://localhost:3000"]
+    global CORS_ALLOW_ORIGINS
+    CORS_ALLOW_ORIGINS = Config.CORS_ORIGINS
+    app.logger.info(f"CORS origins: {CORS_ALLOW_ORIGINS}")
     CORS(
         app,
-        origins=cors_origins,
+        origins=CORS_ALLOW_ORIGINS,
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With"],
         expose_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     )
+
+    @app.after_request
+    def add_cors_headers(response):
+        origin = request.headers.get("Origin")
+        if origin:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept, X-Requested-With"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
     
     jwt.init_app(app)
 
