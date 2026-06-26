@@ -26,9 +26,11 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     # Configure CORS properly - this is the only CORS configuration needed
+    # Use CORS_ORIGINS from config
+    cors_origins = Config.CORS_ORIGINS if hasattr(Config, 'CORS_ORIGINS') else ["http://localhost:3000"]
     CORS(
         app,
-        origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        origins=cors_origins,
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With"],
         expose_headers=["Content-Type", "Authorization"],

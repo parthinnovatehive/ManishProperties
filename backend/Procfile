@@ -1,0 +1,3 @@
+# In backend/ folder, create a file named "Procfile" (no extension)
+# Add this line:
+web: gunicorn wsgi:application

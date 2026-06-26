@@ -1,0 +1,263 @@
+================================================================================
+                   ESTATEELITE - DEPLOYMENT GUIDE
+        Deploy to Vercel (Frontend) + Render/Railway (Backend)
+                         100% Free Tier
+================================================================================
+
+TABLE OF CONTENTS
+──────────────────────────────────────────────────────────────────────────────
+  1. TECH STACK SUMMARY
+  2. WHAT NEEDS TO BE CHANGED BEFORE DEPLOYMENT
+  3. DEPLOY BACKEND ON RENDER (FREE)
+  4. DEPLOY BACKEND ON RAILWAY (FREE - ALTERNATIVE)
+  5. DEPLOY FRONTEND ON VERCEL (FREE)
+  6. IMPORTANT NOTES & LIMITATIONS
+
+
+════════════════════════════════════════════════════════════════════════════
+1. TECH STACK SUMMARY
+════════════════════════════════════════════════════════════════════════════
+
+  Frontend (Next.js 15 + React 19)     →  Vercel (free)
+  Backend  (Flask 3 / Python 3.10+)     →  Render or Railway (free)
+  Database (JSON flat files)            →  Stored alongside backend (ephemeral!)
+  Auth     (JWT + optional Google OAuth)
+
+
+════════════════════════════════════════════════════════════════════════════
+2. WHAT NEEDS TO BE CHANGED BEFORE DEPLOYMENT
+════════════════════════════════════════════════════════════════════════════
+
+  ── Files you must CREATE ──────────────────────────────────────────────────
+
+  [A] backend/Procfile
+      ────────────────────────────────────────────────────────────────
+      web: gunicorn wsgi:application
+      ────────────────────────────────────────────────────────────────
+      Purpose: Tells Render/Railway how to start the backend server.
+
+  [B] backend/runtime.txt
+      ────────────────────────────────────────────────────────────────
+      python-3.11.0
+      ────────────────────────────────────────────────────────────────
+      Purpose: Pins Python version. Render/Railway need this.
+      (Use 3.10.0 or 3.12.0 if you prefer. Check what Python you have.)
+
+  ── Files you must EDIT ────────────────────────────────────────────────────
+
+  [C] backend/app.py (lines 29-36) — CORS origins
+      ────────────────────────────────────────────────────────────────
+      CHANGE FROM (hardcoded localhost):
+          CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"], ...)
+
+      CHANGE TO (use env var from config):
+          CORS(app, origins=Config.CORS_ORIGINS, supports_credentials=True, ...)
+
+      (Or at minimum add your Vercel domain to the list, e.g.
+       "https://your-app.vercel.app")
+
+  [D] backend/.env — Production secrets (do NOT commit this file to git)
+      ────────────────────────────────────────────────────────────────
+      Generate strong random keys with Python:
+          python -c "import secrets; print(secrets.token_hex(32))"
+
+      Replace these values in your Render/Railway dashboard (NOT in .env):
+        SECRET_KEY=<generate-a-random-64-char-hex-string>
+        JWT_SECRET_KEY=<generate-another-random-64-char-hex-string>
+        CORS_ORIGINS=https://your-frontend.vercel.app
+        PORT=10000
+        JSON_DATA_DIR=/app/database
+
+      Optional (if using Cloudinary / Google):
+        CLOUDINARY_CLOUD_NAME=...
+        CLOUDINARY_API_KEY=...
+        CLOUDINARY_API_SECRET=...
+        GOOGLE_CLIENT_ID=...
+        GOOGLE_PLACES_API_KEY=...
+
+  [E] frontend/.env.local — Frontend env vars (for Vercel)
+      ────────────────────────────────────────────────────────────────
+      In your Vercel project dashboard, add these environment variables:
+        NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+
+  ── Files you should VERIFY ────────────────────────────────────────────────
+
+      backend/requirements.txt  — Already includes gunicorn ✓
+      frontend/next.config.ts   — Already has Cloudinary/remote images ✓
+      frontend/package.json     — Build script: "next build" ✓
+
+
+════════════════════════════════════════════════════════════════════════════
+3. DEPLOY BACKEND ON RENDER (FREE)
+════════════════════════════════════════════════════════════════════════════
+
+  STEP 1: Push your code to a GitHub repository
+          (Make sure backend/.env is NOT committed — it's in .gitignore)
+
+  STEP 2: Go to https://dashboard.render.com → "New +" → "Web Service"
+
+  STEP 3: Connect your GitHub repo and select the branch
+
+  STEP 4: Configure the service:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ Name:              estateelite-api                                  │
+  │ Region:            Choose closest to you                            │
+  │ Branch:            main                                             │
+  │ Runtime:           Python 3                                         │
+  │ Build Command:     pip install -r backend/requirements.txt          │
+  │ Start Command:     gunicorn backend.wsgi:application                │
+  │ Root Directory:    (leave blank — Render detects from repo root)    │
+  │ Plan:              Free                                             │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  ⚠ IMPORTANT: If your repo structure has backend/ as a subfolder,
+    the build & start commands need to account for it:
+      Build:   cd backend && pip install -r requirements.txt
+      Start:   cd backend && gunicorn wsgi:application
+
+  STEP 5: Add Environment Variables (click "Environment" tab after creating):
+      SECRET_KEY         = <your-generated-key>
+      JWT_SECRET_KEY     = <your-generated-key>
+      CORS_ORIGINS       = https://your-frontend.vercel.app
+      PORT               = 10000
+      PYTHON_VERSION     = 3.11.0
+
+  STEP 6: Click "Create Web Service"
+          Wait 2-5 minutes for the first deploy.
+
+  STEP 7: Once deployed, Render gives you a URL like:
+          https://estateelite-api.onrender.com
+          Visit this URL in browser — you should see "API Running"
+
+
+════════════════════════════════════════════════════════════════════════════
+4. DEPLOY BACKEND ON RAILWAY (FREE - ALTERNATIVE TO RENDER)
+════════════════════════════════════════════════════════════════════════════
+
+  Railway is an alternative to Render. It auto-detects Python/Flask.
+
+  STEP 1: Push to GitHub (same as Render)
+
+  STEP 2: Go to https://railway.app → "New Project" → "Deploy from GitHub"
+
+  STEP 3: Select your repo
+
+  STEP 4: Railway auto-detects the Python project.
+          If it doesn't, set these explicitly:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ Build Command:     pip install -r backend/requirements.txt          │
+  │ Start Command:     gunicorn backend.wsgi:application                │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  STEP 5: Add Environment Variables (same as Render):
+      SECRET_KEY, JWT_SECRET_KEY, CORS_ORIGINS, PORT=10000
+
+  STEP 6: Deploy. Railway gives you a URL like:
+          https://estateelite-api.up.railway.app
+
+
+════════════════════════════════════════════════════════════════════════════
+5. DEPLOY FRONTEND ON VERCEL (FREE)
+════════════════════════════════════════════════════════════════════════════
+
+  STEP 1: Go to https://vercel.com → "Add New" → "Project"
+
+  STEP 2: Import your GitHub repository
+
+  STEP 3: Configure the project:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ Root Directory:         frontend/  ← MUST set this!                │
+  │ Framework Preset:       Next.js (auto-detected)                    │
+  │ Build Command:          npm run build (auto-detected)              │
+  │ Output Directory:       .next (auto-detected)                      │
+  │ Install Command:        npm install (auto-detected)                │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  ⚠ CRITICAL: Set "Root Directory" to "frontend/"
+     otherwise Vercel won't find package.json and will fail.
+
+  STEP 4: Add Environment Variables:
+      NEXT_PUBLIC_API_URL      = https://estateelite-api.onrender.com
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID = your-google-client-id (if used)
+
+  STEP 5: Click "Deploy"
+
+  STEP 6: After deployment, Vercel gives you a URL like:
+          https://estateelite.vercel.app
+
+  STEP 7: Copy this URL and go back to Render/Railway dashboard.
+          Update CORS_ORIGINS to include this URL:
+            CORS_ORIGINS = https://estateelite.vercel.app
+
+          ⚠ If you forget this, the frontend will get CORS errors.
+
+
+════════════════════════════════════════════════════════════════════════════
+6. IMPORTANT NOTES & LIMITATIONS
+════════════════════════════════════════════════════════════════════════════
+
+  ⚠ JSON DATABASE = EPHEMERAL STORAGE
+  ──────────────────────────────────────────────────
+  Render/Railway free tiers have EPHEMERAL filesystems.
+  This means:
+    • Any data written to JSON files (properties, users, etc.)
+      will be LOST when the server restarts.
+    • Free-tier servers spin down after 15 min of inactivity
+      and restart on next request (cold start takes 30-60 sec).
+    • Each restart gives you a fresh copy of the JSON database
+      from your GitHub repo (with seed data only).
+
+  Solution options:
+    1) Use for DEMO/TESTING only (acceptable for portfolio)
+    2) Upgrade to Render's paid tier ($7/mo) for persistent disk
+    3) Migrate to SQLite or a real DB (PostgreSQL free on Render)
+    4) Add a startup script that loads seed data from a backup source
+
+  RENDER FREE TIER LIMITS
+  ────────────────────────
+    • 1000 hours/month (enough for 24/7 for ~41 days)
+    • Spins down after 15 min idle (cold start delay)
+    • 512 MB RAM
+    • Shared CPU
+
+  RAILWAY FREE TIER LIMITS
+  ─────────────────────────
+    • $5 credit/month (enough for ~1 small service)
+    • Also spins down after inactivity
+    • 512 MB RAM
+
+  VERCEL FREE TIER LIMITS
+  ────────────────────────
+    • 100 GB bandwidth
+    • 6000 build minutes/month
+    • Serverless functions (max 10 sec execution)
+    • No cold start for frontend (static/edge)
+
+  KEY FILES TO COMMIT
+  ────────────────────
+    ✅ backend/Procfile          (NEW - create it)
+    ✅ backend/runtime.txt       (NEW - create it)
+    ✅ backend/requirements.txt  (already exists)
+    ✅ frontend/package.json     (already exists)
+    ❌ backend/.env              (DO NOT commit — has secrets)
+    ❌ frontend/.env.local       (DO NOT commit — add in Vercel UI)
+    ✅ database/*.json           (commit these — they're seed data)
+    ✅ backend/app.py            (EDIT - fix CORS)
+
+
+
+═══ QUICK CHECKLIST ═══════════════════════════════════════════════════════
+
+  [ ] Create backend/Procfile with: web: gunicorn wsgi:application
+  [ ] Create backend/runtime.txt with: python-3.11.0
+  [ ] Edit backend/app.py to use CORS_ORIGINS from env (or add your domain)
+  [ ] Generate secure SECRET_KEY & JWT_SECRET_KEY
+  [ ] Push to GitHub (make sure .env files are NOT committed)
+  [ ] Deploy backend on Render (or Railway)
+  [ ] Copy backend URL (e.g. https://estateelite-api.onrender.com)
+  [ ] Deploy frontend on Vercel (root dir = frontend/)
+  [ ] Set NEXT_PUBLIC_API_URL to backend URL in Vercel
+  [ ] Set CORS_ORIGINS on backend to Vercel frontend URL
+  [ ] Test everything end-to-end
+═══════════════════════════════════════════════════════════════════════════
