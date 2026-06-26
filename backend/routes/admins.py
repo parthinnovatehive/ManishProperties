@@ -6,7 +6,7 @@ from services.property_service import list_properties
 from utils.helpers import error_response, generate_id, now_iso, success_response
 from utils.validators import normalize_role
 import jwt
-from ..config import Config
+from config import Config
 
 
 admins_bp = Blueprint("admins", __name__)

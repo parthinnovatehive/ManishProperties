@@ -1,6 +1,6 @@
 import cloudinary
 import cloudinary.uploader
-from ..config import Config
+from config import Config
 import base64
 import io
 from PIL import Image

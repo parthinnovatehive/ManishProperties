@@ -1,11 +1,7 @@
 from functools import wraps
 from flask import jsonify, request
 import jwt
-# Try absolute import first, fallback to relative
-try:
-    from config import Config
-except ImportError:
-    from ..config import Config
+from config import Config
 
 def role_required(allowed_roles):
     """Decorator to check if user has any of the allowed roles"""
