@@ -3,7 +3,7 @@ from services.json_service import load_json, update_json
 from utils.helpers import success_response, error_response
 from pathlib import Path
 import jwt
-from config import Config
+from ..config import Config
 
 subareas_bp = Blueprint("subareas", __name__)
 

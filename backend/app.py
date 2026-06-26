@@ -2,7 +2,10 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
-from config import Config
+try:
+    from config import Config
+except ImportError:
+    from .config import Config
 from routes.admins import admins_bp
 from routes.agents import agents_bp
 from routes.appointments import appointments_bp

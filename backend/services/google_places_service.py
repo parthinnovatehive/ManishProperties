@@ -1,5 +1,5 @@
 import requests
-from config import Config
+from ..config import Config
 
 def search_place(query, location=None, radius=5000):
     """

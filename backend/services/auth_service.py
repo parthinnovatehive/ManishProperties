@@ -5,7 +5,7 @@ import requests
 from flask_jwt_extended import create_access_token, create_refresh_token
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from config import Config
+from ..config import Config
 from services.json_service import append_json, find_one, load_json, save_json
 from utils.helpers import generate_id
 from utils.validators import normalize_role, role_matches
