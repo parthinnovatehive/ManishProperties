@@ -266,10 +266,10 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
             </div>
 
             <div className="space-y-2.5 border-t border-estate-border pt-4">
-              <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
+              {/* <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
                 <Eye className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                 <span>42 highly interested buyers</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
                 <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                 <span>Usually responds within 1 hour</span>

@@ -247,7 +247,7 @@ export function Navbar() {
                         ? "/admin/dashboard"
                         : admin.role === "AGENT"
                           ? "/agent/dashboard"
-                          : "/"
+                          : "/user/dashboard"
                   }
                   variant="outline"
                   size="sm"

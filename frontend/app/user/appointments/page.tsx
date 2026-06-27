@@ -5,6 +5,7 @@ import Link from "next/link";
 import { estateApi } from "@/lib/api";
 import { getAdminData } from "@/lib/utils/token";
 import { Calendar, Clock, User, Phone, Video, MapPin, CheckCircle, XCircle, AlertCircle, MessageSquare, ExternalLink, Bed, Bath, Maximize2, RefreshCw, Star, Loader2 } from "lucide-react";
+import { toastManager } from "@/lib/utils/toast";
 import { StarRating } from "@/components/ui/StarRating";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
 
@@ -62,6 +63,7 @@ export default function UserAppointmentsPage() {
   const [ratingTarget, setRatingTarget] = useState<Appointment | null>(null);
   const [userRating, setUserRating] = useState(0);
   const [isRatingSubmitting, setIsRatingSubmitting] = useState(false);
+  const [showMissedBanner, setShowMissedBanner] = useState(true);
 
   useEffect(() => {
     fetchAppointments();
@@ -117,7 +119,7 @@ export default function UserAppointmentsPage() {
         );
       } catch (error) {
         console.error("Error cancelling appointment:", error);
-        alert("Failed to cancel appointment. Please try again.");
+        toastManager.error("Failed to cancel appointment. Please try again.");
       }
     }
   };
@@ -151,10 +153,10 @@ export default function UserAppointmentsPage() {
       setRescheduleTarget(null);
       setRescheduleDate("");
       setRescheduleTime("");
-      alert("Appointment rescheduled successfully! A new booking has been created with Confirmed status.");
+      toastManager.success("Appointment rescheduled successfully! A new booking has been created.");
     } catch (error) {
       console.error("Error rescheduling appointment:", error);
-      alert("Failed to reschedule appointment. Please try again.");
+      toastManager.error("Failed to reschedule appointment. Please try again.");
     } finally {
       setIsRescheduling(false);
     }
@@ -166,7 +168,7 @@ export default function UserAppointmentsPage() {
     try {
       const account = getAdminData();
       if (!account?.id) {
-        alert("User not found. Please log in again.");
+        toastManager.error("User not found. Please log in again.");
         setIsRatingSubmitting(false);
         return;
       }
@@ -187,10 +189,10 @@ export default function UserAppointmentsPage() {
       setRatedAppointments(prev => new Set(prev).add(ratingTarget.id));
       setRatingTarget(null);
       setUserRating(0);
-      alert(`Thank you for rating ${ratingTarget.agentName}!`);
+      toastManager.success(`Thank you for rating ${ratingTarget.agentName}!`);
     } catch (error) {
       console.error("Error rating agent:", error);
-      alert("Failed to submit rating. Please try again.");
+      toastManager.error("Failed to submit rating. Please try again.");
     } finally {
       setIsRatingSubmitting(false);
     }
@@ -284,6 +286,10 @@ export default function UserAppointmentsPage() {
     today.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
     return date < today;
+  };
+
+  const isMissedAppointment = (apt: Appointment) => {
+    return isPastDate(apt.date) && apt.status !== "Cancelled" && apt.status !== "Completed";
   };
 
   const getPropertyImage = (property: Property | null | undefined): string => {
@@ -400,15 +406,52 @@ export default function UserAppointmentsPage() {
         </button>
         <button
           onClick={() => setFilterStatus("missed")}
-          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition relative ${
             filterStatus === "missed"
               ? "bg-estate-navy text-white"
               : "text-estate-text-sec hover:text-estate-navy"
           }`}
         >
           Missed
+          {missedCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {missedCount > 9 ? "9+" : missedCount}
+            </span>
+          )}
         </button>
       </div>
+
+      {/* Missed Appointments Banner */}
+      {missedCount > 0 && showMissedBanner && (
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-6 h-6 text-rose-600 flex-shrink-0" />
+            <div>
+              <p className="font-bold text-rose-700">
+                You have {missedCount} missed appointment{missedCount > 1 ? 's' : ''}!
+              </p>
+              <p className="text-sm text-rose-600">
+                Please reschedule or contact the agent.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setFilterStatus("missed")}
+              className="px-4 py-2 bg-rose-600 text-white text-sm font-semibold rounded-xl hover:bg-rose-700 transition"
+            >
+              View Missed
+            </button>
+            <button
+              onClick={() => setShowMissedBanner(false)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-rose-500 hover:bg-rose-100 transition"
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Appointments List */}
       {filteredAppointments.length === 0 ? (
@@ -435,11 +478,22 @@ export default function UserAppointmentsPage() {
             return (
               <div
                 key={apt.id}
-                className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden hover:shadow-lg transition cursor-pointer"
+                className={`bg-white rounded-2xl border shadow-estate overflow-hidden hover:shadow-lg transition cursor-pointer relative ${
+                  isMissedAppointment(apt)
+                    ? "border-rose-300 bg-rose-50/30"
+                    : "border-estate-border"
+                }`}
                 onClick={() => openAppointmentDetails(apt)}
               >
                 <div className="flex h-full">
-                  <div className="w-28 sm:w-36 flex-shrink-0">
+                  <div className="w-28 sm:w-36 flex-shrink-0 relative">
+                    {isMissedAppointment(apt) && (
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="px-2 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-sm">
+                          Missed
+                        </span>
+                      </div>
+                    )}
                     <img
                       src={propImg}
                       alt={apt.propertyName}
@@ -699,7 +753,7 @@ export default function UserAppointmentsPage() {
       )}
     </div>
     <button
-      onClick={() => alert(`Contacting Agent ${selectedAppointment.agentName} via email: ${selectedAppointment.agentEmail}`)}
+      onClick={() => toastManager.info(`Contacting Agent ${selectedAppointment.agentName} via email: ${selectedAppointment.agentEmail}`)}
       className="mt-3 w-full px-4 py-2 bg-estate-navy text-white text-sm font-semibold rounded-xl hover:bg-estate-navy-mid transition"
     >
       Email Agent

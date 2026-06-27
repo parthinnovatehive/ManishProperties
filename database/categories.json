@@ -2,42 +2,42 @@
   "categories": [
     {
       "name": "Apartments",
-      "count": 24500,
+      "count": null,
       "icon": "Building2"
     },
     {
       "name": "Villas",
-      "count": 8200,
+      "count": null,
       "icon": "Home"
     },
     {
       "name": "Plots & Land",
-      "count": 12800,
+      "count": null,
       "icon": "Crosshair"
     },
     {
       "name": "Commercial",
-      "count": 6400,
+      "count": null,
       "icon": "Landmark"
     },
     {
       "name": "Penthouses",
-      "count": 1200,
+      "count": null,
       "icon": "Sparkles"
     },
     {
       "name": "New Projects",
-      "count": 890,
+      "count": null,
       "icon": "Zap"
     },
     {
       "name": "PG / Co-living",
-      "count": 18600,
+      "count": null,
       "icon": "Users"
     },
     {
       "name": "Farmhouses",
-      "count": 450,
+      "count": null,
       "icon": "Trees"
     }
   ],

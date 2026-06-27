@@ -124,7 +124,8 @@
         "distance": 15.4,
         "travelTime": "35 min"
       }
-    }
+    },
+    "views": 4
   },
   {
     "id": "2",
@@ -250,7 +251,8 @@
         "distance": 15.4,
         "travelTime": "35 min"
       }
-    }
+    },
+    "views": 2
   },
   {
     "id": "3",
@@ -371,7 +373,8 @@
         "distance": 15.4,
         "travelTime": "35 min"
       }
-    }
+    },
+    "views": 8
   },
   {
     "id": "prop_2b540112c3fd494dbd64636031d6b3e1",
@@ -495,7 +498,8 @@
         "distance": 15.4,
         "travelTime": "35 min"
       }
-    }
+    },
+    "views": 4
   },
   {
     "id": "prop_c5e736fedb064718b8f998a860f9ecc1",

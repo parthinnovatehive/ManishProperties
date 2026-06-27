@@ -132,9 +132,10 @@
     "date": "20 Jun 2026",
     "time": "10:00 AM",
     "type": "In-Person",
-    "status": "Pending",
+    "status": "Cancelled",
     "userId": "user_71670e4f29e94438800bedfa7131569e",
-    "createdAt": "2026-06-19T03:28:14.890978+00:00"
+    "createdAt": "2026-06-19T03:28:14.890978+00:00",
+    "updatedAt": "2026-06-27T08:08:51.426047+00:00"
   },
   {
     "id": "apt_0d01f95c6e24438ab8f8e3d536d91327",
@@ -163,5 +164,20 @@
     "status": "Pending",
     "userId": "user_71670e4f29e94438800bedfa7131569e",
     "createdAt": "2026-06-19T03:30:54.689467+00:00"
+  },
+  {
+    "id": "apt_1782547730871",
+    "propertyId": "1",
+    "propertyName": "Luxury Sea-View 3BHK Apartment",
+    "userId": "user_71670e4f29e94438800bedfa7131569e",
+    "userName": "test",
+    "agentName": "EstateElite Luxe",
+    "agentEmail": "luxe@estateelite.com",
+    "date": "2026-07-01",
+    "time": "17:38",
+    "status": "Confirmed",
+    "type": "In-Person",
+    "createdAt": "2026-06-27T08:08:51.758926+00:00",
+    "updatedAt": "2026-06-27T08:08:50.871Z"
   }
 ]

@@ -59,7 +59,7 @@ function propertyDetails(property: Property): PropertyDetailRow[] {
     { label: "Year Built", value: property.yearBuilt },
     { label: "Floor", value: property.floor },
     { label: "Possession", value: property.possession },
-    { label: "Builder / Developer", value: property.builder },
+    // { label: "Builder / Developer", value: property.builder },
     { label: "Furnishing", value: property.furnishing },
     { label: "Facing", value: property.facing },
     { label: "RERA No.", value: property.rera, highlight: true },
@@ -205,29 +205,6 @@ export default function PropertyDetailsPage() {
                 details={derived.details}
               />
 
-              {coords && (
-                <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
-                  <h2 className="mb-5 text-2xl font-bold text-estate-navy">
-                    Property Location
-                  </h2>
-                  <p className="mb-4 text-estate-text-sec">
-                    📍 {property.location}, {property.city}
-                  </p>
-                  <PropertyMapClient
-                    lat={coords.lat}
-                    lng={coords.lng}
-                    title={property.title}
-                  />
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex rounded-xl bg-estate-navy px-4 py-2 text-white hover:opacity-90"
-                  >
-                    Open in Google Maps
-                  </a>
-                </section>
-              )}
 
               {nearbySummary && (
                 <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
@@ -268,8 +245,8 @@ export default function PropertyDetailsPage() {
                   )}
                 </section>
               )}
-              <PropertyTrust rera={property.rera} />
-              <PropertyEMI price={property.price} />
+              {/* <PropertyTrust rera={property.rera} /> */}
+              {derived.listingType === "For Sale" && <PropertyEMI price={property.price} />}
               <PropertySimilar city={property.city} propertyType={property.type} />
             </main>
 
