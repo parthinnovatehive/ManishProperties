@@ -114,8 +114,8 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
         />
 
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_360px]">
-          <div>
-            <div className="mb-5 rounded-2xl border border-estate-border bg-white p-7">
+          <div className="min-w-0">
+            <div className="mb-5 rounded-2xl border border-estate-border bg-white p-4 sm:p-7">
               <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-start">
                 <div className="flex-1">
                   <div className="mb-2.5 flex flex-wrap gap-2">
@@ -160,30 +160,30 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
                 </div>
               </div>
 
-              <div className="mt-5 grid overflow-hidden rounded-xl bg-estate-border [gap:1px] sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-5 grid overflow-hidden rounded-xl bg-estate-border [gap:1px] grid-cols-2 sm:grid-cols-2 xl:grid-cols-4">
                 {[
                   { icon: Bed, label: "Bedrooms", value: property.beds > 0 ? `${property.beds} BHK` : "N/A" },
                   { icon: Bath, label: "Bathrooms", value: `${property.baths} Baths` },
                   { icon: Maximize2, label: "Carpet Area", value: `${property.area.toLocaleString("en-IN")} ft²` },
                   { icon: Car, label: "Parking", value: `${property.parking} Spots` },
                 ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="bg-white px-3.5 py-4 text-center">
-                    <div className="mb-1.5 flex justify-center text-estate-blue">
-                      <Icon size={20} aria-hidden="true" />
+                  <div key={label} className="bg-white px-2 sm:px-3.5 py-3 sm:py-4 text-center">
+                    <div className="mb-1 flex sm:mb-1.5 justify-center text-estate-blue">
+                      <Icon size={18} aria-hidden="true" className="sm:w-5 sm:h-5" />
                     </div>
-                    <div className="text-base font-bold text-estate-text">{value}</div>
-                    <div className="mt-0.5 text-xs text-estate-muted">{label}</div>
+                    <div className="text-sm sm:text-base font-bold text-estate-text">{value}</div>
+                    <div className="mt-0.5 text-[11px] sm:text-xs text-estate-muted">{label}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="mb-5 overflow-hidden rounded-2xl border border-estate-border bg-white">
-              <div className="flex border-b border-estate-border">
+              <div className="flex overflow-x-auto border-b border-estate-border scrollbar-hide">
                 {(["overview", "amenities", "details"] as const).map((item) => (
                   <button
                     key={item}
-                    className={`mb-[-1px] flex-1 border-b-[2.5px] px-3 py-3.5 text-sm font-semibold capitalize transition ${
+                    className={`shrink-0 mb-[-1px] border-b-[2.5px] px-3 sm:px-5 py-3.5 text-xs sm:text-sm font-semibold capitalize transition ${
                       tab === item ? "border-estate-blue text-estate-blue" : "border-transparent text-estate-text-sec"
                     }`}
                     onClick={() => setTab(item)}
@@ -193,7 +193,7 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
                 ))}
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {tab === "overview" && (
                   <div>
                     <p className="mb-5 text-[15px] leading-8 text-estate-text-sec">{property.description}</p>
@@ -261,8 +261,8 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
             <EmiCalculator property={property} />
           </div>
 
-          <div className="sticky top-[88px]">
-            <div className="mb-4 rounded-2xl border border-estate-border bg-white p-6">
+          <div className="lg:sticky lg:top-[88px]">
+            <div className="mb-4 rounded-2xl border border-estate-border bg-white p-4 sm:p-6">
               <div className="mb-5 flex items-center gap-3 border-b border-estate-border pb-5">
                 <Avatar initials={agent.avatar ?? "EA"} size="lg" />
                 <div className="flex-1">
@@ -316,7 +316,7 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
               </Button>
             </div>
 
-            <div className="rounded-2xl border border-estate-blue/15 bg-estate-blue-pale p-5">
+            <div className="rounded-2xl border border-estate-blue/15 bg-estate-blue-pale p-4 sm:p-5">
               <div className="mb-3.5 text-sm font-bold text-estate-navy">Why This Property?</div>
               {[
                 { icon: ShieldCheck, text: "RERA & legally verified" },
@@ -336,7 +336,7 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
         {similar.length > 0 && (
           <div className="mt-10">
             <h3 className="mb-5 font-serif text-[22px] text-estate-navy">Similar Properties</h3>
-            <div className="grid gap-5 lg:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {similar.map((item) => (
                 <PropertyCard key={item.id} property={item} compact />
               ))}

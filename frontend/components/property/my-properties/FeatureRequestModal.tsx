@@ -145,10 +145,10 @@ export function FeatureRequestModal({
         onClick={onClose}
         className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm"
       />
-      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 pointer-events-none">
-        <div onClick={(e) => e.stopPropagation()} className="pointer-events-auto w-full max-w-lg max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-xl border border-estate-border animate-fade-up">
+      <div className="fixed inset-0 z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+        <div onClick={(e) => e.stopPropagation()} className="pointer-events-auto w-full max-w-lg max-h-[85vh] overflow-y-auto bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-estate-border animate-fade-up">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-estate-border p-5 flex justify-between items-center z-10">
+          <div className="sticky top-0 bg-white border-b border-estate-border p-4 sm:p-5 flex justify-between items-center z-10">
             <div>
               <h2 className="text-lg font-bold text-estate-navy font-serif">
                 Request Featured
@@ -165,7 +165,7 @@ export function FeatureRequestModal({
             </button>
           </div>
 
-          <div className="p-5 space-y-5">
+          <div className="p-4 sm:p-5 space-y-5">
           {/* Plans */}
           <div>
             <label className="block text-sm font-bold text-estate-text mb-3">
@@ -336,17 +336,17 @@ export function FeatureRequestModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-estate-border p-5 flex gap-3">
+        <div className="sticky bottom-0 bg-white border-t border-estate-border p-4 sm:p-5 flex gap-3 flex-wrap">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface transition"
+            className="flex-1 py-2.5 min-h-[44px] rounded-xl border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!selectedPlanId || !paymentProof || submitting}
-            className="flex-1 py-2.5 rounded-xl bg-estate-amber text-white text-sm font-bold hover:bg-estate-amber-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 min-h-[44px] rounded-xl bg-estate-amber text-white text-sm font-bold hover:bg-estate-amber-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {submitting ? (
               <>

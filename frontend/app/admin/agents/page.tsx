@@ -677,7 +677,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Agents</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Agents</h1>
           <p className="text-sm text-estate-text-sec">
             {adminCity ? `Managing agents for ${adminCity.name} city` : "Loading city information..."}
           </p>
@@ -689,7 +689,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
               fetchSubareasForCity(adminCity.id);
             }
           }}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
         >
           Refresh
         </button>
@@ -697,20 +697,20 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Agents</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{agentsList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active Agents</span>
           <span className="text-3xl font-extrabold text-estate-success block mt-2">{activeCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending Approval</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Average Rating</span>
           <span className="text-3xl font-extrabold text-estate-amber-dark block mt-2">{avgRating} / 5.0</span>
         </div>
@@ -793,7 +793,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
             >
               Clear All Filters
             </button>
@@ -916,14 +916,14 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                         {agent.status === 'pending' ? (
                           <button
                             onClick={() => toggleStatus(agent.id)}
-                            className="px-3 py-1.5 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                            className="px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
                           >
                             Approve Agent
                           </button>
                         ) : (
                           <button
                             onClick={() => toggleStatus(agent.id)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${agent.status === 'active'
+                            className={`px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border transition ${agent.status === 'active'
                               ? 'bg-estate-red-bg text-estate-red border-estate-red/20 hover:bg-rose-100'
                               : 'bg-estate-success-bg text-estate-success border-estate-success/20 hover:bg-emerald-150'
                               }`}
@@ -953,10 +953,10 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
 
       {/* Agent Subareas Modal */}
       {isModalOpen && selectedAgent && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl w-full max-w-5xl mx-4 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-5xl mx-0 sm:mx-4 flex flex-col max-h-[95vh] sm:max-h-[90vh]">
             {/* Modal Header */}
-            <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-estate-border">
+            <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
                 <h2 className="text-xl font-bold text-estate-navy font-serif">
                   Subareas for {selectedAgent.name}
@@ -1029,7 +1029,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {isLoadingSubareas ? (
                 <div className="flex justify-center items-center py-12">
                   <div className="text-estate-navy">Loading subareas...</div>
@@ -1114,7 +1114,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                         <div className="mt-4 pt-4 border-t border-estate-border">
                           <button
                             onClick={() => approveAgentWithSubareas(selectedAgent.id)}
-                            className="w-full px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm font-semibold"
+                            className="w-full px-4 py-2 min-h-[44px] bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm font-semibold"
                           >
                             Approve & Assign All Requested ({requestedSubareas.length})
                           </button>
@@ -1161,18 +1161,18 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end p-6 border-t border-estate-border bg-gray-50 gap-3">
+            <div className="flex flex-wrap justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50 gap-3">
               {selectedAgent.status === "pending" && requestedSubareas.length > 0 && (
                 <button
                   onClick={() => approveAgentWithSubareas(selectedAgent.id)}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition"
+                  className="px-4 py-2 min-h-[44px] bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition"
                 >
                   Approve & Assign All Requested
                 </button>
               )}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>

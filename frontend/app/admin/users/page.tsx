@@ -211,7 +211,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Users</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Users</h1>
           <p className="text-sm text-estate-text-sec">View, moderate, and manage user accounts on the platform.</p>
         </div>
         <button
@@ -219,23 +219,23 @@ export default function AdminUsersPage() {
             fetchUsers();
             fetchProperties();
           }}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Users</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{usersList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active Users</span>
           <span className="text-3xl font-extrabold text-estate-success block mt-2">{activeCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Suspended Users</span>
           <span className="text-3xl font-extrabold text-estate-red block mt-2">{suspendedCount}</span>
         </div>
@@ -317,7 +317,7 @@ export default function AdminUsersPage() {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
             >
               Clear All Filters
             </button>
@@ -454,7 +454,7 @@ export default function AdminUsersPage() {
                       <td className="py-4 px-4 text-right">
                         <button
                           onClick={() => toggleStatus(user.id)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                          className={`px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border transition ${
                             user.status === 'active'
                               ? 'bg-estate-red-bg text-estate-red border-estate-red/20 hover:bg-rose-100'
                               : 'bg-estate-success-bg text-estate-success border-estate-success/20 hover:bg-emerald-150'
@@ -484,10 +484,10 @@ export default function AdminUsersPage() {
 
       {/* User Properties Modal */}
       {isModalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl w-full max-w-4xl mx-4 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-4xl mx-0 sm:mx-4 flex flex-col max-h-[95vh] sm:max-h-[90vh]">
             {/* Modal Header */}
-            <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-estate-border">
+            <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
                 <h2 className="text-xl font-bold text-estate-navy font-serif">
                   Properties Listed by {selectedUser.name}
@@ -508,7 +508,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {isLoadingProperties ? (
                 <div className="flex justify-center items-center py-12">
                   <div className="text-estate-navy">Loading properties...</div>
@@ -580,10 +580,10 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>
@@ -594,11 +594,11 @@ export default function AdminUsersPage() {
 
       {/* Property Detail Modal */}
       {isDetailModalOpen && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border z-10">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border z-10">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">
                 Property Details
               </h2>
               <button
@@ -610,7 +610,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {/* Main Image */}
               <img
                 src={getPropertyImage(selectedProperty)}
@@ -777,10 +777,10 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-white flex justify-end p-6 border-t border-estate-border">
+            <div className="sticky bottom-0 bg-white flex justify-end p-4 sm:p-6 border-t border-estate-border">
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>

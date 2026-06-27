@@ -295,9 +295,9 @@ export default function AdminAgentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Agents</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Agents</h1>
           <p className="text-sm text-estate-text-sec">Supervise agent activity, details, and active listings.</p>
         </div>
         <button
@@ -305,7 +305,7 @@ export default function AdminAgentsPage() {
             fetchAgents();
             fetchSubareas();
           }}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md min-h-[44px]"
         >
           Refresh
         </button>
@@ -313,23 +313,23 @@ export default function AdminAgentsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Agents</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{agentsList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active Agents</span>
           <span className="text-3xl font-extrabold text-estate-success block mt-2">{activeCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Average Rating</span>
           <span className="text-3xl font-extrabold text-estate-amber-dark block mt-2">{avgRating} / 5.0</span>
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
             <label className="block text-xs font-semibold text-estate-text mb-1">Search</label>
@@ -403,7 +403,7 @@ export default function AdminAgentsPage() {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm min-h-[44px]"
             >
               Clear All Filters
             </button>
@@ -520,7 +520,7 @@ export default function AdminAgentsPage() {
                       <td className="py-4 px-4 text-right">
                         <button
                           onClick={() => toggleStatus(agent.id)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition min-h-[44px] ${
                             agent.status === 'active'
                               ? 'bg-estate-red-bg text-estate-red border-estate-red/20 hover:bg-rose-100'
                               : 'bg-estate-success-bg text-estate-success border-estate-success/20 hover:bg-emerald-150'
@@ -538,7 +538,7 @@ export default function AdminAgentsPage() {
         </div>
         
         {/* Results Count */}
-        <div className="px-6 py-3 border-t border-estate-border bg-gray-50 text-xs text-estate-muted flex justify-between items-center">
+        <div className="px-4 sm:px-6 py-3 border-t border-estate-border bg-gray-50 text-xs text-estate-muted flex justify-between items-center">
           <span>Showing {filteredAgents.length} of {agentsList.length} agents</span>
           {filteredAgents.length !== agentsList.length && (
             <button onClick={clearFilters} className="text-estate-navy hover:underline">
@@ -550,10 +550,10 @@ export default function AdminAgentsPage() {
 
       {/* Agent Subareas Modal */}
       {isModalOpen && selectedAgent && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl w-full max-w-5xl mx-4 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-5xl mx-4 flex flex-col max-h-[90vh]">
             {/* Modal Header */}
-            <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-estate-border">
+            <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
                 <h2 className="text-xl font-bold text-estate-navy font-serif">
                   Subareas Managed by {selectedAgent.name}
@@ -574,7 +574,7 @@ export default function AdminAgentsPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {isLoadingSubareas ? (
                 <div className="flex justify-center items-center py-12">
                   <div className="text-estate-navy">Loading subareas...</div>
@@ -655,10 +655,10 @@ export default function AdminAgentsPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
               >
                 Close
               </button>

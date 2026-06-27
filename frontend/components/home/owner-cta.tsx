@@ -5,7 +5,7 @@ const features = ["Free Listing", "Verified Leads", "AI Matching", "Legal Assist
 
 export function OwnerCta() {
   return (
-    <section className="bg-estate-navy px-6 py-24 text-center lg:py-28">
+    <section className="bg-estate-navy px-6 py-16 sm:py-24 text-center lg:py-28">
       <div className="mx-auto max-w-2xl">
         <div className="mb-4 text-[13px] font-bold uppercase tracking-[0.08em] text-[#BFE6BF]">For Property Owners</div>
         <h2 className="font-serif text-[clamp(1.8rem,3vw,2.8rem)] leading-tight text-white">
@@ -15,10 +15,10 @@ export function OwnerCta() {
           Post your property for free and get connected with genuine buyers and tenants through our AI-powered matching system.
         </p>
         <div className="flex flex-wrap justify-center gap-3.5">
-          <Button href="/submit-property" variant="amber" className="px-7 py-3.5 text-[15px]">
+          <Button href="/submit-property" variant="amber" className="min-h-[44px] px-7 py-3.5 text-[15px]">
             <Plus size={17} aria-hidden="true" /> List Your Property Free
           </Button>
-          <Button href="/auth/login" variant="ghost" className="border-white/30 px-7 py-3.5 text-[15px] text-white hover:bg-white/10">
+          <Button href="/auth/login" variant="ghost" className="min-h-[44px] border-white/30 px-7 py-3.5 text-[15px] text-white hover:bg-white/10">
             Talk to an Expert
           </Button>
         </div>

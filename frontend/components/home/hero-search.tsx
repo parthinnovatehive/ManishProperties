@@ -361,13 +361,13 @@ export function HeroSearch() {
           Explore 85,000+ verified listings with transparent pricing, RERA-compliant properties, and expert guidance.
         </p>
 
-        <div className="mt-12 max-w-[920px] rounded-[28px] border border-white/30 bg-white/20 p-2 shadow-search-card backdrop-blur-xl">
+        <div className="mt-8 sm:mt-12 w-full max-w-[920px] rounded-[28px] border border-white/30 bg-white/20 p-2 shadow-search-card backdrop-blur-xl">
           <div className="rounded-[22px] bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-            <div className="mb-3 flex overflow-x-auto border-b border-estate-border px-1">
+            <div className="mb-3 flex overflow-x-auto border-b border-estate-border px-1 scrollbar-hide">
               {searchTabs.map((tab) => (
                 <button
                   key={tab}
-                  className={`mb-[-1px] whitespace-nowrap border-b-[2.5px] px-4 py-3 text-sm font-semibold transition duration-300 hover:bg-estate-bg/80 sm:px-5 ${
+                  className={`mb-[-1px] shrink-0 whitespace-nowrap border-b-[2.5px] px-3 py-3 text-xs sm:px-5 sm:text-sm font-semibold transition duration-300 hover:bg-estate-bg/80 ${
                     searchType === tab
                       ? "border-estate-navy text-estate-navy"
                       : "border-transparent text-estate-text-sec hover:text-estate-navy"
@@ -379,8 +379,8 @@ export function HeroSearch() {
               ))}
             </div>
 
-            <div className="flex gap-3 p-1" ref={wrapperRef}>
-              <div className="relative flex-1">
+            <div className="flex flex-col sm:flex-row gap-3 p-1" ref={wrapperRef}>
+              <div className="relative flex-1 w-full">
                 <input
                   ref={inputRef}
                   type="text"
@@ -398,7 +398,7 @@ export function HeroSearch() {
                   onKeyDown={handleKeyDown}
                   placeholder="Search properties, locations, builders..."
                   disabled={loading}
-                  className="w-full rounded-[14px] border-[1.5px] border-estate-border bg-estate-bg/65 py-3.5 pl-10 pr-10 text-sm text-estate-text shadow-sm transition hover:border-estate-border-med hover:bg-white focus:border-estate-navy focus:bg-white focus:ring-2 focus:ring-estate-navy/20 focus:outline-none"
+                  className="w-full rounded-[14px] border-[1.5px] border-estate-border bg-estate-bg/65 py-3.5 pl-10 pr-10 text-sm text-estate-text shadow-sm transition hover:border-estate-border-med hover:bg-white focus:border-estate-navy focus:bg-white focus:ring-2 focus:ring-estate-navy/20 focus:outline-none min-h-[48px]"
                   autoComplete="off"
                   role="combobox"
                   aria-expanded={showSuggestions}
@@ -458,7 +458,7 @@ export function HeroSearch() {
                                 <span className="flex-1 truncate">
                                   {suggestion.label}
                                 </span>
-                                <span className="whitespace-nowrap rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-estate-muted">
+                                <span className="shrink-0 whitespace-nowrap rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-estate-muted">
                                   {suggestion.category}
                                 </span>
                               </button>
@@ -473,7 +473,7 @@ export function HeroSearch() {
 
               <Button
                 variant="navy"
-                className="rounded-xl px-8 py-3.5 text-[15px]"
+                className="rounded-xl px-8 py-3.5 text-[15px] w-full sm:w-auto min-h-[48px]"
                 onClick={() => handleSearch()}
               >
                 Search <ArrowRight size={16} aria-hidden="true" />

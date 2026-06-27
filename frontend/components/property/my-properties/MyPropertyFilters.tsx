@@ -28,7 +28,7 @@ export function MyPropertyFilters({
   };
 
   return (
-    <div className="bg-white border border-estate-border/70 p-4 rounded-2xl shadow-sm mb-6 space-y-4">
+    <div className="bg-white border border-estate-border/70 p-4 sm:p-6 rounded-2xl shadow-sm mb-6 space-y-4">
       {/* Search Bar */}
       <div className="relative">
         <Search className="w-4 h-4 text-estate-muted absolute left-3.5 top-1/2 -translate-y-1/2" />

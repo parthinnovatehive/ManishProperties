@@ -53,53 +53,53 @@ export function PropertyComparisonModal({ isOpen, onClose }: PropertyComparisonM
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-[99999] bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-white sm:rounded-3xl w-full max-w-6xl max-h-[100dvh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-estate-border flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <Scale className="w-6 h-6 text-estate-navy" />
-            <h2 className="text-xl font-bold text-estate-navy">Compare Properties</h2>
-            <span className="text-sm text-estate-muted">
-              ({properties.length} of {selectedCount} selected)
+        <div className="flex justify-between items-center px-4 py-3 sm:p-6 border-b border-estate-border flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <Scale className="w-5 h-5 sm:w-6 sm:h-6 text-estate-navy shrink-0" />
+            <h2 className="text-base sm:text-xl font-bold text-estate-navy truncate">Compare Properties</h2>
+            <span className="text-xs sm:text-sm text-estate-muted shrink-0">
+              ({properties.length} of {selectedCount})
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <button
               onClick={handlePrint}
-              className="p-2 hover:bg-gray-100 rounded-lg transition text-estate-muted hover:text-estate-navy"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition text-estate-muted hover:text-estate-navy"
               title="Print"
             >
-              <Printer className="w-5 h-5" />
+              <Printer className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={handleShare}
-              className="p-2 hover:bg-gray-100 rounded-lg transition text-estate-muted hover:text-estate-navy"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition text-estate-muted hover:text-estate-navy"
               title="Share"
             >
-              <Share2 className="w-5 h-5" />
+              <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => {
                 clearSelection();
                 onClose();
               }}
-              className="px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"
+              className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-red-500 hover:bg-red-50 rounded-lg transition"
             >
-              Clear All
+              Clear
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
@@ -128,9 +128,9 @@ export function PropertyComparisonModal({ isOpen, onClose }: PropertyComparisonM
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center p-4 border-t border-estate-border bg-gray-50 flex-shrink-0">
-          <p className="text-sm text-estate-muted">
-            Showing {properties.length} of {selectedCount} selected properties {selectedCount < maxLimit && `(add ${maxLimit - selectedCount} more)`}
+        <div className="flex justify-between items-center px-4 py-3 sm:p-4 border-t border-estate-border bg-gray-50 flex-shrink-0">
+          <p className="text-xs sm:text-sm text-estate-muted">
+            {properties.length} of {selectedCount} selected
           </p>
           <div className="flex gap-2">
             <Button size="sm" variant="navy" onClick={onClose}>

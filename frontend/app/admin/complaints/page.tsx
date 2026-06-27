@@ -481,38 +481,38 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-<h1 className="text-3xl font-bold text-estate-navy font-serif">User Complaints</h1>
+<h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">User Complaints</h1>
 <p className="text-sm text-estate-text-sec">
   {adminCity ? `Managing complaints for ${adminCity.name} city` : "Investigate, track progress, and resolve user-reported issues."}
 </p>
         </div>
         <button
   onClick={() => fetchData()}
-  className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+  className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
 >
   Refresh
 </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{complaintsList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">In Progress</span>
           <span className="text-3xl font-extrabold text-blue-600 block mt-2">{inProgressCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Resolved</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{resolvedCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Rejected</span>
           <span className="text-3xl font-extrabold text-rose-600 block mt-2">{rejectedCount}</span>
         </div>
@@ -600,7 +600,7 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
           {/* Clear Filters Button */}
           <button
             onClick={clearFilters}
-            className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+            className="px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
           >
             Clear Filters
           </button>
@@ -696,7 +696,7 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
                     <td className="py-4 px-4 text-right whitespace-nowrap">
                       <button
                         onClick={() => openComplaintModal(comp)}
-                        className="px-3 py-1.5 bg-estate-navy/10 text-estate-navy text-xs font-semibold rounded-lg hover:bg-estate-navy/20 transition"
+                        className="px-3 py-1.5 min-h-[36px] bg-estate-navy/10 text-estate-navy text-xs font-semibold rounded-lg hover:bg-estate-navy/20 transition"
                       >
                         View Details
                       </button>
@@ -717,11 +717,11 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
       {/* Rest of the modals remain the same... */}
       {/* Complaint Detail Modal */}
       {isModalOpen && selectedComplaint && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
-                <h2 className="text-xl font-bold text-estate-navy font-serif">Complaint Details</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Complaint Details</h2>
                 <p className="text-xs text-estate-muted mt-1">Last updated: {formatDateTime(selectedComplaint.updatedAt)}</p>
               </div>
               <button
@@ -734,7 +734,7 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
 
             <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-estate-border">
               {/* Left Column */}
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-6">
                 <h3 className="font-bold text-estate-navy text-lg border-b border-estate-border pb-2">Complaint Information</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -788,19 +788,19 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
                 )}
 
                 {(selectedComplaint.status === "pending" || selectedComplaint.status === "in_progress") && (
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-wrap gap-3 pt-4">
                     {selectedComplaint.status === "pending" && (
                       <button
                         onClick={handleStartProgress}
                         disabled={isSubmitting}
-                        className="flex-1 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+                        className="flex-1 min-h-[44px] py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
                       >
                         Start Progress
                       </button>
                     )}
                     <button
                       onClick={() => setIsActionModalOpen(true)}
-                      className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition"
+                      className="flex-1 min-h-[44px] py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition"
                     >
                       Resolve / Reject
                     </button>
@@ -809,7 +809,7 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
               </div>
 
               {/* Right Column */}
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-6">
                 <h3 className="font-bold text-estate-navy text-lg border-b border-estate-border pb-2">Property Details</h3>
                 
                 {isPropertyLoading ? (
@@ -862,19 +862,19 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
 
                     <div className="border-t border-estate-border pt-4">
                       <h3 className="font-bold text-estate-navy mb-3">Property Actions</h3>
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
                         {relatedProperty.status === "SUSPENDED" ? (
                           <button
                             onClick={activateProperty}
                             disabled={isSubmitting}
-                            className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition disabled:opacity-50"
+                            className="flex-1 min-h-[44px] py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition disabled:opacity-50"
                           >
                             Activate Property
                           </button>
                         ) : (
                           <button
                             onClick={() => setIsSuspendModalOpen(true)}
-                            className="flex-1 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition"
+                            className="flex-1 min-h-[44px] py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition"
                           >
                             Suspend Property
                           </button>
@@ -890,10 +890,10 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="sticky bottom-0 bg-white flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>
@@ -904,10 +904,10 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
 
       {/* Action Modal (Resolve/Reject) */}
       {isActionModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 w-full sm:max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy">Resolve or Reject Complaint</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy">Resolve or Reject Complaint</h2>
               <button
                 onClick={() => setIsActionModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -941,18 +941,18 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
                   rows={2}
                 />
               </div>
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <button
                   onClick={handleResolve}
                   disabled={isSubmitting}
-                  className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition disabled:opacity-50"
+                  className="flex-1 min-h-[44px] py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition disabled:opacity-50"
                 >
                   Mark Resolved
                 </button>
                 <button
                   onClick={handleReject}
                   disabled={isSubmitting}
-                  className="flex-1 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition disabled:opacity-50"
+                  className="flex-1 min-h-[44px] py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition disabled:opacity-50"
                 >
                   Reject
                 </button>
@@ -964,10 +964,10 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
 
       {/* Suspend Property Modal */}
       {isSuspendModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 w-full sm:max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy">Suspend Property</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy">Suspend Property</h2>
               <button
                 onClick={() => setIsSuspendModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -993,17 +993,17 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
               />
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsSuspendModalOpen(false)}
-                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                className="flex-1 min-h-[44px] py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={suspendProperty}
                 disabled={isSubmitting}
-                className="flex-1 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition disabled:opacity-50"
+                className="flex-1 min-h-[44px] py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition disabled:opacity-50"
               >
                 {isSubmitting ? "Suspending..." : "Confirm Suspension"}
               </button>
@@ -1015,7 +1015,7 @@ const [allProperties, setAllProperties] = useState<Property[]>([]);
       {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 mx-4">
             <p className="text-estate-navy">Loading...</p>
           </div>
         </div>

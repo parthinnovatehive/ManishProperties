@@ -8,7 +8,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 
 export function Input({ label, icon, required, className, ...props }: InputProps) {
   return (
-    <label className="mb-4 block">
+    <label className="mb-4 block w-full">
       {label && (
         <span className="mb-1.5 block text-[13px] font-semibold text-estate-text">
           {label}
@@ -20,7 +20,7 @@ export function Input({ label, icon, required, className, ...props }: InputProps
         <input
           required={required}
           className={cn(
-            "focus-field w-full rounded-[14px] border-[1.5px] border-estate-border bg-white py-3 pr-4 text-sm text-estate-text placeholder:text-estate-muted",
+            "focus-field w-full rounded-[14px] border-[1.5px] border-estate-border bg-white py-3 pr-4 text-sm text-estate-text placeholder:text-estate-muted min-h-[44px]",
             icon ? "pl-9" : "pl-3.5",
             className,
           )}

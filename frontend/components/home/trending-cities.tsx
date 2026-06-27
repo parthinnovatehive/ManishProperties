@@ -7,7 +7,7 @@ export function TrendingCities({ cities }: { cities: City[] }) {
   const router = useRouter();
 
   return (
-    <section className="bg-white py-24 lg:py-28">
+    <section className="bg-white py-16 sm:py-24 lg:py-28">
       <div className="container-wide">
         <div className="mb-14 text-center">
           <div className="section-eyebrow mb-3 bg-estate-success-bg text-estate-success">Top Locations</div>
@@ -20,7 +20,7 @@ export function TrendingCities({ cities }: { cities: City[] }) {
             No cities are available from the API yet.
           </div>
         ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {cities.map((city) => (
             <button
               key={city.name}

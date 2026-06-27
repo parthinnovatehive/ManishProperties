@@ -173,34 +173,34 @@ export default function AdminSubareasPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Subareas</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Subareas</h1>
           <p className="text-sm text-estate-text-sec">
             {adminCity ? `Managing subareas for ${adminCity.name}` : "All subareas"}
           </p>
         </div>
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Subareas</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{totalSubareas}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active</span>
           <span className="text-3xl font-extrabold text-estate-success block mt-2">{activeSubareas}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">With Agents</span>
           <span className="text-3xl font-extrabold text-estate-blue block mt-2">{assignedSubareas}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Unassigned</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{unassignedSubareas}</span>
         </div>
@@ -234,7 +234,7 @@ export default function AdminSubareasPage() {
           <div className="flex items-end">
             <button
               onClick={() => { setSearchTerm(""); setStatusFilter("all"); }}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
             >
               Clear Filters
             </button>
@@ -308,7 +308,7 @@ export default function AdminSubareasPage() {
                       <td className="py-4 px-4 text-right">
                         <button
                           onClick={() => openManageModal(subarea)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold border border-estate-navy/30 text-estate-navy hover:bg-estate-navy hover:text-white transition"
+                          className="px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border border-estate-navy/30 text-estate-navy hover:bg-estate-navy hover:text-white transition"
                         >
                           Manage Agents ({agentCount})
                         </button>
@@ -327,10 +327,10 @@ export default function AdminSubareasPage() {
 
       {/* Manage Agents Modal */}
       {isModalOpen && selectedSubarea && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-2xl mx-0 sm:mx-4 flex flex-col max-h-[95vh] sm:max-h-[90vh]">
             {/* Header */}
-            <div className="flex-shrink-0 flex justify-between items-center p-6 border-b border-estate-border">
+            <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
                 <h2 className="text-xl font-bold text-estate-navy font-serif">
                   Manage Agents: {selectedSubarea.name}
@@ -351,7 +351,7 @@ export default function AdminSubareasPage() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {agents.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-estate-text-sec">No agents available to assign.</p>
@@ -391,7 +391,7 @@ export default function AdminSubareasPage() {
                         </div>
                         <button
                           onClick={() => toggleAgentAssignment(selectedSubarea.id, agent.id, isAssigned)}
-                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                          className={`px-3 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition ${
                             isAssigned
                               ? "text-rose-600 hover:bg-rose-100 border border-rose-200"
                               : "text-emerald-600 hover:bg-emerald-100 border border-emerald-200"
@@ -407,10 +407,10 @@ export default function AdminSubareasPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>

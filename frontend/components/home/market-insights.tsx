@@ -18,7 +18,7 @@ const rows = [
 
 export function MarketInsights() {
   return (
-    <section className="bg-estate-bg py-24 lg:py-28">
+    <section className="bg-estate-bg py-16 sm:py-24 lg:py-28">
       <div className="container-wide">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
@@ -41,7 +41,7 @@ export function MarketInsights() {
               ))}
             </div>
 
-            <Button href="/properties" className="mt-6">
+            <Button href="/properties" className="mt-6 min-h-[44px]">
               Explore Insights <ArrowRight size={15} aria-hidden="true" />
             </Button>
           </div>

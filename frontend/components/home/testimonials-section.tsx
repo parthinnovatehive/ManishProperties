@@ -5,7 +5,7 @@ import { Stars } from "@/components/ui/stars";
 
 export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   return (
-    <section className="bg-white py-24 lg:py-28">
+    <section className="bg-white py-16 sm:py-24 lg:py-28">
       <div className="container-wide">
         <div className="mb-14 text-center">
           <div className="section-eyebrow mb-3 bg-estate-amber-pale text-estate-amber-dark">Testimonials</div>
@@ -18,7 +18,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
             No testimonials are available from the API yet.
           </div>
         ) : (
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
             <Card key={testimonial.name} className="p-8">
               <Stars rating={testimonial.rating} />

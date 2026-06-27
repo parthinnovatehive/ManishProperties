@@ -23,8 +23,8 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "gap-1.5 rounded-xl px-4 py-2.5 text-[13px]",
-  md: "gap-1.5 rounded-xl px-6 py-3.5 text-sm",
+  sm: "gap-1.5 rounded-xl px-4 py-2.5 text-[13px] min-h-[40px]",
+  md: "gap-1.5 rounded-xl px-6 py-3.5 text-sm min-h-[48px]",
 };
 
 export function Button({
@@ -39,7 +39,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center border-0 font-semibold transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center border-0 font-semibold transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50 select-none",
     variants[variant],
     sizes[size],
     fullWidth && "w-full",

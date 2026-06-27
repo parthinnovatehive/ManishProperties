@@ -391,9 +391,9 @@ const renderLineChart = (
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-gradient-to-r from-estate-navy to-estate-navy-mid rounded-2xl p-6 text-white">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-gradient-to-r from-estate-navy to-estate-navy-mid rounded-2xl p-4 sm:p-6 text-white">
         <div>
-          <h1 className="text-2xl font-bold font-serif">Platform Analytics</h1>
+          <h1 className="text-xl md:text-2xl font-bold font-serif">Platform Analytics</h1>
           <p className="text-white/70 text-sm mt-1">
             Time-based trends and growth metrics across the platform
           </p>
@@ -403,7 +403,7 @@ const renderLineChart = (
             <select
               value={timeframe}
               onChange={e => setTimeframe(e.target.value)}
-              className="appearance-none px-4 py-2 pr-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold outline-none hover:bg-white/20 transition cursor-pointer"
+              className="appearance-none px-4 py-2 pr-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold outline-none hover:bg-white/20 transition cursor-pointer min-h-[44px]"
             >
               <option value="Weekly" className="text-gray-900">Weekly</option>
               <option value="Monthly" className="text-gray-900">Monthly</option>
@@ -413,7 +413,7 @@ const renderLineChart = (
           </div>
           <button
             onClick={loadData}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition"
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition min-h-[44px] min-w-[44px]"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -423,7 +423,7 @@ const renderLineChart = (
       {/* Trend Charts - 4 Core Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Growth Trend */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -446,7 +446,7 @@ const renderLineChart = (
         </div>
 
         {/* Property Listing Trend */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -472,7 +472,7 @@ const renderLineChart = (
       {/* Second Row - Appointments */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Appointment Trend */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -496,7 +496,7 @@ const renderLineChart = (
 
         {/* Complaint Trend */}
         {complaintTrends.length > 0 && (
-          <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -519,7 +519,7 @@ const renderLineChart = (
 
       {/* Users vs Agents Comparison */}
       {userAgentComparison.length > 0 && (
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">

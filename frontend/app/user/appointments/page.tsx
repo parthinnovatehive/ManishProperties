@@ -341,13 +341,13 @@ export default function UserAppointmentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-estate-navy font-serif">My Appointments</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-estate-navy font-serif">My Appointments</h1>
         <p className="text-sm text-estate-text-sec mt-1">Track and manage your property viewing appointments.</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">Upcoming</p>
@@ -358,7 +358,7 @@ export default function UserAppointmentsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">Completed</p>
@@ -369,7 +369,7 @@ export default function UserAppointmentsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">Missed</p>
@@ -383,10 +383,10 @@ export default function UserAppointmentsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-estate-border pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-estate-border pb-2">
         <button
           onClick={() => setFilterStatus("upcoming")}
-          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition min-h-[44px] ${
             filterStatus === "upcoming"
               ? "bg-estate-navy text-white"
               : "text-estate-text-sec hover:text-estate-navy"
@@ -396,7 +396,7 @@ export default function UserAppointmentsPage() {
         </button>
         <button
           onClick={() => setFilterStatus("past")}
-          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition min-h-[44px] ${
             filterStatus === "past"
               ? "bg-estate-navy text-white"
               : "text-estate-text-sec hover:text-estate-navy"
@@ -406,7 +406,7 @@ export default function UserAppointmentsPage() {
         </button>
         <button
           onClick={() => setFilterStatus("missed")}
-          className={`px-4 py-2 text-sm font-semibold rounded-lg transition relative ${
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition relative min-h-[44px] ${
             filterStatus === "missed"
               ? "bg-estate-navy text-white"
               : "text-estate-text-sec hover:text-estate-navy"
@@ -438,7 +438,7 @@ export default function UserAppointmentsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFilterStatus("missed")}
-              className="px-4 py-2 bg-rose-600 text-white text-sm font-semibold rounded-xl hover:bg-rose-700 transition"
+              className="px-4 py-2 bg-rose-600 text-white text-sm font-semibold rounded-xl hover:bg-rose-700 transition min-h-[44px]"
             >
               View Missed
             </button>
@@ -528,11 +528,11 @@ export default function UserAppointmentsPage() {
                         <span className="truncate">{apt.agentName}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex flex-wrap items-center gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
                       {apt.agentPhone && (
                         <a
                           href={`tel:${apt.agentPhone}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition min-h-[44px]"
                         >
                           <Phone className="w-3.5 h-3.5" />
                           Call Agent
@@ -541,7 +541,7 @@ export default function UserAppointmentsPage() {
                       {apt.propertyId && (
                         <Link
                           href={`/properties/${apt.propertyId}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-estate-navy text-white text-xs font-bold rounded-lg hover:bg-estate-navy-mid transition"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-estate-navy text-white text-xs font-bold rounded-lg hover:bg-estate-navy-mid transition min-h-[44px]"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -550,7 +550,7 @@ export default function UserAppointmentsPage() {
                       )}
                       {apt.status === "Completed" && (
                         ratedAppointments.has(apt.id) ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-500 text-xs font-bold rounded-lg border border-gray-200">
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-500 text-xs font-bold rounded-lg border border-gray-200 min-h-[44px]">
                             <Star className="w-3.5 h-3.5 fill-estate-amber text-estate-amber" />
                             Rated
                           </span>
@@ -560,7 +560,7 @@ export default function UserAppointmentsPage() {
                               setRatingTarget(apt);
                               setUserRating(0);
                             }}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition min-h-[44px]"
                           >
                             <Star className="w-3.5 h-3.5" />
                             Rate Agent
@@ -574,7 +574,7 @@ export default function UserAppointmentsPage() {
                             setRescheduleDate("");
                             setRescheduleTime("");
                           }}
-                          className="ml-auto inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition"
+                          className="ml-auto inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition min-h-[44px]"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           Reschedule
@@ -591,10 +591,10 @@ export default function UserAppointmentsPage() {
 
       {/* Appointment Details Modal */}
       {isModalOpen && selectedAppointment && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Appointment Details</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Appointment Details</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -603,7 +603,7 @@ export default function UserAppointmentsPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {/* Status Banner */}
               <div className={`p-4 rounded-xl ${
                 selectedAppointment.status === "Confirmed" ? "bg-emerald-50 border border-emerald-200" :
@@ -754,7 +754,7 @@ export default function UserAppointmentsPage() {
     </div>
     <button
       onClick={() => toastManager.info(`Contacting Agent ${selectedAppointment.agentName} via email: ${selectedAppointment.agentEmail}`)}
-      className="mt-3 w-full px-4 py-2 bg-estate-navy text-white text-sm font-semibold rounded-xl hover:bg-estate-navy-mid transition"
+      className="mt-3 w-full px-4 py-2 bg-estate-navy text-white text-sm font-semibold rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
     >
       Email Agent
     </button>
@@ -777,11 +777,11 @@ export default function UserAppointmentsPage() {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-white flex justify-end gap-3 p-6 border-t border-estate-border bg-gray-50">
+            <div className="sticky bottom-0 bg-white flex justify-end gap-3 p-4 sm:p-6 border-t border-estate-border bg-gray-50">
              
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
               >
                 Close
               </button>
@@ -792,10 +792,10 @@ export default function UserAppointmentsPage() {
 
       {/* Reschedule Modal */}
       {rescheduleTarget && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md mx-4">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Reschedule Appointment</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Reschedule Appointment</h2>
               <button
                 onClick={() => setRescheduleTarget(null)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -804,7 +804,7 @@ export default function UserAppointmentsPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-4 sm:p-6 space-y-5">
               <div>
                 <h3 className="font-bold text-estate-navy mb-1">{rescheduleTarget.propertyName}</h3>
                 <p className="text-xs text-estate-muted">Current: {rescheduleTarget.date} at {rescheduleTarget.time}</p>
@@ -831,17 +831,17 @@ export default function UserAppointmentsPage() {
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white flex justify-end gap-3 p-6 border-t border-estate-border bg-gray-50">
+            <div className="sticky bottom-0 bg-white flex justify-end gap-3 p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setRescheduleTarget(null)}
-                className="px-4 py-2 text-estate-text-sec font-semibold rounded-xl hover:bg-gray-100 transition"
+                className="px-4 py-2 text-estate-text-sec font-semibold rounded-xl hover:bg-gray-100 transition min-h-[44px]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReschedule}
                 disabled={!rescheduleDate || !rescheduleTime || isRescheduling}
-                className="px-4 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
               >
                 {isRescheduling ? "Rescheduling..." : "Confirm Reschedule"}
               </button>
@@ -852,10 +852,10 @@ export default function UserAppointmentsPage() {
 
       {/* Rate Agent Modal */}
       {ratingTarget && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md mx-4">
-            <div className="flex justify-between items-center p-6 border-b border-estate-border">
-              <h2 className="text-xl font-bold text-estate-navy font-serif flex items-center gap-2">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif flex items-center gap-2">
                 <Star className="w-5 h-5 text-estate-amber fill-estate-amber" />
                 Rate Agent
               </h2>
@@ -867,7 +867,7 @@ export default function UserAppointmentsPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               <div className="text-center">
                 <div className="w-16 h-16 rounded-full bg-estate-blue-pale flex items-center justify-center mx-auto mb-3">
                   <User className="w-8 h-8 text-estate-navy" />
@@ -900,17 +900,17 @@ export default function UserAppointmentsPage() {
               )}
             </div>
 
-            <div className="flex justify-end gap-3 p-6 border-t border-estate-border bg-gray-50">
+            <div className="flex justify-end gap-3 p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => { setRatingTarget(null); setUserRating(0); }}
-                className="px-4 py-2 text-estate-text-sec font-semibold rounded-xl hover:bg-gray-100 transition"
+                className="px-4 py-2 text-estate-text-sec font-semibold rounded-xl hover:bg-gray-100 transition min-h-[44px]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRateAgent}
                 disabled={userRating === 0 || isRatingSubmitting}
-                className="px-6 py-2 bg-estate-amber text-white font-semibold rounded-xl hover:bg-estate-amber-dark transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                className="px-6 py-2 bg-estate-amber text-white font-semibold rounded-xl hover:bg-estate-amber-dark transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 min-h-[44px]"
               >
                 {isRatingSubmitting ? (
                   <>

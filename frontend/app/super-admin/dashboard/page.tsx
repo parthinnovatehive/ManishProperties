@@ -305,7 +305,7 @@ const loadDashboard = async () => {
         <p className="text-red-700 font-semibold">{error}</p>
         <button
           onClick={loadDashboard}
-          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          className="mt-4 px-4 py-2 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
         >
           Retry
         </button>
@@ -317,10 +317,10 @@ const loadDashboard = async () => {
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-estate-navy to-estate-navy-mid rounded-3xl p-8 text-white shadow-xl">
+      <div className="bg-gradient-to-r from-estate-navy to-estate-navy-mid rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
-            <h1 className="text-3xl font-bold font-serif">Super Admin Dashboard</h1>
+            <h1 className="text-2xl md:text-3xl font-bold font-serif">Super Admin Dashboard</h1>
             <p className="text-white/80 text-sm mt-1">
               Platform Overview. Monitor properties, agents, appointments, and user engagement.
             </p>
@@ -336,13 +336,13 @@ const loadDashboard = async () => {
 
       {/* Primary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Total Properties
               </p>
-              <p className="text-3xl font-extrabold text-estate-navy mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-estate-navy mt-2">
                 {totalProperties.toLocaleString()}
               </p>
             </div>
@@ -358,13 +358,13 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Agents
               </p>
-              <p className="text-3xl font-extrabold text-estate-navy mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-estate-navy mt-2">
                 {totalAgents.toLocaleString()}
               </p>
             </div>
@@ -374,13 +374,13 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Appointments
               </p>
-              <p className="text-3xl font-extrabold text-estate-navy mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-estate-navy mt-2">
                 {totalAppointments.toLocaleString()}
               </p>
             </div>
@@ -399,13 +399,13 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Total Users
               </p>
-              <p className="text-3xl font-extrabold text-estate-navy mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-estate-navy mt-2">
                 {totalUsers.toLocaleString()}
               </p>
             </div>
@@ -420,13 +420,13 @@ const loadDashboard = async () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
         {/* Cities & Areas Card */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Cities & Areas
               </p>
-              <p className="text-3xl font-extrabold text-estate-navy mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-estate-navy mt-2">
                 {totalCities}
               </p>
             </div>
@@ -440,13 +440,13 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Complaints
               </p>
-              <p className="text-3xl font-extrabold text-rose-600 mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-rose-600 mt-2">
                 {totalComplaints}
               </p>
             </div>
@@ -465,13 +465,13 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Featured Properties
               </p>
-              <p className="text-3xl font-extrabold text-amber-600 mt-2">
+              <p className="text-2xl md:text-3xl font-extrabold text-amber-600 mt-2">
                 {featuredProperties}
               </p>
             </div>
@@ -487,8 +487,8 @@ const loadDashboard = async () => {
 
       {/* Property Type Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-          <h2 className="text-xl font-bold text-estate-navy font-serif mb-4">
+        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-4">
             Properties by Type
           </h2>
           <div className="space-y-3">
@@ -513,8 +513,8 @@ const loadDashboard = async () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-          <h2 className="text-xl font-bold text-estate-navy font-serif mb-4">
+        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-4">
             Appointment Types
           </h2>
           <div className="space-y-3">
@@ -542,8 +542,8 @@ const loadDashboard = async () => {
 
       {/* City-Wise Distribution with Subareas */}
       {(cityAnalytics.length > 0 || subareaAnalytics.length > 0) && (
-        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-          <h2 className="text-xl font-bold text-estate-navy font-serif mb-2">
+        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-2">
             City & Subarea Distribution
           </h2>
           <p className="text-sm text-estate-text-sec mb-6">
@@ -586,8 +586,8 @@ const loadDashboard = async () => {
           {/* Top Performing Subareas */}
           {/* Top Performing Subareas */}
 {subareaAnalytics.length > 0 && (
-  <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-    <h2 className="text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
+  <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+    <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
       <TrendingUp className="w-5 h-5 text-emerald-500" />
       Top Performing Subareas
     </h2>
@@ -627,7 +627,7 @@ const loadDashboard = async () => {
       <div className="mt-6 flex justify-center">
         <button
           onClick={() => setShowAllSubareas(!showAllSubareas)}
-          className="px-6 py-2.5 text-sm font-semibold text-estate-navy border border-estate-border rounded-xl hover:bg-estate-bg transition flex items-center gap-2"
+          className="px-6 py-2.5 min-h-[44px] text-sm font-semibold text-estate-navy border border-estate-border rounded-xl hover:bg-estate-bg transition flex items-center gap-2"
         >
           {showAllSubareas ? (
             <>
@@ -650,8 +650,8 @@ const loadDashboard = async () => {
 
       {/* Top Performing Agents */}
       {topAgents.length > 0 && (
-        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-          <h2 className="text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
+        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
             <Award className="w-5 h-5 text-amber-500" />
             Top Performing Agents
           </h2>
@@ -713,8 +713,8 @@ const loadDashboard = async () => {
 
       {/* Top Performing Areas */}
       {topAreas.length > 0 && (
-        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
-          <h2 className="text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
+        <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif mb-2 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-emerald-500" />
             Top Performing Areas
           </h2>
@@ -755,7 +755,7 @@ const loadDashboard = async () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-50 rounded-full">
               <Home className="w-5 h-5 text-emerald-600" />
@@ -764,14 +764,14 @@ const loadDashboard = async () => {
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Properties Listed Today
               </p>
-              <p className="text-2xl font-extrabold text-estate-navy">
+              <p className="text-xl md:text-2xl font-extrabold text-estate-navy">
                 {propertiesAddedToday}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-50 rounded-full">
               <Calendar className="w-5 h-5 text-amber-600" />
@@ -780,7 +780,7 @@ const loadDashboard = async () => {
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">
                 Appointments Today
               </p>
-              <p className="text-2xl font-extrabold text-estate-navy">
+              <p className="text-xl md:text-2xl font-extrabold text-estate-navy">
                 {appointmentsToday}
               </p>
             </div>

@@ -156,7 +156,7 @@ export function PropertyQuestionnaireModal({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -165,13 +165,13 @@ export function PropertyQuestionnaireModal({
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-[560px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl animate-fade-up"
+        className="relative w-full max-w-[560px] max-h-[100dvh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl animate-fade-up"
         role="dialog"
         aria-modal="true"
         aria-label="Property search questionnaire"
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-3xl bg-white px-6 pb-0 pt-6">
+        <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-3xl bg-white px-4 sm:px-6 pb-0 pt-4 sm:pt-6">
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-estate-blue-pale text-estate-navy">
               <Search size={16} />
@@ -191,7 +191,7 @@ export function PropertyQuestionnaireModal({
         </div>
 
         {/* Progress bar */}
-        <div className="mx-6 mt-4 h-1.5 rounded-full bg-estate-bg">
+        <div className="mx-4 sm:mx-6 mt-4 h-1.5 rounded-full bg-estate-bg">
           <div
             className="h-full rounded-full bg-estate-navy transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
@@ -350,7 +350,7 @@ export function PropertyQuestionnaireModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex items-center justify-between gap-3 rounded-b-3xl border-t border-estate-border bg-white px-6 py-4">
+        <div className="sticky bottom-0 flex items-center justify-between gap-3 rounded-b-3xl border-t border-estate-border bg-white px-4 sm:px-6 py-4">
           <button
             onClick={() => resetAndClose(onSkip)}
             className="rounded-xl px-4 py-2.5 text-sm font-semibold text-estate-muted transition hover:bg-estate-bg hover:text-estate-text-sec"

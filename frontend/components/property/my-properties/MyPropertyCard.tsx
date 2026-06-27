@@ -200,11 +200,11 @@ export function MyPropertyCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-4 gap-2 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 text-[11px] px-1"
+            className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px]"
             onClick={() => onView?.(property)}
           >
             <Eye className="w-3.5 h-3.5" /> View
@@ -212,7 +212,7 @@ export function MyPropertyCard({
           <Button
             variant="outline"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 text-[11px] px-1"
+            className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px]"
             onClick={() => onEdit?.(property)}
           >
             <Edit2 className="w-3.5 h-3.5" /> Edit
@@ -227,7 +227,7 @@ export function MyPropertyCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full flex items-center justify-center gap-1 text-[11px] px-1 text-estate-amber-dark border-estate-amber/50 hover:bg-amber-50"
+                className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px] text-estate-amber-dark border-estate-amber/50 hover:bg-amber-50"
                 onClick={() => onFeatureRequest?.(property)}
               >
                 <Sparkles className="w-3.5 h-3.5" /> {property.featured && isExpired ? "Renew" : "Feature"}
@@ -237,7 +237,7 @@ export function MyPropertyCard({
           <Button
             variant="outline"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 text-[11px] px-1 text-red-600 border-red-200 hover:bg-red-50"
+            className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px] text-red-600 border-red-200 hover:bg-red-50"
             onClick={() => onDelete?.(property)}
           >
             <Trash2 className="w-3.5 h-3.5" /> Delete

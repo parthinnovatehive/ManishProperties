@@ -4,7 +4,7 @@ import { ContentIcon } from "@/lib/icons";
 export function StatsBar({ stats }: { stats: Stat[] }) {
   return (
     <section className="border-y border-estate-border bg-white">
-      <div className="container-wide grid sm:grid-cols-2 lg:grid-cols-4">
+      <div className="container-wide grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
           <div
             key={stat.label}

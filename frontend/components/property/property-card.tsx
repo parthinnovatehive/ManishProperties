@@ -77,7 +77,7 @@ export function PropertyCard({
 
   return (
     <Card className={cn(
-      "group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg flex flex-col h-full relative transition-all duration-300",
+      "group cursor-pointer rounded-[20px] border-estate-border/90 shadow-estate hover:-translate-y-1.5 hover:shadow-estate-lg flex flex-col h-full relative transition-all duration-300 w-full",
       isChecked && "ring-2 ring-estate-navy ring-offset-2 shadow-estate-lg"
     )}>
       <div className="relative overflow-hidden bg-estate-navy rounded-t-[20px]">
@@ -88,7 +88,7 @@ export function PropertyCard({
             loading="lazy"
             className={cn(
               "w-full object-cover transition duration-500 group-hover:scale-[1.045] group-hover:saturate-[1.08]",
-              compact ? "h-[188px]" : "h-[232px]",
+              compact ? "h-[188px] sm:h-[200px]" : "h-[200px] sm:h-[232px]",
             )}
             onError={(event) => {
               event.currentTarget.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&auto=format&q=75";
@@ -188,7 +188,7 @@ export function PropertyCard({
 
       <Link href={`/properties/${property.id}`} className={cn("block flex-1", compact ? "p-5" : "p-6")}>
         <div className="mb-2 flex items-start justify-between gap-2.5">
-          <h3 className={cn("flex-1 font-bold leading-snug text-estate-text transition group-hover:text-estate-navy", compact ? "text-[15px]" : "text-base")}>
+          <h3 className={cn("flex-1 font-bold leading-snug text-estate-text transition group-hover:text-estate-navy text-sm sm:text-base", compact ? "text-[15px]" : "")}>
             {property.title}
           </h3>
           <Badge variant="muted" size="sm" className="mt-0.5">
@@ -201,7 +201,7 @@ export function PropertyCard({
           {propertyLocation}
         </div>
 
-        <div className={cn("mb-4 flex flex-wrap gap-2.5 border-b border-estate-border pb-4 text-[13px] font-semibold text-estate-text-sec", !compact && "sm:gap-3")}>
+        <div className={cn("mb-4 flex flex-wrap gap-2 border-b border-estate-border pb-4 text-[13px] font-semibold text-estate-text-sec", !compact && "sm:gap-3")}>
           {beds > 0 && (
             <span className="flex items-center gap-1.5 rounded-full bg-estate-bg px-2.5 py-1.5">
               <Bed size={14} aria-hidden="true" className="text-estate-blue" />

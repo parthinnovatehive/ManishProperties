@@ -30,15 +30,15 @@ export default function SavedPropertiesPage() {
 
   return (
     <SavedPropertiesProvider>
-      <div>
-        <div className="flex justify-between items-center mb-6">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-estate-navy font-serif">Saved Properties</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-estate-navy font-serif">Saved Properties</h1>
             <p className="text-sm text-estate-text-sec">Manage and view your shortlisted properties.</p>
           </div>
           <Link
             href="/properties"
-            className="px-5 py-2.5 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition flex items-center gap-2"
+            className="px-5 py-2.5 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition flex items-center gap-2 min-h-[44px]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -48,11 +48,11 @@ export default function SavedPropertiesPage() {
         </div>
 
         {savedListings.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-estate-border p-12 text-center shadow-estate">
+          <div className="bg-white rounded-2xl border border-estate-border p-6 sm:p-12 text-center shadow-estate">
             <p className="text-lg font-medium text-estate-muted mb-4">You haven't saved any properties yet.</p>
             <Link
               href="/properties"
-              className="inline-block px-5 py-2.5 bg-estate-navy text-white font-medium rounded-xl hover:bg-estate-navy-mid transition"
+              className="inline-block px-5 py-2.5 bg-estate-navy text-white font-medium rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
             >
               Browse Properties
             </Link>

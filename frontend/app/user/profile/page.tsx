@@ -64,9 +64,9 @@ export default function UserProfilePage() {
   const initials = (profile.name || profile.email || "User").slice(0, 2).toUpperCase();
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-estate-navy font-serif">Profile Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-estate-navy font-serif">Profile Settings</h1>
         <p className="text-sm text-estate-text-sec">Manage your account information from the backend profile record.</p>
       </div>
 
@@ -139,10 +139,10 @@ export default function UserProfilePage() {
           </div>
 
           <div className="pt-4 flex justify-end">
-            <button
-              type="submit"
-              className="px-6 py-3 bg-estate-navy text-white font-medium rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition"
-            >
+              <button
+                type="submit"
+                className="px-6 py-3 bg-estate-navy text-white font-medium rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition min-h-[44px]"
+              >
               Save Changes
             </button>
           </div>

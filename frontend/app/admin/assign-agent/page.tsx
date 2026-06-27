@@ -32,7 +32,7 @@ export default function AdminAssignAgentPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-estate-navy font-serif">Assign Agent</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Assign Agent</h1>
         <p className="text-sm text-estate-text-sec">Link active agents to property listings to manage inquiries and client visits.</p>
       </div>
 
@@ -95,7 +95,7 @@ export default function AdminAssignAgentPage() {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition"
+              className="px-6 py-3 min-h-[44px] bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition"
             >
               Confirm Assignment
             </button>

@@ -167,9 +167,9 @@ export default function AdminPropertiesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Properties</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Properties</h1>
           <p className="text-sm text-estate-text-sec">Approve new listings and audit active properties.</p>
         </div>
         <button
@@ -186,31 +186,31 @@ export default function AdminPropertiesPage() {
               setPropertiesList(items.map((p: any) => toListItem(p, map)));
             }).finally(() => setLoading(false));
           }}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md min-h-[44px]"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Listings</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{propertiesList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending Review</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Approved</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{approvedCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Featured</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{featuredCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Agents</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">
             {new Set(propertiesList.map(p => p.listerName)).size}
@@ -219,8 +219,8 @@ export default function AdminPropertiesPage() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
             <label className="block text-xs font-semibold text-estate-text mb-1">Search</label>
@@ -323,7 +323,7 @@ export default function AdminPropertiesPage() {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm min-h-[44px]"
             >
               Clear All Filters
             </button>
@@ -445,11 +445,11 @@ export default function AdminPropertiesPage() {
                       </span>
                       </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end gap-2 flex-wrap">
                         {property.approvalStatus !== 'Approved' && (
                           <button
                             onClick={() => handleApprove(property.id)}
-                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition"
+                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition min-h-[44px]"
                           >
                             Approve
                           </button>
@@ -457,7 +457,7 @@ export default function AdminPropertiesPage() {
                         {property.approvalStatus !== 'Rejected' && (
                           <button
                             onClick={() => handleReject(property.id)}
-                            className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition"
+                            className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition min-h-[44px]"
                           >
                             Reject
                           </button>
@@ -472,7 +472,7 @@ export default function AdminPropertiesPage() {
         </div>
         
         {/* Results Count */}
-        <div className="px-6 py-3 border-t border-estate-border bg-gray-50 text-xs text-estate-muted flex justify-between items-center">
+        <div className="px-4 sm:px-6 py-3 border-t border-estate-border bg-gray-50 text-xs text-estate-muted flex justify-between items-center">
           <span>Showing {filteredProperties.length} of {propertiesList.length} properties</span>
           {filteredProperties.length !== propertiesList.length && (
             <button onClick={clearFilters} className="text-estate-navy hover:underline">

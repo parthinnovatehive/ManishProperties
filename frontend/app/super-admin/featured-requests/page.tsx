@@ -307,38 +307,38 @@ export default function SuperAdminFeaturedRequestsPage() {
       </div>
 
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Featured Requests Management</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Featured Requests Management</h1>
           <p className="text-sm text-estate-text-sec">Manage featured property requests and approve/reject listings.</p>
         </div>
         <button
           onClick={fetchData}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending Requests</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{featuredRequests.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active Featured</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{approvedFeatured.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Auto-Expired</span>
           <span className="text-3xl font-extrabold text-rose-600 block mt-2">{expiredFeatured.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Manually Removed</span>
           <span className="text-3xl font-extrabold text-gray-600 block mt-2">{manuallyRemovedFeatured.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Properties</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{properties.length}</span>
         </div>
@@ -346,8 +346,8 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Expired Featured Properties Section (Auto-Expired) */}
       <div className="bg-white rounded-2xl border border-rose-200 shadow-estate overflow-hidden">
-        <div className="px-6 py-4 border-b border-rose-200 bg-rose-50">
-          <h2 className="text-xl font-bold text-rose-700 font-serif">⚠️ Auto-Expired Featured Properties</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-rose-200 bg-rose-50">
+          <h2 className="text-lg md:text-xl font-bold text-rose-700 font-serif">⚠️ Auto-Expired Featured Properties</h2>
           <p className="text-sm text-rose-600">These properties' featured tenure has ended automatically (system expired).</p>
         </div>
         
@@ -407,7 +407,7 @@ export default function SuperAdminFeaturedRequestsPage() {
                     <td className="py-4 px-4">
                       <button
                         onClick={() => removeExpiredFeatured(property)}
-                        className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition"
+                        className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
                       >
                         Remove from Featured
                       </button>
@@ -422,8 +422,8 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Pending Requests Section */}
       <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
-        <div className="px-6 py-4 border-b border-estate-border bg-amber-50">
-          <h2 className="text-xl font-bold text-estate-navy font-serif">Pending Featured Requests</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-estate-border bg-amber-50">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif">Pending Featured Requests</h2>
           <p className="text-sm text-estate-text-sec">Properties waiting for approval</p>
         </div>
         
@@ -498,10 +498,10 @@ export default function SuperAdminFeaturedRequestsPage() {
                       )}
                     </td>
                     <td className="py-4 px-4">
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => openApproveModal(property)}
-                          className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition"
+                          className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition min-h-[44px]"
                         >
                           Approve
                         </button>
@@ -510,7 +510,7 @@ export default function SuperAdminFeaturedRequestsPage() {
                             setSelectedProperty(property);
                             setIsModalOpen(true);
                           }}
-                          className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition"
+                          className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
                         >
                           Reject
                         </button>
@@ -526,8 +526,8 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Current Featured Properties Section */}
       <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
-        <div className="px-6 py-4 border-b border-estate-border bg-emerald-50">
-          <h2 className="text-xl font-bold text-estate-navy font-serif">Current Featured Properties</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-estate-border bg-emerald-50">
+          <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif">Current Featured Properties</h2>
           <p className="text-sm text-estate-text-sec">Properties currently displayed on homepage</p>
         </div>
         
@@ -595,16 +595,16 @@ export default function SuperAdminFeaturedRequestsPage() {
                         </span>
                        </td>
                       <td className="py-4 px-4">
-  <div className="flex gap-2">
+  <div className="flex flex-wrap gap-2">
     <button
       onClick={() => markAsExpired(property)}
-      className="px-3 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-lg hover:bg-amber-700 transition"
+      className="px-3 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-lg hover:bg-amber-700 transition min-h-[44px]"
     >
       Mark Expired
     </button>
     <button
       onClick={() => removeFeatured(property)}
-      className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition"
+      className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
     >
       Remove
     </button>
@@ -621,8 +621,8 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Manually Removed Featured Properties Section */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-estate overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-xl font-bold text-gray-700 font-serif">📋 Manually Removed Featured Properties</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <h2 className="text-lg md:text-xl font-bold text-gray-700 font-serif">📋 Manually Removed Featured Properties</h2>
           <p className="text-sm text-gray-600">Properties that were removed from featured as their tenure is over.</p>
         </div>
         
@@ -681,10 +681,10 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Approve Modal with Plan Selection */}
       {isApproveModalOpen && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy">Approve Featured Request</h2>
+              <h2 className="text-lg md:text-xl font-bold text-estate-navy">Approve Featured Request</h2>
               <button
                 onClick={() => setIsApproveModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -740,16 +740,16 @@ export default function SuperAdminFeaturedRequestsPage() {
               </div>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsApproveModalOpen(false)}
-                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px]"
               >
                 Cancel
               </button>
               <button
                 onClick={approveFeaturedRequest}
-                className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition"
+                className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition min-h-[44px]"
               >
                 Approve Request
               </button>
@@ -760,10 +760,10 @@ export default function SuperAdminFeaturedRequestsPage() {
 
       {/* Rejection Modal */}
       {isModalOpen && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy">Reject Featured Request</h2>
+              <h2 className="text-lg md:text-xl font-bold text-estate-navy">Reject Featured Request</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -790,16 +790,16 @@ export default function SuperAdminFeaturedRequestsPage() {
               />
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px]"
               >
                 Cancel
               </button>
               <button
                 onClick={rejectFeaturedRequest}
-                className="flex-1 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition"
+                className="flex-1 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition min-h-[44px]"
               >
                 Reject Request
               </button>
@@ -811,7 +811,7 @@ export default function SuperAdminFeaturedRequestsPage() {
       {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6">
             <p className="text-estate-navy">Loading...</p>
           </div>
         </div>

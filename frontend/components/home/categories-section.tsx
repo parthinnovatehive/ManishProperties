@@ -9,7 +9,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
   const router = useRouter();
 
   return (
-    <section className="bg-white py-24 lg:py-28">
+    <section className="bg-white py-16 sm:py-24 lg:py-28">
       <div className="container-wide">
         <div className="mb-14 text-center">
           <div className="section-eyebrow mb-3 bg-estate-blue-pale text-estate-blue">Browse by Category</div>

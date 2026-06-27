@@ -174,8 +174,8 @@ export default function AdminProfilePage() {
   return (
     <div className="space-y-8 animate-fade-up">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
+      <div className="px-4 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
           Admin Profile
         </h1>
         <p className="text-sm font-semibold text-estate-text-sec mt-1">
@@ -189,8 +189,8 @@ export default function AdminProfilePage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Card */}
           <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4">
                 <div className="w-16 h-16 bg-estate-navy text-white text-xl font-bold rounded-full flex items-center justify-center border-2 border-estate-navy/20">
                   {profile.name.slice(0, 2).toUpperCase()}
                 </div>
@@ -214,7 +214,7 @@ export default function AdminProfilePage() {
                   setFormState({ ...profile });
                   setShowEditModal(true);
                 }}
-                className="px-4 py-2 text-sm font-bold text-estate-navy border border-estate-border rounded-xl hover:bg-estate-bg transition"
+                className="px-4 py-2 text-sm font-bold text-estate-navy border border-estate-border rounded-xl hover:bg-estate-bg transition min-h-[44px]"
               >
                 Edit Profile
               </button>
@@ -290,7 +290,7 @@ export default function AdminProfilePage() {
                 setPasswordSuccess(false);
                 setShowPasswordModal(true);
               }}
-              className="w-full flex items-center gap-3 p-3 bg-estate-surface/40 rounded-xl border border-estate-border/30 hover:bg-estate-surface/60 transition group"
+              className="w-full flex items-center gap-3 p-3 bg-estate-surface/40 rounded-xl border border-estate-border/30 hover:bg-estate-surface/60 transition group min-h-[44px]"
             >
               <KeyRound className="w-4 h-4 text-estate-navy-light group-hover:text-estate-navy transition" />
               <div className="text-left">
@@ -400,11 +400,11 @@ export default function AdminProfilePage() {
                   </div>
                 )}
 
-                <div className="pt-2 border-t border-estate-border flex gap-3 justify-end">
+                <div className="pt-2 border-t border-estate-border flex flex-wrap gap-3 justify-end">
                   <button
                     type="button"
                     onClick={() => setShowPasswordModal(false)}
-                    className="px-4 py-2.5 border border-estate-border text-xs font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition"
+                    className="px-4 py-2.5 border border-estate-border text-xs font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition min-h-[44px]"
                     disabled={isResetting}
                   >
                     Cancel
@@ -412,7 +412,7 @@ export default function AdminProfilePage() {
                   <button
                     type="submit"
                     disabled={isResetting || !passwordForm.newPassword || !passwordForm.confirmPassword}
-                    className="px-5 py-2.5 bg-estate-navy text-white text-xs font-bold rounded-xl hover:bg-estate-navy-mid transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-estate-navy text-white text-xs font-bold rounded-xl hover:bg-estate-navy-mid transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-h-[44px]"
                   >
                     {isResetting ? (
                       <>
@@ -448,8 +448,8 @@ export default function AdminProfilePage() {
               </button>
             </div>
             <form onSubmit={handleSaveProfile} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <label className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="sm:col-span-2">
                   <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
                     Full Name
                   </span>
@@ -485,17 +485,17 @@ export default function AdminProfilePage() {
                   />
                 </label>
               </div>
-              <div className="pt-4 border-t border-estate-border flex gap-3 justify-end">
+              <div className="pt-4 border-t border-estate-border flex flex-wrap gap-3 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2.5 border border-estate-border text-xs font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition"
+                  className="px-4 py-2.5 border border-estate-border text-xs font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-estate-navy text-white text-xs font-bold rounded-xl hover:bg-estate-navy-mid transition"
+                  className="px-4 py-2.5 bg-estate-navy text-white text-xs font-bold rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
                 >
                   Save Changes
                 </button>

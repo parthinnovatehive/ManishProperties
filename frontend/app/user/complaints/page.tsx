@@ -199,7 +199,7 @@ export default function UserComplaintsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Support Tickets</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-estate-navy font-serif">Support Tickets</h1>
           <p className="text-sm text-estate-text-sec mt-1">Track and manage your support requests.</p>
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function UserComplaintsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">Pending</p>
-              <p className="text-3xl font-extrabold text-amber-600 mt-1">{pendingCount}</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1">{pendingCount}</p>
             </div>
             <div className="p-3 bg-amber-50 rounded-full">
               <Clock className="w-6 h-6 text-amber-600" />
@@ -221,7 +221,7 @@ export default function UserComplaintsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">In Progress</p>
-              <p className="text-3xl font-extrabold text-blue-600 mt-1">{inProgressCount}</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1">{inProgressCount}</p>
             </div>
             <div className="p-3 bg-blue-50 rounded-full">
               <MessageSquare className="w-6 h-6 text-blue-600" />
@@ -232,7 +232,7 @@ export default function UserComplaintsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-estate-muted uppercase tracking-wider">Resolved</p>
-              <p className="text-3xl font-extrabold text-emerald-600 mt-1">{resolvedCount}</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">{resolvedCount}</p>
             </div>
             <div className="p-3 bg-emerald-50 rounded-full">
               <CheckCircle className="w-6 h-6 text-emerald-600" />
@@ -247,7 +247,7 @@ export default function UserComplaintsPage() {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
             <div className="px-6 py-4 border-b border-estate-border bg-gray-50">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Ticket History</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Ticket History</h2>
               <p className="text-sm text-estate-text-sec">View all your support tickets and their status</p>
             </div>
 
@@ -329,22 +329,22 @@ export default function UserComplaintsPage() {
 
       {/* Complaint Details Modal */}
       {isModalOpen && selectedComplaint && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white w-full sm:max-w-2xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
-                <h2 className="text-xl font-bold text-estate-navy font-serif">Ticket Details</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Ticket Details</h2>
                 <p className="text-xs text-estate-muted">ID: {selectedComplaint.id}</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-gray-500 hover:text-gray-700 text-2xl min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 ×
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {/* Status Bar */}
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center gap-3">
@@ -386,16 +386,16 @@ export default function UserComplaintsPage() {
                   <p className="text-xs text-estate-muted mb-3">Property ID: {selectedComplaint.propertyId}</p>
                   <button
                     onClick={() => router.push(`/properties/${selectedComplaint.propertyId}`)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition text-sm min-h-[44px]"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-5 h-5" />
                     Visit Property Page
                   </button>
                 </div>
               )}
 
               {/* Timestamps */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
                 <div>
                   <p className="text-xs text-estate-muted">Created On</p>
                   <p className="text-sm font-medium">{formatDate(selectedComplaint.createdAt)}</p>
@@ -432,10 +432,10 @@ export default function UserComplaintsPage() {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-white flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="sticky bottom-0 bg-white flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
               >
                 Close
               </button>

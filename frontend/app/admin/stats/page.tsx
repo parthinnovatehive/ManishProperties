@@ -432,7 +432,7 @@ const cityRank = otherCitiesStats.length > 0
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-gradient-to-r from-estate-navy to-estate-navy-mid rounded-2xl p-6 text-white">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold font-serif">City Analytics</h1>
+            <h1 className="text-xl md:text-2xl font-bold font-serif">City Analytics</h1>
             <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold flex items-center gap-2">
               <MapPin className="w-3.5 h-3.5" />
               {adminCity?.name || cityStats.name}
@@ -465,8 +465,8 @@ const cityRank = otherCitiesStats.length > 0
       </div>
 
       {/* City Rank & Motivation */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 p-6 rounded-2xl border border-amber-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 p-4 sm:p-6 rounded-2xl border border-amber-200">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-amber-700 text-sm font-semibold">
@@ -499,7 +499,7 @@ const cityRank = otherCitiesStats.length > 0
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-6 rounded-2xl border border-emerald-200">
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 sm:p-6 rounded-2xl border border-emerald-200">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-emerald-700 text-sm font-semibold">
@@ -572,7 +572,7 @@ const cityRank = otherCitiesStats.length > 0
       {/* Trend Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Property Trend */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -592,7 +592,7 @@ const cityRank = otherCitiesStats.length > 0
         </div>
 
         {/* Appointment Trend */}
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate hover:shadow-lg transition">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -614,7 +614,7 @@ const cityRank = otherCitiesStats.length > 0
 
       {/* Comparison with Other Cities */}
       {topCities.length > 0 && (
-<div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+<div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
   <div className="flex items-start justify-between mb-6">
     <div>
       <h3 className="font-bold text-estate-navy flex items-center gap-2">
@@ -690,7 +690,7 @@ const cityRank = otherCitiesStats.length > 0
   </div>
 
   {/* Performance Insights */}
-  <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
       <div className="flex items-center gap-2 text-blue-700 text-sm font-semibold">
         <TrendingUp className="w-4 h-4" />

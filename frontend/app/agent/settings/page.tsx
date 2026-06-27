@@ -50,7 +50,7 @@ export default function AgentSettingsPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
             Portal Settings
           </h1>
           <p className="text-sm font-semibold text-estate-text-sec mt-1">
@@ -67,7 +67,7 @@ export default function AgentSettingsPage() {
       {/* Grid Layout of configuration cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* CARD 1: Account Info Settings */}
-        <Card className="p-6 space-y-4 hover:shadow-estate transition">
+        <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
               <User className="w-5 h-5" />
@@ -95,14 +95,14 @@ export default function AgentSettingsPage() {
                 <option value="mr">Marathi (मराठी)</option>
               </select>
             </label>
-            <Button variant="primary" size="sm" type="submit" className="w-full mt-2">
+            <Button variant="primary" size="sm" type="submit" className="w-full mt-2 min-h-[44px]">
               Update Account
             </Button>
           </form>
         </Card>
 
         {/* CARD 2: Password & Authentication Credentials */}
-        <Card className="p-6 space-y-4 hover:shadow-estate transition">
+        <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
               <Lock className="w-5 h-5" />
@@ -151,14 +151,14 @@ export default function AgentSettingsPage() {
               />
             </label>
 
-            <Button variant="outline" size="sm" type="submit" className="w-full mt-2">
+            <Button variant="outline" size="sm" type="submit" className="w-full mt-2 min-h-[44px]">
               Update Password
             </Button>
           </form>
         </Card>
 
         {/* CARD 3: Notification Alerts (Toggles switches) */}
-        <Card className="p-6 space-y-4 hover:shadow-estate transition">
+        <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
               <Bell className="w-5 h-5" />
@@ -196,7 +196,7 @@ export default function AgentSettingsPage() {
         </Card>
 
         {/* CARD 4: Privacy Settings (Toggles switches) */}
-        <Card className="p-6 space-y-4 hover:shadow-estate transition">
+        <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
               <Shield className="w-5 h-5" />

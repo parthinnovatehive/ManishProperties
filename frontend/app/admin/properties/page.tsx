@@ -212,7 +212,7 @@ export default function AdminPropertiesPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Manage Properties</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Manage Properties</h1>
           <p className="text-sm text-estate-text-sec">
             {adminCity ? `Managing properties for ${adminCity.name} city` : "Loading city information..."}
           </p>
@@ -225,31 +225,31 @@ export default function AdminPropertiesPage() {
               fetchProperties();
             }
           }}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Listings</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{propertiesList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending Review</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Approved</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{approvedCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Featured</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{featuredCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Agents</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">
             {new Set(propertiesList.map(p => p.agentName)).size}
@@ -361,7 +361,7 @@ export default function AdminPropertiesPage() {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+              className="w-full px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
             >
               Clear All Filters
             </button>
@@ -478,11 +478,11 @@ export default function AdminPropertiesPage() {
                       </span>
                       </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex flex-wrap justify-end gap-2">
                         {property.approvalStatus !== 'Approved' && (
                           <button
                             onClick={() => handleApprove(property.id)}
-                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition"
+                            className="px-3 py-1.5 min-h-[36px] bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition"
                           >
                             Approve
                           </button>
@@ -490,7 +490,7 @@ export default function AdminPropertiesPage() {
                         {property.approvalStatus !== 'Rejected' && (
                           <button
                             onClick={() => handleReject(property.id)}
-                            className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition"
+                            className="px-3 py-1.5 min-h-[36px] bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition"
                           >
                             Reject
                           </button>

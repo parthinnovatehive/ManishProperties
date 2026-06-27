@@ -250,21 +250,21 @@ export default function SuperAdminAdminsPage() {
       )}
 
       {/* Header with Buttons */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-estate-navy font-serif">Platform Admins</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-estate-navy font-serif">Platform Admins</h1>
           <p className="text-estate-text-sec text-sm mt-1">Total Cities: {cities.length}</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setIsCityModalOpen(true)}
-            className="px-4 py-2 bg-white border border-estate-navy text-estate-navy rounded-xl hover:bg-estate-bg transition font-semibold"
+            className="px-4 py-2 bg-white border border-estate-navy text-estate-navy rounded-xl hover:bg-estate-bg transition font-semibold min-h-[44px]"
           >
             + Add City
           </button>
           <button
             onClick={() => setIsAdminModalOpen(true)}
-            className="px-4 py-2 bg-estate-navy hover:bg-estate-navy-mid text-white rounded-xl transition font-semibold shadow-md"
+            className="px-4 py-2 bg-estate-navy hover:bg-estate-navy-mid text-white rounded-xl transition font-semibold shadow-md min-h-[44px]"
           >
             + Create Admin
           </button>
@@ -272,7 +272,7 @@ export default function SuperAdminAdminsPage() {
       </div>
 
       {/* Admin List Table */}
-      <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-6">
+      <div className="bg-white rounded-3xl border border-estate-border shadow-estate p-4 sm:p-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -320,7 +320,8 @@ export default function SuperAdminAdminsPage() {
                       {adm.status}
                     </span>
                   </td>
-                  <td className="py-4 px-4 text-right whitespace-nowrap space-x-2">
+                  <td className="py-4 px-4 text-right whitespace-nowrap">
+                    <div className="flex flex-wrap gap-2 justify-end">
                     {adm.role !== 'SUPER_ADMIN' ? (
                       <>
                         <select
@@ -341,7 +342,7 @@ export default function SuperAdminAdminsPage() {
                               )
                             );
                           }}
-                          className="px-2 py-1 rounded-lg border border-estate-border text-xs"
+                          className="px-2 py-1 rounded-lg border border-estate-border text-xs min-h-[44px]"
                         >
                           <option value="">Assign City</option>
                           {cities
@@ -364,7 +365,7 @@ export default function SuperAdminAdminsPage() {
                         </button> */}
                         <button
                           onClick={() => toggleStatus(adm.id!)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${adm.status === 'active'
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition min-h-[44px] ${adm.status === 'active'
                             ? 'bg-estate-red-bg text-estate-red border-estate-red/20 hover:bg-rose-100'
                             : 'bg-estate-success-bg text-estate-success border-estate-success/20 hover:bg-emerald-150'
                             }`}
@@ -375,6 +376,7 @@ export default function SuperAdminAdminsPage() {
                     ) : (
                       <span className="text-xs text-estate-muted font-bold">System Guard</span>
                     )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -385,10 +387,10 @@ export default function SuperAdminAdminsPage() {
 
       {/* Create Admin Modal */}
       {isAdminModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Create New Admin</h2>
+              <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif">Create New Admin</h2>
               <button
                 onClick={() => setIsAdminModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -478,17 +480,17 @@ export default function SuperAdminAdminsPage() {
                 <div>• Resolve User Complaints</div>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsAdminModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                  className="flex-1 py-2.5 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-estate-navy hover:bg-estate-navy-mid text-white font-semibold rounded-xl transition"
+                  className="flex-1 py-2.5 bg-estate-navy hover:bg-estate-navy-mid text-white font-semibold rounded-xl transition min-h-[44px]"
                 >
                   Create Admin
                 </button>
@@ -500,10 +502,10 @@ export default function SuperAdminAdminsPage() {
 
       {/* Add City Modal */}
       {isCityModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Add New City</h2>
+              <h2 className="text-lg md:text-xl font-bold text-estate-navy font-serif">Add New City</h2>
               <button
                 onClick={() => setIsCityModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -548,18 +550,18 @@ export default function SuperAdminAdminsPage() {
                 />
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsCityModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                  className="flex-1 py-2.5 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 bg-estate-navy hover:bg-estate-navy-mid text-white font-semibold rounded-xl transition disabled:opacity-50"
+                  className="flex-1 py-2.5 bg-estate-navy hover:bg-estate-navy-mid text-white font-semibold rounded-xl transition disabled:opacity-50 min-h-[44px]"
                 >
                   {isSubmitting ? "Adding..." : "Add City"}
                 </button>

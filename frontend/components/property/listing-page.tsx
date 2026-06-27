@@ -283,7 +283,7 @@ export function ListingPage({ properties }: { properties: Property[] }) {
               </Button>
             </div>
           ) : (
-            <div className={cn("grid gap-6", view === "grid" ? "xl:grid-cols-2" : "grid-cols-1")}>
+            <div className={cn("grid gap-4 sm:gap-6", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-2" : "grid-cols-1")}>
               {paginatedProperties.map((property) => (
                 <PropertyCard key={property.id} property={property} compact={view === "grid"} />
               ))}
@@ -302,7 +302,7 @@ export function ListingPage({ properties }: { properties: Property[] }) {
                 of {filtered.length} properties
               </div>
 
-              <div className="mt-12 flex items-center justify-center gap-2">
+              <div className="mt-8 sm:mt-12 flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
                 <button
                   disabled={currentPage === 1}
                   onClick={() =>
@@ -310,29 +310,43 @@ export function ListingPage({ properties }: { properties: Property[] }) {
                       Math.max(1, p - 1)
                     )
                   }
-                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-medium text-estate-text-sec shadow-estate disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium text-estate-text-sec shadow-estate disabled:opacity-50 min-h-[40px]"
                 >
                   <ChevronLeft size={15} />
-                  Previous
+                  <span className="hidden sm:inline">Previous</span>
                 </button>
 
-                {Array.from(
-                  { length: totalPages },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={cn(
-                      "h-10 w-10 rounded-xl border-[1.5px] text-sm font-semibold shadow-estate",
-                      page === currentPage
-                        ? "border-estate-blue bg-estate-blue text-white"
-                        : "border-estate-border bg-white text-estate-text-sec"
-                    )}
-                  >
-                    {page}
-                  </button>
-                ))}
+                <div className="flex gap-1">
+                  {Array.from(
+                    { length: Math.min(totalPages, 5) },
+                    (_, i) => {
+                      let pageNum: number;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={cn(
+                            "h-9 w-9 sm:h-10 sm:w-10 rounded-xl border-[1.5px] text-xs sm:text-sm font-semibold shadow-estate",
+                            pageNum === currentPage
+                              ? "border-estate-blue bg-estate-blue text-white"
+                              : "border-estate-border bg-white text-estate-text-sec"
+                          )}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
 
                 <button
                   disabled={currentPage === totalPages}
@@ -341,9 +355,9 @@ export function ListingPage({ properties }: { properties: Property[] }) {
                       Math.min(totalPages, p + 1)
                     )
                   }
-                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-estate disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-xl border-[1.5px] border-estate-border bg-white px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold text-estate-navy shadow-estate disabled:opacity-50 min-h-[40px]"
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
                   <ChevronRight size={15} />
                 </button>
               </div>

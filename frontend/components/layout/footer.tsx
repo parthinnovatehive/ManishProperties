@@ -36,8 +36,8 @@ export function Footer() {
   return (
     <footer className="bg-estate-navy pt-14 text-white">
       <div className="container-wide">
-        <div className="grid gap-10 pb-12 lg:grid-cols-[2fr_1fr_1fr]">
-          <div>
+        <div className="grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr]">
+          <div className="sm:col-span-2 lg:col-span-1">
             <div className="mb-4 flex items-center gap-2.5">
               <Image 
                 src="/logo.png" 

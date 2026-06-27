@@ -143,7 +143,7 @@ export default function UserDashboardPage() {
     {/* Welcome Banner */}
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
-        <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
           Welcome back, {user.name}!
         </h1>
         <p className="text-sm font-semibold text-estate-text-sec mt-1">
@@ -197,12 +197,12 @@ export default function UserDashboardPage() {
 
     {/* Upcoming Appointments */}
     <div className="space-y-4">
-      <h2 className="text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
+      <h2 className="text-xl md:text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
         Upcoming Appointments
       </h2>
 
       {upcomingAppointments.length === 0 ? (
-        <div className="bg-white p-8 rounded-3xl border border-estate-border text-center">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-estate-border text-center">
           <p className="text-estate-text-sec font-semibold">No upcoming appointments scheduled.</p>
         </div>
       ) : (
@@ -211,8 +211,8 @@ export default function UserDashboardPage() {
             const aptImg = propertyImages.get(String(apt.propertyId)) || "https://placehold.co/400x300?text=No+Image";
             return (
               <div key={apt.id} className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden hover:shadow-lg transition">
-                <div className="flex h-full">
-                  <div className="w-28 sm:w-36 flex-shrink-0">
+                <div className="flex flex-col sm:flex-row h-full">
+                  <div className="w-full sm:w-28 md:w-36 flex-shrink-0 h-40 sm:h-auto">
                     <img
                       src={aptImg}
                       alt={apt.propertyName}
@@ -244,7 +244,7 @@ export default function UserDashboardPage() {
                         <span className="truncate">{apt.agentName}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
                       {apt.agentPhone && (
                         <a
                           href={`tel:${apt.agentPhone}`}
@@ -275,12 +275,12 @@ export default function UserDashboardPage() {
 
     {/* Missed Appointments */}
     <div className="space-y-4">
-      <h2 className="text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
+      <h2 className="text-xl md:text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
         Missed Appointments
       </h2>
 
       {missedAppointments.length === 0 ? (
-        <div className="bg-white p-8 rounded-3xl border border-estate-border text-center">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-estate-border text-center">
           <p className="text-estate-text-sec font-semibold">No missed appointments.</p>
         </div>
       ) : (
@@ -289,8 +289,8 @@ export default function UserDashboardPage() {
             const aptImg = propertyImages.get(String(apt.propertyId)) || "https://placehold.co/400x300?text=No+Image";
             return (
               <div key={apt.id} className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden hover:shadow-lg transition">
-                <div className="flex h-full">
-                  <div className="w-28 sm:w-36 flex-shrink-0">
+                <div className="flex flex-col sm:flex-row h-full">
+                  <div className="w-full sm:w-28 md:w-36 flex-shrink-0 h-40 sm:h-auto">
                     <img
                       src={aptImg}
                       alt={apt.propertyName}
@@ -322,7 +322,7 @@ export default function UserDashboardPage() {
                         <span className="truncate">{apt.agentName}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
                       {apt.agentPhone && (
                         <a
                           href={`tel:${apt.agentPhone}`}
@@ -354,16 +354,16 @@ export default function UserDashboardPage() {
     {/* Recently Completed */}
     {completedAppointments.length > 0 && (
       <div className="space-y-4">
-        <h2 className="text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
-          Recently Completed
-        </h2>
+      <h2 className="text-xl md:text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
+        Recently Completed
+      </h2>
         <div className="grid gap-5 md:grid-cols-2">
           {completedAppointments.slice(0, 3).map((apt) => {
             const aptImg = propertyImages.get(String(apt.propertyId)) || "https://placehold.co/400x300?text=No+Image";
             return (
               <div key={apt.id} className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden hover:shadow-lg transition">
-                <div className="flex h-full">
-                  <div className="w-28 sm:w-36 flex-shrink-0">
+                <div className="flex flex-col sm:flex-row h-full">
+                  <div className="w-full sm:w-28 md:w-36 flex-shrink-0 h-40 sm:h-auto">
                     <img
                       src={aptImg}
                       alt={apt.propertyName}
@@ -386,7 +386,7 @@ export default function UserDashboardPage() {
                         <span className="truncate">{apt.agentName}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
                       {ratedAppointments.has(apt.id) ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-500 text-xs font-bold rounded-lg border border-gray-200">
                           <Star className="w-3.5 h-3.5 fill-estate-amber text-estate-amber" />
@@ -416,12 +416,12 @@ export default function UserDashboardPage() {
 
     {/* Saved Properties */}
     <div className="space-y-4">
-      <h2 className="text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
+      <h2 className="text-xl md:text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
         Recently Saved Properties
       </h2>
 
       {userSavedProperties.length === 0 ? (
-        <div className="bg-white p-8 rounded-3xl border border-estate-border text-center">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-estate-border text-center">
           <p className="text-estate-text-sec font-semibold">No saved properties yet.</p>
         </div>
       ) : (

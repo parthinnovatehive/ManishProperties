@@ -53,16 +53,16 @@ export default function SuperAdminSecurityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-estate-navy font-serif">Security Audits</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Security Audits</h1>
         <p className="text-sm text-estate-text-sec">Live connection logs, authorization checks, and system warning logs.</p>
       </div>
 
       <div className="bg-white rounded-3xl border border-estate-border shadow-estate overflow-hidden">
-        <div className="p-6 border-b border-estate-border bg-estate-bg flex justify-between items-center">
+        <div className="p-4 sm:p-6 border-b border-estate-border bg-estate-bg flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <span className="text-sm font-bold text-estate-navy">Security Logs Feed</span>
           <button
             onClick={loadLogs}
-            className="px-4 py-2 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition"
+            className="px-4 py-2 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition min-h-[44px]"
           >
             Refresh Logs
           </button>
@@ -126,7 +126,7 @@ export default function SuperAdminSecurityPage() {
                     {log.status === 'Failed' || log.status === 'Warning' ? (
                       <button
                         onClick={() => handleResolveAlert(log.id)}
-                        className="px-3 py-1 bg-estate-navy text-white text-xs font-bold rounded-lg hover:bg-estate-navy-mid transition shadow-sm"
+                        className="px-3 py-1 bg-estate-navy text-white text-xs font-bold rounded-lg hover:bg-estate-navy-mid transition shadow-sm min-h-[44px]"
                       >
                         Acknowledge
                       </button>

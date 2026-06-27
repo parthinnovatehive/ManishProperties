@@ -40,15 +40,15 @@ export default function SuperAdminReportsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Platform Reports</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Platform Reports</h1>
           <p className="text-sm text-estate-text-sec">Extract and export audits and transactions sheets.</p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           {["Properties", "Users", "Complaints"].map((type) => (
             <button
               key={type}
               onClick={() => setReportType(type as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition min-h-[44px] ${
                 reportType === type
                   ? "bg-estate-navy text-white shadow-md"
                   : "bg-white text-estate-text border border-estate-border hover:bg-estate-surface"
@@ -62,18 +62,18 @@ export default function SuperAdminReportsPage() {
 
       {/* Report View Panel */}
       <div className="bg-white rounded-3xl border border-estate-border shadow-estate overflow-hidden">
-        <div className="p-6 border-b border-estate-border bg-estate-bg flex justify-between items-center">
+        <div className="p-4 sm:p-6 border-b border-estate-border bg-estate-bg flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <h3 className="font-bold text-estate-navy text-sm uppercase tracking-wider">{reportType} Audit Sheets</h3>
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleExport("CSV")}
-              className="px-3.5 py-1.5 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition"
+              className="px-3.5 py-1.5 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition min-h-[44px]"
             >
               Export CSV
             </button>
             <button
               onClick={() => handleExport("PDF")}
-              className="px-3.5 py-1.5 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition"
+              className="px-3.5 py-1.5 bg-white hover:bg-estate-surface text-estate-navy border border-estate-border text-xs font-bold rounded-xl transition min-h-[44px]"
             >
               Export PDF
             </button>

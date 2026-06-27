@@ -29,7 +29,7 @@ export default function AgentNavbar({ onMenuClick }: AgentNavbarProps) {
   };
 
   return (
-    <header className="h-20 bg-white/80 border-b border-estate-border/80 flex items-center justify-between px-6 sticky top-0 z-30 backdrop-blur-md">
+    <header className="h-16 sm:h-20 bg-white/80 border-b border-estate-border/80 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 backdrop-blur-md">
       {/* Mobile Drawer Trigger & Breadcrumbs */}
       <div className="flex items-center gap-4">
         <button

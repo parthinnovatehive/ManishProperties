@@ -29,9 +29,9 @@ export default function SuperAdminSettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Global Settings</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Global Settings</h1>
           <p className="text-sm text-estate-text-sec">Modify core platform parameters, security policies, and performance variables.</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export default function SuperAdminSettingsPage() {
           )}
 
           {/* Maintenance Mode Option */}
-          <div className="p-5 bg-estate-bg rounded-2xl border border-estate-border flex justify-between items-center">
+          <div className="p-4 sm:p-5 bg-estate-bg rounded-2xl border border-estate-border flex justify-between items-center">
             <div>
               <span className="font-bold text-estate-navy block">System Maintenance Mode</span>
               <span className="text-xs text-estate-text-sec mt-0.5 block">Restrict access to Manish Properties for database optimizations.</span>
@@ -121,7 +121,7 @@ export default function SuperAdminSettingsPage() {
           <div className="pt-4 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition"
+              className="px-6 py-3 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid shadow-md hover:shadow-lg transition min-h-[44px]"
             >
               Sync Configuration
             </button>

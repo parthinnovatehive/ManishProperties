@@ -74,7 +74,7 @@ function AppointmentCard({ appointment, onStatusChange, properties }: Appointmen
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-5 hover:shadow-lg transition-all">
+    <div className="bg-white rounded-2xl border border-estate-border shadow-estate p-4 sm:p-5 hover:shadow-lg transition-all">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-estate-blue-pale flex items-center justify-center">
@@ -163,18 +163,18 @@ function AppointmentCard({ appointment, onStatusChange, properties }: Appointmen
         )}
       </div>
 
-      <div className="flex gap-2 pt-3 border-t border-estate-border">
+      <div className="flex flex-wrap gap-2 pt-3 border-t border-estate-border">
         {appointment.status === "Pending" && (
           <>
             <button
               onClick={() => onStatusChange(appointment.id, "Confirmed")}
-              className="flex-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition"
+              className="flex-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition min-h-[44px]"
             >
               Confirm
             </button>
             <button
               onClick={() => onStatusChange(appointment.id, "Cancelled")}
-              className="flex-1 px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition"
+              className="flex-1 px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
             >
               Cancel
             </button>
@@ -183,7 +183,7 @@ function AppointmentCard({ appointment, onStatusChange, properties }: Appointmen
         {appointment.status === "Confirmed" && (
           <button
             onClick={() => onStatusChange(appointment.id, "Completed")}
-            className="flex-1 px-3 py-1.5 bg-purple-600 text-white text-xs font-semibold rounded-lg hover:bg-purple-700 transition"
+            className="flex-1 px-3 py-1.5 bg-purple-600 text-white text-xs font-semibold rounded-lg hover:bg-purple-700 transition min-h-[44px]"
           >
             Mark Completed
           </button>
@@ -514,7 +514,7 @@ export default function AgentAppointmentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
+          <h1 className="text-xl md:text-2xl font-extrabold text-estate-navy tracking-tight font-serif">
             My Appointments
           </h1>
           <p className="text-sm font-semibold text-estate-text-sec mt-1">
@@ -525,21 +525,21 @@ export default function AgentAppointmentsPage() {
           <div className="flex border border-estate-border bg-white rounded-xl overflow-hidden shadow-sm">
             <button
               onClick={() => setViewMode("calendar")}
-              className={`p-2.5 transition flex items-center gap-1.5 ${viewMode === "calendar" ? "bg-estate-blue-pale text-estate-navy font-bold" : "text-estate-text-sec hover:bg-estate-surface/40"}`}
+              className={`p-2.5 transition flex items-center gap-1.5 min-h-[44px] ${viewMode === "calendar" ? "bg-estate-blue-pale text-estate-navy font-bold" : "text-estate-text-sec hover:bg-estate-surface/40"}`}
             >
               <CalendarIcon className="w-4.5 h-4.5" />
               <span className="text-xs hidden md:inline">Calendar</span>
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2.5 transition flex items-center gap-1.5 ${viewMode === "list" ? "bg-estate-blue-pale text-estate-navy font-bold" : "text-estate-text-sec hover:bg-estate-surface/40"}`}
+              className={`p-2.5 transition flex items-center gap-1.5 min-h-[44px] ${viewMode === "list" ? "bg-estate-blue-pale text-estate-navy font-bold" : "text-estate-text-sec hover:bg-estate-surface/40"}`}
             >
               <List className="w-4.5 h-4.5" />
               <span className="text-xs hidden md:inline">List View</span>
             </button>
           </div>
 
-          <Button variant="primary" onClick={() => setShowAddModal(true)} className="flex items-center gap-2">
+          <Button variant="primary" onClick={() => setShowAddModal(true)} className="flex items-center gap-2 min-h-[44px]">
             <Plus className="w-4 h-4" /> Book Meeting
           </Button>
         </div>
@@ -547,19 +547,19 @@ export default function AgentAppointmentsPage() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Appointments</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{appointments.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Confirmed</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{confirmedCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Completed</span>
           <span className="text-3xl font-extrabold text-purple-600 block mt-2">{completedCount}</span>
         </div>
@@ -567,12 +567,12 @@ export default function AgentAppointmentsPage() {
 
       {/* Filters for List View */}
       {viewMode === "list" && (
-        <div className="flex items-center gap-2 overflow-x-auto p-1 bg-white border border-estate-border/70 rounded-2xl shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 p-1 bg-white border border-estate-border/70 rounded-2xl shadow-sm">
           {(["All", "Pending", "Confirmed", "Completed", "Cancelled"] as const).map((status) => (
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`text-xs font-bold px-4 py-2 rounded-xl transition ${filterStatus === status ? "bg-estate-navy text-white shadow-sm" : "text-estate-text-sec hover:text-estate-navy hover:bg-estate-surface/40"}`}
+              className={`text-xs font-bold px-4 py-2 rounded-xl transition min-h-[44px] ${filterStatus === status ? "bg-estate-navy text-white shadow-sm" : "text-estate-text-sec hover:text-estate-navy hover:bg-estate-surface/40"}`}
             >
               {status}
             </button>
@@ -631,7 +631,7 @@ export default function AgentAppointmentsPage() {
         </button>
         <button 
           onClick={() => setCurrentMonth(new Date())} 
-          className="px-3 py-1 text-xs bg-estate-navy/10 text-estate-navy rounded-lg hover:bg-estate-navy/20 transition"
+          className="px-3 py-1 text-xs bg-estate-navy/10 text-estate-navy rounded-lg hover:bg-estate-navy/20 transition min-h-[44px]"
         >
           Today
         </button>
@@ -711,12 +711,12 @@ export default function AgentAppointmentsPage() {
       {showAddModal && (
         <>
           <div onClick={() => setShowAddModal(false)} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity" />
-          <div className="fixed inset-x-4 top-16 max-w-xl mx-auto bg-white z-50 rounded-2xl shadow-estate-lg border border-estate-border overflow-hidden animate-fade-up">
-            <div className="p-5 border-b border-estate-border flex justify-between items-center bg-estate-surface/10">
+          <div className="fixed inset-0 sm:inset-x-4 sm:top-16 sm:max-w-xl sm:mx-auto bg-white z-50 sm:rounded-2xl rounded-t-3xl shadow-estate-lg border border-estate-border overflow-hidden animate-fade-up flex flex-col">
+            <div className="p-4 sm:p-5 border-b border-estate-border flex justify-between items-center bg-estate-surface/10">
               <h3 className="font-extrabold text-base text-estate-navy font-serif">Schedule New Meeting</h3>
               <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-estate-surface rounded-lg transition"><X className="w-5 h-5 text-estate-text-sec" /></button>
             </div>
-            <form onSubmit={handleAddAppointment} className="p-6 space-y-4">
+            <form onSubmit={handleAddAppointment} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 <label className="col-span-2">
                   <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">Client Name *</span>
@@ -757,8 +757,8 @@ export default function AgentAppointmentsPage() {
                 </label>
               </div>
               <div className="pt-4 border-t border-estate-border flex gap-3 justify-end">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2.5 border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition">Cancel</button>
-                <Button variant="primary" size="sm" type="submit">Confirm Schedule</Button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2.5 border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition min-h-[44px]">Cancel</button>
+                <Button variant="primary" size="sm" type="submit" className="min-h-[44px]">Confirm Schedule</Button>
               </div>
             </form>
           </div>

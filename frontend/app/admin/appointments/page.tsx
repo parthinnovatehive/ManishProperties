@@ -418,34 +418,34 @@ export default function AdminAppointmentsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-estate-navy font-serif">Appointments Management</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Appointments Management</h1>
           <p className="text-sm text-estate-text-sec">
             {adminCity ? `Managing appointments for ${adminCity.name} city` : "View and manage property visit appointments"}
           </p>
         </div>
         <button
           onClick={fetchData}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
         >
           Refresh
         </button>
       </div>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Bookings</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{appointmentsList.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending</span>
           <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Confirmed</span>
           <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{confirmedCount}</span>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-estate-border shadow-estate">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Cancelled</span>
           <span className="text-3xl font-extrabold text-rose-600 block mt-2">{cancelledCount}</span>
         </div>
@@ -506,7 +506,7 @@ export default function AdminAppointmentsPage() {
 
           <button
             onClick={clearFilters}
-            className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
+            className="px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm"
           >
             Clear Filters
           </button>
@@ -571,7 +571,7 @@ export default function AdminAppointmentsPage() {
                             <span className="text-amber-600 text-xs font-semibold">Not Assigned</span>
                             <button
                               onClick={() => openAssignModal(apt)}
-                              className="px-2 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition"
+                              className="px-2 py-1 min-h-[36px] bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition"
                             >
                               Assign Agent
                             </button>
@@ -589,11 +589,11 @@ export default function AdminAppointmentsPage() {
                         </span>
                       </td>
                       <td className="py-4 px-4 text-right whitespace-nowrap">
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex flex-wrap justify-end gap-2">
                           {needsAgentAssignment && (
                             <button
                               onClick={() => openAssignModal(apt)}
-                              className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg transition"
+                              className="px-2.5 py-1 min-h-[36px] bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg transition"
                             >
                               Assign Agent
                             </button>
@@ -601,7 +601,7 @@ export default function AdminAppointmentsPage() {
                           {apt.status !== 'Cancelled' && apt.status !== 'Confirmed' && apt.agentId && (
                             <button
                               onClick={() => handleUpdateStatus(apt.id, 'Confirmed')}
-                              className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition"
+                              className="px-2.5 py-1 min-h-[36px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition"
                             >
                               Confirm
                             </button>
@@ -609,7 +609,7 @@ export default function AdminAppointmentsPage() {
                           {apt.status !== 'Cancelled' && (
                             <button
                               onClick={() => handleUpdateStatus(apt.id, 'Cancelled')}
-                              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-lg transition"
+                              className="px-2.5 py-1 min-h-[36px] bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-lg transition"
                             >
                               Cancel
                             </button>
@@ -631,10 +631,10 @@ export default function AdminAppointmentsPage() {
 
       {/* Assign Agent Modal */}
       {isAssignModalOpen && selectedAppointment && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 w-full sm:max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-estate-navy">Assign Agent</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy">Assign Agent</h2>
               <button
                 onClick={() => setIsAssignModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -670,7 +670,7 @@ export default function AdminAppointmentsPage() {
                     </div>
                     {selectedAgent?.id !== subareaAgent.id && (
                       <button
-                        className="mt-2 px-3 py-1 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition"
+                        className="mt-2 px-3 py-1 min-h-[36px] bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedAgent(subareaAgent);
@@ -724,17 +724,17 @@ export default function AdminAppointmentsPage() {
               )}
 
               {/* Buttons */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   onClick={() => setIsAssignModalOpen(false)}
-                  className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+                  className="flex-1 min-h-[44px] py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAssignAgent}
                   disabled={isSubmitting || !selectedAgent}
-                  className="flex-1 py-2 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition disabled:opacity-50"
+                  className="flex-1 min-h-[44px] py-2 bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition disabled:opacity-50"
                 >
                   {isSubmitting ? "Assigning..." : "Assign Agent"}
                 </button>
@@ -746,10 +746,10 @@ export default function AdminAppointmentsPage() {
 
       {/* Property Details Modal */}
       {isPropertyModalOpen && selectedProperty && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-estate-border">
-              <h2 className="text-xl font-bold text-estate-navy font-serif">Property Details</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">Property Details</h2>
               <button
                 onClick={() => setIsPropertyModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -758,7 +758,7 @@ export default function AdminAppointmentsPage() {
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <img
                 src={getPropertyImage(selectedProperty)}
                 alt={selectedProperty.title}
@@ -824,10 +824,10 @@ export default function AdminAppointmentsPage() {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-white flex justify-end p-6 border-t border-estate-border bg-gray-50">
+            <div className="sticky bottom-0 bg-white flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
               <button
                 onClick={() => setIsPropertyModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>
@@ -839,7 +839,7 @@ export default function AdminAppointmentsPage() {
       {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 mx-4">
             <p className="text-estate-navy">Loading...</p>
           </div>
         </div>

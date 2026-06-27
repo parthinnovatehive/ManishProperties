@@ -7,7 +7,7 @@ export function FeaturedProperties({ properties }: { properties: Property[] }) {
   console.log("FeaturedProperties received:", properties);
 console.log("Count:", properties.length);
   return (
-    <section className="bg-estate-bg py-24 lg:py-28">
+    <section className="bg-estate-bg py-16 sm:py-24 lg:py-28">
       <div className="container-wide">
         <div className="mb-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -25,7 +25,7 @@ console.log("Count:", properties.length);
             No featured properties are available from the API yet.
           </div>
         ) : (
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}

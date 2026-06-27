@@ -210,8 +210,8 @@ export default function AgentProfilePage() {
   return (
     <div className="space-y-6 animate-fade-up">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">Agent Profile</h1>
+      <div className="px-4 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">Agent Profile</h1>
         <p className="text-sm text-estate-text-sec mt-1">Manage your profile and account settings</p>
       </div>
 
@@ -395,10 +395,10 @@ export default function AgentProfilePage() {
                 </div>
               </div>
               <div className="pt-4 border-t border-estate-border flex gap-3 justify-end">
-                <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2.5 border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition">
+                <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2.5 border border-estate-border text-sm font-bold text-estate-text-sec hover:bg-estate-surface rounded-xl transition min-h-[44px]">
                   Cancel
                 </button>
-                <Button variant="primary" size="sm" type="submit">Save Changes</Button>
+                <Button variant="primary" size="sm" type="submit" className="min-h-[44px]">Save Changes</Button>
               </div>
             </form>
           </div>

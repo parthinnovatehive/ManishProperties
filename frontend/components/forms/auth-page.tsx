@@ -206,7 +206,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const displayError = localError || authError;
 
   return (
-    <div className="grid min-h-[calc(100vh-68px)] bg-white lg:grid-cols-[0.95fr_1.05fr]">
+    <div className="min-h-[calc(100vh-68px)] bg-white lg:grid lg:grid-cols-[0.95fr_1.05fr]">
       <div className="relative hidden min-h-[580px] overflow-hidden lg:block">
         <img
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&q=80"
@@ -228,17 +228,17 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-center px-6 py-12 sm:px-10">
+      <div className="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
         <div className="w-full max-w-[430px]">
-          <Link href="/" className="mb-8 flex items-center gap-2.5">
+          <Link href="/" className="mb-6 sm:mb-8 flex items-center gap-2.5">
             <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-estate-navy text-white">
               <Building2 size={20} aria-hidden="true" />
             </span>
             <span className="font-serif text-xl font-bold text-estate-navy">Manish Properties</span>
           </Link>
 
-          <div className="mb-7">
-            <h1 className="text-2xl font-extrabold text-estate-navy">{title}</h1>
+          <div className="mb-6 sm:mb-7">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-estate-navy">{title}</h1>
             <p className="mt-2 text-sm leading-6 text-estate-text-sec">{subtitle}</p>
           </div>
 
@@ -286,7 +286,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
 
                   <div className="mb-4">
                     <span className="mb-2 block text-[13px] font-semibold text-estate-text">Role</span>
-                    <div className="grid grid-cols-3 gap-2 rounded-xl bg-estate-bg p-1">
+                    <div className="grid grid-cols-2 gap-2 rounded-xl bg-estate-bg p-1">
                       {[
                         ["USER", "User"],
                         ["AGENT", "Agent"],

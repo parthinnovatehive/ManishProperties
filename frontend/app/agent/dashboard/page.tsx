@@ -150,7 +150,7 @@ export default function AgentDashboardPage() {
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
           {error}
-          <button onClick={loadDashboard} className="ml-3 font-bold underline">Retry</button>
+          <button onClick={loadDashboard} className="ml-3 font-bold underline min-h-[44px] min-w-[44px] inline-flex items-center justify-center">Retry</button>
         </div>
       )}
       {loading && (
@@ -163,7 +163,7 @@ export default function AgentDashboardPage() {
       {/* Welcome Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
             Agent Dashboard
           </h1>
           <p className="text-sm font-semibold text-estate-text-sec mt-1">
@@ -214,10 +214,10 @@ export default function AgentDashboardPage() {
       {/* Analytics Charts Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Property Views Chart (SVG Line) */}
-        <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate lg:col-span-2">
+        <div className="bg-white border border-estate-border/80 rounded-[20px] p-4 sm:p-6 shadow-estate lg:col-span-2">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-extrabold text-lg text-estate-navy">Monthly Property Views</h3>
+              <h3 className="font-extrabold text-base md:text-lg text-estate-navy">Monthly Property Views</h3>
               <p className="text-xs font-semibold text-estate-text-sec mt-0.5">Jan - Jun 2026 performance</p>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-estate-success font-bold bg-estate-success-bg px-2.5 py-1 rounded-full">
@@ -225,7 +225,7 @@ export default function AgentDashboardPage() {
             </div>
           </div>
           {/* Custom SVG Line Chart */}
-          <div className="w-full h-64 relative">
+          <div className="w-full h-48 sm:h-64 relative">
             <svg viewBox="0 0 500 200" className="w-full h-full overflow-visible">
               {/* Grids */}
               <line x1="0" y1="40" x2="500" y2="40" stroke="#f3f4f6" strokeWidth="1" />
@@ -271,8 +271,8 @@ export default function AgentDashboardPage() {
         </div>
 
         {/* Lead Analytics Section (SVG Bar Chart) */}
-        <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate">
-          <h3 className="font-extrabold text-lg text-estate-navy">Leads Generated</h3>
+        <div className="bg-white border border-estate-border/80 rounded-[20px] p-4 sm:p-6 shadow-estate">
+          <h3 className="font-extrabold text-base md:text-lg text-estate-navy">Leads Generated</h3>
           <p className="text-xs font-semibold text-estate-text-sec mt-0.5 mb-6">Total inquiries converted</p>
 
           <div className="space-y-4">
@@ -307,7 +307,7 @@ export default function AgentDashboardPage() {
       {/* Grid of lists - Appointments, Leads, Recent activities */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Upcoming appointments preview */}
-        <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate flex flex-col justify-between">
+        <div className="bg-white border border-estate-border/80 rounded-[20px] p-4 sm:p-6 shadow-estate flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-extrabold text-base text-estate-navy">Upcoming Appointments</h3>
@@ -348,7 +348,7 @@ export default function AgentDashboardPage() {
         </div>
 
         {/* Recent leads preview */}
-        <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate flex flex-col justify-between">
+        <div className="bg-white border border-estate-border/80 rounded-[20px] p-4 sm:p-6 shadow-estate flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-extrabold text-base text-estate-navy">Recent Inquiries</h3>
@@ -381,7 +381,7 @@ export default function AgentDashboardPage() {
         </div>
 
         {/* Recent activities feed */}
-        <div className="bg-white border border-estate-border/80 rounded-[20px] p-6 shadow-estate">
+        <div className="bg-white border border-estate-border/80 rounded-[20px] p-4 sm:p-6 shadow-estate">
           <h3 className="font-extrabold text-base text-estate-navy mb-4">Recent Activities</h3>
           <div className="space-y-1 divide-y divide-estate-border/35 -mx-4 px-2">
             {recentActivities.map((act) => (

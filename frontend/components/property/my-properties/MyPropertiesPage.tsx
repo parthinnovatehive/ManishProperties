@@ -210,7 +210,7 @@ function MyPropertiesPageInner({ role }: MyPropertiesPageProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Error Banner */}
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 flex items-center justify-between">
@@ -244,13 +244,13 @@ function MyPropertiesPageInner({ role }: MyPropertiesPageProps) {
             Manage your real estate listings, status, and details.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => fetchProperties(true)}
             disabled={loading || refreshing}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-h-[44px]"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
             Refresh
@@ -258,7 +258,7 @@ function MyPropertiesPageInner({ role }: MyPropertiesPageProps) {
           <Button
             variant="primary"
             onClick={() => router.push("/submit-property")}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-h-[44px]"
           >
             <Plus className="w-4 h-4" /> Add New Property
           </Button>

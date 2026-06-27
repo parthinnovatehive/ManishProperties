@@ -626,23 +626,23 @@ export function SubmitPropertyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-estate-bg px-6 py-10">
+    <div className="min-h-screen bg-estate-bg px-4 sm:px-6 py-6 sm:py-10">
       <div className="mx-auto max-w-[840px]">
-        <div className="mb-9 text-center">
-          <div className="mb-5 inline-flex items-center gap-2.5 rounded-xl bg-estate-navy px-5 py-2.5 text-white">
-            <Building2 size={18} aria-hidden="true" />
-            <span className="font-bold">List Your Property - Free</span>
+        <div className="mb-6 sm:mb-9 text-center">
+          <div className="mb-4 sm:mb-5 inline-flex items-center gap-2.5 rounded-xl bg-estate-navy px-4 sm:px-5 py-2 sm:py-2.5 text-white">
+            <Building2 size={16} aria-hidden="true" className="sm:w-[18px] sm:h-[18px]" />
+            <span className="text-xs sm:text-sm font-bold">List Your Property - Free</span>
           </div>
-          <h1 className="mb-2.5 font-serif text-[clamp(1.8rem,3vw,2.4rem)] text-estate-navy">
+          <h1 className="mb-2.5 font-serif text-[clamp(1.5rem,5vw,2.4rem)] text-estate-navy">
             Reach Lakhs of Verified Buyers
           </h1>
-          <p className="text-[15px] text-estate-text-sec">
+          <p className="text-sm sm:text-[15px] text-estate-text-sec">
             Fill in the details below to list your property and start receiving genuine inquiries
           </p>
         </div>
 
         {/* Step indicator */}
-        <div className="mb-9 flex items-center rounded-[14px] border border-estate-border bg-white px-6 py-4">
+        <div className="mb-6 sm:mb-9 flex items-center rounded-[14px] border border-estate-border bg-white px-4 sm:px-6 py-4 overflow-x-auto scrollbar-hide">
           {stepItems.map(({ label, icon: Icon }, index) => {
             const stepNumber = index + 1;
             const done = stepNumber < step;
@@ -682,7 +682,7 @@ export function SubmitPropertyPage() {
           })}
         </div>
 
-        <div className="mb-5 rounded-[20px] border border-estate-border bg-white p-6 sm:p-9">
+        <div className="mb-5 rounded-[20px] border border-estate-border bg-white p-4 sm:p-6 lg:p-9">
           {error && (
             <div className="mb-6 rounded-[9px] bg-red-50 p-3.5 text-sm font-medium text-red-700 border border-red-200">
               {error}
@@ -1462,9 +1462,9 @@ export function SubmitPropertyPage() {
           address={form.address}
         />
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-3">
           <button
-            className="flex items-center gap-2 rounded-[10px] border-[1.5px] border-estate-border bg-white px-5 py-3 text-sm font-semibold text-estate-text-sec disabled:opacity-50"
+            className="flex items-center gap-2 rounded-[10px] border-[1.5px] border-estate-border bg-white px-4 sm:px-5 py-3 text-xs sm:text-sm font-semibold text-estate-text-sec disabled:opacity-50 min-h-[44px]"
             onClick={handleBack}
             disabled={loading || uploadingImages}
           >

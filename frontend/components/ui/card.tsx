@@ -10,7 +10,7 @@ export function Card({ children, interactive = true, className, ...props }: Card
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-[20px] border border-estate-border/80 bg-white shadow-estate transition duration-300",
+        "overflow-hidden rounded-[20px] border border-estate-border/80 bg-white shadow-estate transition duration-300 w-full",
         interactive && "hover:-translate-y-1 hover:border-estate-border-med hover:shadow-estate-md",
         className,
       )}
