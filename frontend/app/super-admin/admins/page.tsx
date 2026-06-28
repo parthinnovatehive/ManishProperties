@@ -80,7 +80,6 @@ export default function SuperAdminAdminsPage() {
     );
 
     estateApi.cities.list<City>().then((data) => {
-      console.log("Cities received:", data);
       setCities(data);
     });
   }, []);
@@ -98,18 +97,14 @@ export default function SuperAdminAdminsPage() {
       admin_id: null,
     };
     
-    console.log("Creating city with data:", cityData);
-    
     // Try to create the city
     try {
       await estateApi.cities.create(cityData);
     } catch (createErr) {
-      console.log("Create API returned error, but city might still be created");
     }
     
     // Always refetch the list to get the latest data
     const updatedCities = await estateApi.cities.list<City>();
-    console.log("Refetched cities:", updatedCities);
     setCities(updatedCities);
     
     // Check if our city was created

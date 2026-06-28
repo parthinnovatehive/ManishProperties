@@ -75,9 +75,6 @@ const loadDashboard = async () => {
       estateApi.content.subareas.list<any>(),
     ]);
     
-    console.log("Dashboard Data:", dashboardData);
-    console.log("Cities Data:", citiesData);
-    console.log("Subareas Data:", subareasData);
     
     setData({
       users: dashboardData.users || [],
