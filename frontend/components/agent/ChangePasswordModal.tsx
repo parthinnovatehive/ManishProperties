@@ -82,7 +82,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
             <div className="p-1.5 bg-amber-50 rounded-lg">
               <KeyRound className="w-4 h-4 text-amber-600" />
             </div>
-            <h3 className="font-extrabold text-base text-estate-navy font-serif">Change Password</h3>
+            <h3 className="font-extrabold text-base text-estate-navy font-serif">Reset Password</h3>
           </div>
           <button onClick={handleClose} className="p-1 hover:bg-estate-surface rounded-lg transition">
             <svg className="w-5 h-5 text-estate-text-sec" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -151,7 +151,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
               {submitting ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Changing...</>
               ) : (
-                <><KeyRound className="w-4 h-4" /> Change Password</>
+                <><KeyRound className="w-4 h-4" /> Reset Password</>
               )}
             </button>
           </div>

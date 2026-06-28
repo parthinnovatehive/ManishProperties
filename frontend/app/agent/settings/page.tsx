@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Lock, Shield, User, Globe, Eye, EyeOff, Save, Check } from "lucide-react";
+import { Bell, Shield, User, Check } from "lucide-react";
 
 export default function AgentSettingsPage() {
   // Toggle states
@@ -20,14 +20,6 @@ export default function AgentSettingsPage() {
     showEmail: true,
   });
 
-  // Password fields
-  const [passwords, setPasswords] = useState({
-    current: "",
-    next: "",
-    confirm: "",
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Handle Save settings
@@ -54,7 +46,7 @@ export default function AgentSettingsPage() {
             Portal Settings
           </h1>
           <p className="text-sm font-semibold text-estate-text-sec mt-1">
-            Configure your notifications, privacy preferences, and password credentials.
+            Configure your notifications and privacy preferences.
           </p>
         </div>
         {saveSuccess && (
@@ -101,63 +93,7 @@ export default function AgentSettingsPage() {
           </form>
         </Card>
 
-        {/* CARD 2: Password & Authentication Credentials */}
-        <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
-              <Lock className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-estate-navy font-serif">Security Password</h3>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setPasswords({ current: "", next: "", confirm: "" });
-              setSaveSuccess(true);
-              setTimeout(() => setSaveSuccess(false), 2500);
-            }}
-            className="space-y-3.5 pt-2"
-          >
-            <label className="block relative">
-              <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                Current Password
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={passwords.current}
-                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-                className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 bottom-3 text-estate-muted hover:text-estate-navy"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </label>
-
-            <label className="block">
-              <span className="text-[10px] font-bold uppercase text-estate-muted tracking-wider block mb-1">
-                New Password
-              </span>
-              <input
-                type="password"
-                required
-                value={passwords.next}
-                onChange={(e) => setPasswords({ ...passwords, next: e.target.value })}
-                className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold"
-              />
-            </label>
-
-            <Button variant="outline" size="sm" type="submit" className="w-full mt-2 min-h-[44px]">
-              Update Password
-            </Button>
-          </form>
-        </Card>
-
-        {/* CARD 3: Notification Alerts (Toggles switches) */}
+        {/* CARD 2: Notification Alerts (Toggles switches) */}
         <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">
@@ -195,7 +131,7 @@ export default function AgentSettingsPage() {
           </div>
         </Card>
 
-        {/* CARD 4: Privacy Settings (Toggles switches) */}
+        {/* CARD 3: Privacy Settings (Toggles switches) */}
         <Card className="p-4 sm:p-6 space-y-4 hover:shadow-estate transition">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-estate-blue-pale text-estate-navy rounded-lg">

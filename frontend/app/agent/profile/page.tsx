@@ -332,7 +332,7 @@ export default function AgentProfilePage() {
                   <KeyRound className="w-4 h-4 text-amber-600" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-estate-navy block">Change Password</span>
+                  <span className="text-sm font-bold text-estate-navy block">Reset Password</span>
                   <span className="text-[10px] text-estate-muted font-semibold">Reset your password</span>
                 </div>
               </button>
