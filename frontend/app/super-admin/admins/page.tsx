@@ -48,6 +48,7 @@ export default function SuperAdminAdminsPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [cityAssignedMsg, setCityAssignedMsg] = useState("");
 
   // Modal states
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -243,6 +244,12 @@ export default function SuperAdminAdminsPage() {
         </div>
       )}
 
+      {cityAssignedMsg && (
+        <div className="p-4 bg-estate-success-bg border border-estate-success/30 rounded-xl text-estate-success text-sm font-medium animate-fade-up">
+          ✓ {cityAssignedMsg}
+        </div>
+      )}
+
       {error && (
         <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-sm font-medium">
           ✗ {error}
@@ -324,24 +331,28 @@ export default function SuperAdminAdminsPage() {
                     <div className="flex flex-wrap gap-2 justify-end">
                     {adm.role !== 'SUPER_ADMIN' ? (
                       <>
-                        <select
-                          value={getAssignedCity(adm.id)?.id || ""}
-                          onChange={async (e) => {
-                            const cityId = e.target.value;
-                            if (!cityId) return;
+                          <select
+                            value={getAssignedCity(adm.id)?.id || ""}
+                            onChange={async (e) => {
+                              const cityId = e.target.value;
+                              if (!cityId) return;
 
-                            await estateApi.cities.update(cityId, {
-                              admin_id: adm.id,
-                            });
+                              await estateApi.cities.update(cityId, {
+                                admin_id: adm.id,
+                              });
 
-                            setCities((prev) =>
-                              prev.map((city) =>
-                                city.id === cityId
-                                  ? { ...city, admin_id: adm.id || null }
-                                  : city
-                              )
-                            );
-                          }}
+                              setCities((prev) =>
+                                prev.map((city) =>
+                                  city.id === cityId
+                                    ? { ...city, admin_id: adm.id || null }
+                                    : city
+                                )
+                              );
+
+                              const cityName = cities.find(c => c.id === cityId)?.name || "";
+                              setCityAssignedMsg(`${cityName} assigned to ${adm.name}`);
+                              setTimeout(() => setCityAssignedMsg(""), 4000);
+                            }}
                           className="px-2 py-1 rounded-lg border border-estate-border text-xs min-h-[44px]"
                         >
                           <option value="">Assign City</option>
