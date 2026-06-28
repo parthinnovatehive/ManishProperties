@@ -1,8 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { estateApi } from "@/lib/api";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
+import type { Property } from "@/types/property";
+
+interface UserRatingEntry {
+  agentEmail?: string;
+  agentId?: string;
+  rating?: number;
+  comment?: string;
+  createdAt?: string;
+}
 
 interface Agent {
   id: string;
@@ -39,7 +49,7 @@ export default function AdminAgentsPage() {
   const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [subareas, setSubareas] = useState<Subarea[]>([]);
   const [cities, setCities] = useState<City[]>([]);
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [agentSubareas, setAgentSubareas] = useState<Subarea[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,16 +77,16 @@ export default function AdminAgentsPage() {
     Promise.all([
       estateApi.agents.list<Agent>(),
       estateApi.adminProperties.list(),
-      estateApi.users.list<any>().catch(() => [] as any[]),
+      estateApi.users.list<Record<string, unknown>>().catch(() => [] as Record<string, unknown>[]),
     ]).then(([items, allProperties, users]) => {
       setProperties(allProperties);
       const agentRatings = new Map<string, { rating: number; totalRatings: number; sum: number }>();
       for (const user of users) {
-        const ratings = (user as any).agentRatings;
+        const ratings = user.agentRatings as Record<string, UserRatingEntry> | undefined;
         if (!ratings) continue;
-        for (const entry of Object.values(ratings) as any[]) {
+        for (const entry of Object.values(ratings)) {
           if (!entry?.agentEmail || !entry?.rating) continue;
-          const existing: { rating: number; totalRatings: number; sum: number } = agentRatings.get(entry.agentEmail) || { rating: 0, totalRatings: 0, sum: 0 };
+          const existing = agentRatings.get(entry.agentEmail) || { rating: 0, totalRatings: 0, sum: 0 };
           existing.sum += Number(entry.rating);
           existing.totalRatings += 1;
           existing.rating = Math.round((existing.sum / existing.totalRatings) * 10) / 10;
@@ -90,7 +100,7 @@ export default function AdminAgentsPage() {
           email: agent.email || agent.username || "",
           avatar: agent.avatar || (agent.name || agent.username || "A").slice(0, 2).toUpperCase(),
           rating: (computed?.rating ?? Number(agent.rating)) || 0,
-          totalRatings: (computed?.totalRatings ?? Number((agent as any).totalRatings)) || 0,
+          totalRatings: (computed?.totalRatings ?? Number(agent.totalRatings)) || 0,
           experience: agent.experience || "2+ years",
           status: agent.status || "active",
           propertyCount: allProperties.filter(p =>
@@ -104,21 +114,16 @@ export default function AdminAgentsPage() {
 
   const fetchSubareas = async () => {
     try {
-      const data = await estateApi.content.subareas.list<any>();
-      console.log("Subareas loaded:", data);
-      console.log("Subareas with agents:", data.filter((s: any) => (s.agent_ids || []).length > 0));
-      console.log("Subareas without agents:", data.filter((s: any) => (s.agent_ids || []).length === 0));
+      const data = await estateApi.content.subareas.list<Subarea>();
       setSubareas(data);
-    } catch (error: any) {
-      console.error("Error loading subareas from API:", error);
-      console.log("Using fallback - no subareas endpoint available");
+    } catch {
+      toast.error("Failed to load subareas");
       setSubareas([]);
     }
   };
 
   const fetchCities = () => {
     estateApi.cities.list<City>().then((data) => {
-      console.log("Cities loaded:", data);
       setCities(data);
     });
   };
@@ -183,9 +188,6 @@ export default function AdminAgentsPage() {
     setIsLoadingSubareas(true);
     
     try {
-      console.log(`Viewing subareas for agent: ${agent.name} (${agent.id})`);
-      console.log("All subareas:", subareas);
-      
       const filteredSubareas = subareas.filter(
         (subarea) => subarea.agent_ids?.includes(agent.id)
       );
@@ -194,13 +196,10 @@ export default function AdminAgentsPage() {
         (subarea) => !subarea.agent_ids || subarea.agent_ids.length === 0
       );
       
-      console.log(`Found ${filteredSubareas.length} assigned subareas:`, filteredSubareas);
-      console.log(`Found ${available.length} available subareas:`, available);
-      
       setAgentSubareas(filteredSubareas);
       setAvailableSubareas(available);
-    } catch (error) {
-      console.error("Error fetching agent subareas:", error);
+    } catch {
+      toast.error("Error loading subareas");
       setAgentSubareas([]);
       setAvailableSubareas([]);
     } finally {
@@ -210,8 +209,6 @@ export default function AdminAgentsPage() {
 
   const assignSubarea = async (subareaId: string, agentId: string) => {
     try {
-      console.log(`Assigning subarea ${subareaId} to agent ${agentId}`);
-      
       await estateApi.content.subareas.update(subareaId, {
         add_agent: agentId
       });
@@ -230,17 +227,14 @@ export default function AdminAgentsPage() {
         setAvailableSubareas(prev => prev.filter(s => s.id !== subareaId));
       }
       
-      alert("Subarea assigned successfully!");
-    } catch (error) {
-      console.error("Error assigning subarea:", error);
-      alert("Failed to assign subarea. Please make sure the backend endpoint is configured.");
+      toast.success("Subarea assigned successfully!");
+    } catch {
+      toast.error("Failed to assign subarea. Please make sure the backend endpoint is configured.");
     }
   };
 
   const unassignSubarea = async (subareaId: string) => {
     try {
-      console.log(`Unassigning subarea ${subareaId}`);
-      
       const agentId = selectedAgent?.id;
       await estateApi.content.subareas.update(subareaId, {
         remove_agent: agentId
@@ -260,10 +254,9 @@ export default function AdminAgentsPage() {
         setAgentSubareas(prev => prev.filter(s => s.id !== subareaId));
       }
       
-      alert("Subarea unassigned successfully!");
-    } catch (error) {
-      console.error("Error unassigning subarea:", error);
-      alert("Failed to unassign subarea");
+      toast.success("Subarea unassigned successfully!");
+    } catch {
+      toast.error("Failed to unassign subarea");
     }
   };
 

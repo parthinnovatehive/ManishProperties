@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode, useState } from "react";
+import { Toaster } from "sonner";
 import SuperAdminSidebar from "@/components/super-admin/SuperAdminSidebar";
 import SuperAdminNavbar from "@/components/super-admin/SuperAdminNavbar";
 import { useRedirectIfUnauthenticated } from "@/hooks/useRedirectIfUnauthenticated";
@@ -10,6 +11,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
 
   return (
     <div className="min-h-screen flex bg-estate-bg text-estate-text font-sans">
+      <Toaster position="top-right" richColors closeButton />
       <SuperAdminSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
