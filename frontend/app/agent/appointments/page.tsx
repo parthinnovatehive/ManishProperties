@@ -202,7 +202,7 @@ export default function AgentAppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
-  const [filterStatus, setFilterStatus] = useState<"All" | "Pending" | "Confirmed" | "Completed" | "Cancelled">("All");
+  const [filterStatus, setFilterStatus] = useState<"All" | "Upcoming" | "Completed" | "Cancelled">("All");
 
   // Scheduling states
   const [showAddModal, setShowAddModal] = useState(false);
@@ -451,7 +451,9 @@ export default function AgentAppointmentsPage() {
 };
 
   const filteredAppointments = appointments.filter((a) => {
+    if (a.status === "Pending") return false;
     if (filterStatus === "All") return true;
+    if (filterStatus === "Upcoming") return a.status === "Confirmed" || a.status === "Scheduled";
     return a.status === filterStatus;
   });
 
@@ -466,7 +468,7 @@ export default function AgentAppointmentsPage() {
   console.log(`Looking for appointments on: ${targetDateStr}`);
   
   return appointments.filter((a) => {
-    // Compare the date string directly
+    if (a.status === "Pending") return false;
     const isMatch = a.date === targetDateStr;
     if (isMatch) {
       console.log(`Found appointment: ${a.id} on ${a.date}`);
@@ -497,8 +499,7 @@ export default function AgentAppointmentsPage() {
     setCurrentMonth(new Date());
   };
 
-  const pendingCount = appointments.filter(a => a.status === "Pending").length;
-  const confirmedCount = appointments.filter(a => a.status === "Confirmed" || a.status === "Scheduled").length;
+  const upcomingCount = appointments.filter(a => a.status === "Confirmed" || a.status === "Scheduled").length;
   const completedCount = appointments.filter(a => a.status === "Completed").length;
 
   if (loading) {
@@ -546,18 +547,14 @@ export default function AgentAppointmentsPage() {
       </div>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Appointments</span>
-          <span className="text-3xl font-extrabold text-estate-navy block mt-2">{appointments.length}</span>
+          <span className="text-3xl font-extrabold text-estate-navy block mt-2">{appointments.filter(a => a.status !== "Pending").length}</span>
         </div>
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
-          <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending</span>
-          <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
-          <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Confirmed</span>
-          <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{confirmedCount}</span>
+          <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Upcoming</span>
+          <span className="text-3xl font-extrabold text-emerald-600 block mt-2">{upcomingCount}</span>
         </div>
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Completed</span>
@@ -568,7 +565,7 @@ export default function AgentAppointmentsPage() {
       {/* Filters for List View */}
       {viewMode === "list" && (
         <div className="flex flex-wrap items-center gap-2 p-1 bg-white border border-estate-border/70 rounded-2xl shadow-sm">
-          {(["All", "Pending", "Confirmed", "Completed", "Cancelled"] as const).map((status) => (
+          {(["All", "Upcoming", "Completed", "Cancelled"] as const).map((status) => (
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
