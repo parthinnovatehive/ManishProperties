@@ -496,7 +496,10 @@ export function SubmitPropertyPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  // includeAmenities: when true, geocode the address and fetch nearby amenities
+  // (current behavior). When false, skip that step so the property can be saved
+  // even without a Google Maps API key / working location lookup.
+  const handleSubmit = async (includeAmenities: boolean = true) => {
     // ✅ Validate all steps before final submission
     if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4) || !validateStep(5)) {
       return;
@@ -520,18 +523,23 @@ export function SubmitPropertyPage() {
         userName = userData.name || "";
       }
 
-      const finalCoords =
-        coords ||
-        (await geocodeProperty(
-          `${form.address}, ${form.city}, ${form.state}, ${form.pincode}, India`,
-          ""
-        ));
-      if (!finalCoords) {
-        throw new Error("Location not found");
+      let finalCoords = coords;
+      let finalAmenities = nearbyAmenities;
+
+      if (includeAmenities) {
+        finalCoords =
+          coords ||
+          (await geocodeProperty(
+            `${form.address}, ${form.city}, ${form.state}, ${form.pincode}, India`,
+            ""
+          ));
+        if (!finalCoords) {
+          throw new Error("Location not found");
+        }
+        finalAmenities =
+          nearbyAmenities ||
+          (await generateNearbyAmenities(finalCoords.lat, finalCoords.lng));
       }
-      const finalAmenities =
-        nearbyAmenities ||
-        (await generateNearbyAmenities(finalCoords.lat, finalCoords.lng));
 
       const imageUrls = uploadedImages.map(img => img.url);
       const selectedPlanData = featuredPlans.find(p => p.id === selectedPlan);
@@ -1266,9 +1274,16 @@ export function SubmitPropertyPage() {
           {step === 5 && (
             <div>
               <h2 className="mb-1.5 font-serif text-[22px] text-estate-navy">Feature Your Property</h2>
-              <p className="mb-7 text-sm text-estate-text-sec">
+              <p className="mb-4 text-sm text-estate-text-sec">
                 Get more visibility by featuring your property. Choose a plan or skip for now.
               </p>
+
+              <div className="mb-7 rounded-xl border border-estate-border bg-estate-bg p-4 text-[13px] text-estate-text-sec">
+                <span className="font-semibold text-estate-navy">Two ways to save:</span> use{" "}
+                <span className="font-semibold">Save with Amenities</span> to auto-detect nearby places
+                (needs location lookup), or <span className="font-semibold">Save without Amenities</span>{" "}
+                to publish immediately without the nearby-amenities step.
+              </div>
 
               {/* Option to skip */}
               <div className="mb-6">
@@ -1484,30 +1499,47 @@ export function SubmitPropertyPage() {
               />
             ))}
           </div>
-          <Button
-            type="button"
-            variant={step === totalSteps ? "amber" : "navy"}
-            onClick={() => {
-              if (step < totalSteps) {
-                handleNext();
-                return;
-              }
-              handleSubmit();
-            }}
-            disabled={loading || uploadingImages}
-          >
-            {loading ? (
-              <>Submitting...</>
-            ) : step === totalSteps ? (
-              <>
-                <CheckCircle size={16} aria-hidden="true" /> Submit Listing
-              </>
-            ) : (
-              <>
-                Next <ChevronRight size={16} aria-hidden="true" />
-              </>
-            )}
-          </Button>
+          {step === totalSteps ? (
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleSubmit(false)}
+                disabled={loading || uploadingImages}
+              >
+                {loading ? (
+                  <>Submitting...</>
+                ) : (
+                  <>
+                    <CheckCircle size={16} aria-hidden="true" /> Save without Amenities
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="amber"
+                onClick={() => handleSubmit(true)}
+                disabled={loading || uploadingImages}
+              >
+                {loading ? (
+                  <>Submitting...</>
+                ) : (
+                  <>
+                    <CheckCircle size={16} aria-hidden="true" /> Save with Amenities
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="navy"
+              onClick={handleNext}
+              disabled={loading || uploadingImages}
+            >
+              Next <ChevronRight size={16} aria-hidden="true" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

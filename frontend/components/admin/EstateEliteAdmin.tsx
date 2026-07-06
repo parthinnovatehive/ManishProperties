@@ -239,7 +239,7 @@ const stats = [
     { label: "Featured", value: properties.filter(p => p.featured).length, icon: <Star size={20}/>, color: C.amber, bg: C.amberPale, delta: "Premium slots" },
   ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 20, marginBottom: 28 }}>
+    <div className="admin-stats-grid" style={{ display: "grid", gap: 20, marginBottom: 28 }}>
       {stats.map((s, i) => (
         <div key={i} style={{ background: "#fff", borderRadius: 20, border: `1px solid ${C.border}`, padding: "24px", transition: "all 0.2s", cursor: "pointer", position: "relative", overflow: "hidden", boxShadow: C.shadow }}
           onMouseEnter={e => { e.currentTarget.style.boxShadow = C.shadowMd; e.currentTarget.style.transform = "translateY(-2px)"; }}
@@ -587,7 +587,7 @@ function OverviewPage({ properties, onSetActive }) {
     <div>
       <StatsGrid properties={properties}/>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }}>
+      <div className="admin-overview-grid" style={{ display: "grid", gap: 20 }}>
         {/* Recent submissions */}
         <div style={{ background: "#fff", borderRadius: 16, border: `1px solid ${C.border}` }}>
           <div style={{ padding: "18px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -917,6 +917,17 @@ const tableProperties = filteredProperties.filter(p => {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #C7D8C8; border-radius: 999px; }
         input:focus { outline: none; }
+
+        /* Responsive dashboard grids */
+        .admin-stats-grid { grid-template-columns: repeat(5, 1fr); }
+        .admin-overview-grid { grid-template-columns: 1fr 380px; }
+        @media (max-width: 1024px) {
+          .admin-stats-grid { grid-template-columns: repeat(3, 1fr); }
+          .admin-overview-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+          .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
       `}</style>
 
       <ToastContainer />
