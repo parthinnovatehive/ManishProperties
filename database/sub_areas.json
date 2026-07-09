@@ -585,7 +585,9 @@
     "city_id": "city_nashik",
     "status": "active",
     "slug": "gangapur-road",
-    "agent_ids": []
+    "agent_ids": [
+      "agent_c33dd88f10b04179a605052c5c979213"
+    ]
   },
   {
     "id": "sub_govind_nagar",

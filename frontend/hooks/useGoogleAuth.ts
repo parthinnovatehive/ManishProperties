@@ -18,7 +18,7 @@ const redirectByRole: Record<string, string> = {
   SUPER_ADMIN: "/super-admin/dashboard",
 };
 
-export function useGoogleAuth(redirectTo?: string | null) {
+export function useGoogleAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [googleUser, setGoogleUser] = useState<GoogleUserInfo | null>(null);
@@ -45,15 +45,11 @@ export function useGoogleAuth(redirectTo?: string | null) {
               setRequiresRegistration(true);
             }
           } else {
-            if (redirectTo) {
-              router.replace(redirectTo);
-            } else {
-              const account = getAdminData();
-              const role = String(account?.role || "USER")
-                .toUpperCase()
-                .replace("-", "_");
-              router.replace(redirectByRole[role] || "/");
-            }
+            const account = getAdminData();
+            const role = String(account?.role || "USER")
+              .toUpperCase()
+              .replace("-", "_");
+            router.replace(redirectByRole[role] || "/");
           }
         } else {
           setError(response.message || "Google authentication failed");
@@ -111,15 +107,11 @@ export function useGoogleAuth(redirectTo?: string | null) {
         );
 
         if (response.success) {
-          if (redirectTo) {
-            router.replace(redirectTo);
-          } else {
-            const account = getAdminData();
-            const storedRole = String(account?.role || "USER")
-              .toUpperCase()
-              .replace("-", "_");
-            router.replace(redirectByRole[storedRole] || "/");
-          }
+          const account = getAdminData();
+          const storedRole = String(account?.role || "USER")
+            .toUpperCase()
+            .replace("-", "_");
+          router.replace(redirectByRole[storedRole] || "/");
           return true;
         } else {
           setError(response.message || "Registration failed");

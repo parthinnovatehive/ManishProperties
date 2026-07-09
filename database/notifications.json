@@ -50,5 +50,18 @@
     "createdAt": "2026-06-15T08:00:00+00:00",
     "actionUrl": "/super-admin/featured-requests",
     "icon": "Star"
+  },
+  {
+    "id": "notif_434378418a5b42778c5ab92e2981455e",
+    "userId": "agent_c33dd88f10b04179a605052c5c979213",
+    "userType": "AGENT",
+    "title": "Account Approved!",
+    "message": "Congratulations! Your agent account has been approved and you have been assigned to 1 subarea(s). You can now access all agent features.",
+    "type": "account_update",
+    "relatedId": "agent_c33dd88f10b04179a605052c5c979213",
+    "actionUrl": "/agent/dashboard",
+    "icon": "CheckCircle",
+    "isRead": false,
+    "createdAt": "2026-07-09T17:22:30.857299+00:00"
   }
 ]

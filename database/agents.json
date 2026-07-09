@@ -243,5 +243,20 @@
       "sub_govind_nagar",
       "sub_tide_colony"
     ]
+  },
+  {
+    "id": "agent_c33dd88f10b04179a605052c5c979213",
+    "username": "testagent1603@gmail.com",
+    "email": "testagent1603@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$9hQckqXP5EqJeH10$61840686f6b2c1cce8360b71e5a4f071a902c3a75e3b88dc91577deb3a05715b47d613ff7194631c23a70ce6e41511611eb89c9d4d0a0dffbb3090d84941f446",
+    "role": "AGENT",
+    "name": "test",
+    "phone": "7854120369",
+    "status": "active",
+    "savedProperties": [],
+    "createdAt": "2026-07-09T22:17:21.826782",
+    "city_id": "city_nashik",
+    "sub_area_ids": [],
+    "updatedAt": "2026-07-09T17:22:30.529645+00:00"
   }
 ]

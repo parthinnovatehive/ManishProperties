@@ -13,6 +13,7 @@ type PropertyCardProps = {
   property: Property;
   compact?: boolean;
   showComparisonButton?: boolean;
+  hideSaveButton?: boolean;
 };
 
 function listingStatus(property: Property) {
@@ -26,7 +27,8 @@ function listingStatus(property: Property) {
 export function PropertyCard({ 
   property, 
   compact,
-  showComparisonButton = true 
+  showComparisonButton = true,
+  hideSaveButton = false,
 }: PropertyCardProps) {
   const { isSaved, toggleSaved } = useSavedProperties();
   const saved = isSaved(property.id);
@@ -125,21 +127,23 @@ export function PropertyCard({
           </Badge>
         </div>
 
-        <button
-          aria-label={saved ? "Remove saved property" : "Save property"}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/95 shadow-[0_10px_26px_rgba(0,0,0,0.18)] backdrop-blur transition hover:scale-105 hover:bg-white active:scale-95"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            toggleSaved(property.id);
-          }}
-        >
-          <Heart
-            size={16}
-            aria-hidden="true"
-            className={saved ? "fill-estate-red text-estate-red" : "text-estate-text-sec"}
-          />
-        </button>
+        {!hideSaveButton && (
+          <button
+            aria-label={saved ? "Remove saved property" : "Save property"}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/95 shadow-[0_10px_26px_rgba(0,0,0,0.18)] backdrop-blur transition hover:scale-105 hover:bg-white active:scale-95"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              toggleSaved(property.id);
+            }}
+          >
+            <Heart
+              size={16}
+              aria-hidden="true"
+              className={saved ? "fill-estate-red text-estate-red" : "text-estate-text-sec"}
+            />
+          </button>
+        )}
 
         <div className="absolute bottom-3 left-3 rounded-xl border border-white/10 bg-estate-navy/95 px-3.5 py-2 text-[15px] font-extrabold leading-none text-white shadow-estate backdrop-blur">
           {propertyPrice}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { estateApi } from "@/lib/api";
+import { notificationService } from "@/lib/notifications";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
 import type { Property } from "@/types/property";
 
@@ -24,7 +25,9 @@ interface Agent {
   rating: number;
   totalRatings?: number;
   experience?: string;
-  status?: "active" | "inactive";
+  status?: string;
+  city_id?: string;
+  sub_area_ids?: string[];
   propertyCount?: number;
 }
 
@@ -52,9 +55,11 @@ export default function AdminAgentsPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [agentSubareas, setAgentSubareas] = useState<Subarea[]>([]);
+  const [requestedSubareas, setRequestedSubareas] = useState<Subarea[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoadingSubareas, setIsLoadingSubareas] = useState(false);
   const [availableSubareas, setAvailableSubareas] = useState<Subarea[]>([]);
+  const [activeTab, setActiveTab] = useState<"assigned" | "requested" | "available">("assigned");
 
   // Filter & Sort States
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,7 +107,9 @@ export default function AdminAgentsPage() {
           rating: (computed?.rating ?? Number(agent.rating)) || 0,
           totalRatings: (computed?.totalRatings ?? Number(agent.totalRatings)) || 0,
           experience: agent.experience || "2+ years",
-          status: agent.status || "active",
+          status: agent.status?.toLowerCase() || "pending",
+          city_id: agent.city_id,
+          sub_area_ids: agent.sub_area_ids || [],
           propertyCount: allProperties.filter(p =>
             p.lister_id === agent.id &&
             p.lister_type === "agent"
@@ -186,21 +193,35 @@ export default function AdminAgentsPage() {
     setSelectedAgent(agent);
     setIsModalOpen(true);
     setIsLoadingSubareas(true);
-    
+    setActiveTab("assigned");
+
     try {
-      const filteredSubareas = subareas.filter(
+      let currentSubareas = subareas;
+
+      if (currentSubareas.length === 0) {
+        const freshSubareas = await estateApi.content.subareas.list<Subarea>();
+        setSubareas(freshSubareas);
+        currentSubareas = freshSubareas;
+      }
+
+      const filteredSubareas = currentSubareas.filter(
         (subarea) => subarea.agent_ids?.includes(agent.id)
       );
-      
-      const available = subareas.filter(
-        (subarea) => !subarea.agent_ids || subarea.agent_ids.length === 0
+
+      const requested = currentSubareas.filter(
+        (subarea) => agent.sub_area_ids?.includes(subarea.id)
       );
-      
+
+      const available = currentSubareas.filter(
+        (subarea) => !subarea.agent_ids?.includes(agent.id) && !agent.sub_area_ids?.includes(subarea.id)
+      );
+
       setAgentSubareas(filteredSubareas);
+      setRequestedSubareas(requested);
       setAvailableSubareas(available);
     } catch {
-      toast.error("Error loading subareas");
       setAgentSubareas([]);
+      setRequestedSubareas([]);
       setAvailableSubareas([]);
     } finally {
       setIsLoadingSubareas(false);
@@ -209,10 +230,16 @@ export default function AdminAgentsPage() {
 
   const assignSubarea = async (subareaId: string, agentId: string) => {
     try {
-      await estateApi.content.subareas.update(subareaId, {
-        add_agent: agentId
-      });
-      
+      const subarea = subareas.find(s => s.id === subareaId);
+      const agent = agentsList.find(a => a.id === agentId);
+
+      if (!subarea) {
+        toast.error("Subarea not found. Please refresh and try again.");
+        return;
+      }
+
+      await estateApi.content.subareas.update(subareaId, { add_agent: agentId });
+
       setSubareas(prev =>
         prev.map(s =>
           s.id === subareaId
@@ -220,26 +247,88 @@ export default function AdminAgentsPage() {
             : s
         )
       );
-      
-      const assignedSubarea = availableSubareas.find(s => s.id === subareaId);
-      if (assignedSubarea) {
-        setAgentSubareas(prev => [...prev, { ...assignedSubarea, agent_ids: [...new Set([...(assignedSubarea.agent_ids || []), agentId])] }]);
-        setAvailableSubareas(prev => prev.filter(s => s.id !== subareaId));
+
+      setRequestedSubareas(prev => prev.filter(s => s.id !== subareaId));
+
+      const assignedSubarea = { ...subarea, agent_ids: [...new Set([...(subarea.agent_ids || []), agentId])] };
+      setAgentSubareas(prev => {
+        if (prev.some(s => s.id === subareaId)) return prev;
+        return [...prev, assignedSubarea];
+      });
+
+      setAvailableSubareas(prev => prev.filter(s => s.id !== subareaId));
+
+      setAgentsList(prev =>
+        prev.map(a => {
+          if (a.id === agentId) {
+            const updatedSubareaIds = (a.sub_area_ids || []).filter(id => id !== subareaId);
+            return { ...a, sub_area_ids: updatedSubareaIds };
+          }
+          return a;
+        })
+      );
+
+      if (agent) {
+        const remainingRequests = (agent.sub_area_ids || []).filter(id => id !== subareaId);
+        await estateApi.agents.update(agentId, { sub_area_ids: remainingRequests });
       }
-      
-      toast.success("Subarea assigned successfully!");
-    } catch {
-      toast.error("Failed to assign subarea. Please make sure the backend endpoint is configured.");
+
+      if (agent && subarea) {
+        try {
+          await notificationService.addNotification({
+            userId: agentId,
+            userType: "AGENT",
+            title: "New Subarea Assigned",
+            message: `You have been assigned to manage ${subarea.name} in ${getCityName(subarea.city_id)}.`,
+            type: "subarea_assigned",
+            relatedId: subareaId,
+            actionUrl: "/agent/dashboard",
+            icon: "MapPin"
+          });
+        } catch (notifError) {
+          console.warn("Failed to send notification:", notifError);
+        }
+      }
+
+      const remainingRequests = (agent?.sub_area_ids || []).filter(id => id !== subareaId);
+      if (remainingRequests.length === 0 && agent?.status === "pending") {
+        toast.success("All requested subareas assigned! You can now approve this agent.");
+      } else {
+        toast.success(`Subarea assigned successfully! ${remainingRequests.length} subarea(s) remaining to assign.`);
+      }
+
+      await Promise.all([fetchAgents(), fetchSubareas()]);
+
+      if (selectedAgent) {
+        await viewAgentSubareas(selectedAgent);
+      }
+    } catch (error: any) {
+      console.error("Error assigning subarea:", error);
+      let errorMessage = "Failed to assign subarea. ";
+      if (error?.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error?.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again.";
+      }
+      toast.error(errorMessage);
     }
   };
 
   const unassignSubarea = async (subareaId: string) => {
     try {
+      const subarea = subareas.find(s => s.id === subareaId);
       const agentId = selectedAgent?.id;
-      await estateApi.content.subareas.update(subareaId, {
-        remove_agent: agentId
-      });
-      
+      const agent = agentsList.find(a => a.id === agentId);
+
+      if (!agentId) {
+        toast.error("No agent selected.");
+        return;
+      }
+
+      await estateApi.content.subareas.update(subareaId, { remove_agent: agentId });
+
       setSubareas(prev =>
         prev.map(s =>
           s.id === subareaId
@@ -247,16 +336,132 @@ export default function AdminAgentsPage() {
             : s
         )
       );
-      
+
       const unassignedSubarea = agentSubareas.find(s => s.id === subareaId);
       if (unassignedSubarea) {
-        setAvailableSubareas(prev => [...prev, { ...unassignedSubarea, agent_ids: (unassignedSubarea.agent_ids || []).filter(id => id !== agentId) }]);
+        const updatedIds = (unassignedSubarea.agent_ids || []).filter(id => id !== agentId);
+        setAvailableSubareas(prev => [...prev, { ...unassignedSubarea, agent_ids: updatedIds }]);
         setAgentSubareas(prev => prev.filter(s => s.id !== subareaId));
       }
-      
+
+      if (agent && subarea) {
+        try {
+          await notificationService.addNotification({
+            userId: agent.id,
+            userType: "AGENT",
+            title: "Subarea Removed",
+            message: `You are no longer managing ${subarea.name} in ${getCityName(subarea.city_id)}.`,
+            type: "subarea_assigned",
+            relatedId: subareaId,
+            actionUrl: "/agent/dashboard",
+            icon: "AlertCircle"
+          });
+        } catch (notifError) {
+          console.warn("Failed to send notification:", notifError);
+        }
+      }
+
       toast.success("Subarea unassigned successfully!");
-    } catch {
+      await fetchAgents();
+    } catch (error) {
+      console.error("Error unassigning subarea:", error);
       toast.error("Failed to unassign subarea");
+    }
+  };
+
+  const approveAgentWithSubareas = async (agentId: string) => {
+    const agent = agentsList.find((item) => item.id === agentId);
+    if (!agent) return;
+
+    try {
+      const requestedSubareaIds = agent.sub_area_ids || [];
+
+      if (requestedSubareaIds.length === 0) {
+        await estateApi.agents.update<Agent>(agentId, { status: "active" });
+
+        setAgentsList(prev =>
+          prev.map(a => {
+            if (a.id === agentId) {
+              return { ...a, status: "active" };
+            }
+            return a;
+          })
+        );
+
+        try {
+          await notificationService.addNotification({
+            userId: agentId,
+            userType: "AGENT",
+            title: "Account Approved!",
+            message: "Congratulations! Your agent account has been approved. You can now access all agent features.",
+            type: "account_update",
+            relatedId: agentId,
+            actionUrl: "/agent/dashboard",
+            icon: "CheckCircle"
+          });
+        } catch (notifError) {
+          console.warn("Failed to send notification:", notifError);
+        }
+
+        toast.success("Agent approved successfully!");
+        await Promise.all([fetchAgents(), fetchSubareas()]);
+        setIsModalOpen(false);
+        return;
+      }
+
+      let assignedCount = 0;
+      for (const subareaId of requestedSubareaIds) {
+        try {
+          await estateApi.content.subareas.update(subareaId, { add_agent: agentId });
+          assignedCount++;
+        } catch (subareaError) {
+          console.error(`Failed to assign subarea ${subareaId}:`, subareaError);
+        }
+      }
+
+      await estateApi.agents.update<Agent>(agentId, {
+        status: "active",
+        sub_area_ids: []
+      });
+
+      setAgentsList(prev =>
+        prev.map(a => {
+          if (a.id === agentId) {
+            return { ...a, status: "active", sub_area_ids: [] };
+          }
+          return a;
+        })
+      );
+
+      try {
+        await notificationService.addNotification({
+          userId: agentId,
+          userType: "AGENT",
+          title: "Account Approved!",
+          message: `Congratulations! Your agent account has been approved and you have been assigned to ${assignedCount} subarea(s). You can now access all agent features.`,
+          type: "account_update",
+          relatedId: agentId,
+          actionUrl: "/agent/dashboard",
+          icon: "CheckCircle"
+        });
+      } catch (notifError) {
+        console.warn("Failed to send notification:", notifError);
+      }
+
+      toast.success(`Agent approved and ${assignedCount} subarea(s) assigned successfully!`);
+      await Promise.all([fetchAgents(), fetchSubareas()]);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      console.error("Error approving agent:", error);
+      let errorMessage = "Failed to approve agent. ";
+      if (error?.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error?.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again.";
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -267,23 +472,62 @@ export default function AdminAgentsPage() {
 
   const toggleStatus = async (id: string) => {
     const agent = agentsList.find((item) => item.id === id);
-    const newStatus = agent?.status === "active" ? "inactive" : "active";
-    await estateApi.agents.update<Agent>(id, { status: newStatus });
-    setAgentsList(prev =>
-      prev.map(a => {
-        if (a.id === id) {
-          return { ...a, status: newStatus };
-        }
-        return a;
-      })
-    );
+    if (!agent) return;
+
+    if (agent.status === "pending") {
+      await approveAgentWithSubareas(id);
+      return;
+    }
+
+    const newStatus = agent.status === "active" ? "inactive" : "active";
+    const statusMessage = newStatus === "inactive" ? "suspended" : "activated";
+
+    try {
+      await estateApi.agents.update<Agent>(id, { status: newStatus });
+
+      setAgentsList(prev =>
+        prev.map(a => {
+          if (a.id === id) {
+            return { ...a, status: newStatus };
+          }
+          return a;
+        })
+      );
+
+      try {
+        await notificationService.addNotification({
+          userId: id,
+          userType: "AGENT",
+          title: newStatus === "active" ? "Account Activated" : "Account Suspended",
+          message: `Your agent account has been ${statusMessage} by the administrator.`,
+          type: "account_update",
+          relatedId: id,
+          actionUrl: "/agent/dashboard",
+          icon: newStatus === "active" ? "CheckCircle" : "AlertCircle"
+        });
+      } catch (notifError) {
+        console.warn("Failed to send notification:", notifError);
+      }
+
+      if (isModalOpen && selectedAgent && selectedAgent.id === id) {
+        await viewAgentSubareas(selectedAgent);
+      }
+    } catch (error) {
+      console.error("Error updating agent status:", error);
+      toast.error("Failed to update agent status. Please try again.");
+    }
   };
 
   const getAgentSubareaCount = (agentId: string): number => {
     return subareas.filter(s => s.agent_ids?.includes(agentId)).length;
   };
 
+  const getAgentRequestedSubareaCount = (agent: Agent): number => {
+    return agent.sub_area_ids?.length || 0;
+  };
+
   const activeCount = agentsList.filter(a => a.status === 'active').length;
+  const pendingCount = agentsList.filter(a => a.status === 'pending').length;
   const avgRating = agentsList.length ? (agentsList.reduce((acc, curr) => acc + curr.rating, 0) / agentsList.length).toFixed(1) : "0.0";
 
   return (
@@ -305,7 +549,7 @@ export default function AdminAgentsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Total Agents</span>
           <span className="text-3xl font-extrabold text-estate-navy block mt-2">{agentsList.length}</span>
@@ -313,6 +557,10 @@ export default function AdminAgentsPage() {
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Active Agents</span>
           <span className="text-3xl font-extrabold text-estate-success block mt-2">{activeCount}</span>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
+          <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Pending Approval</span>
+          <span className="text-3xl font-extrabold text-amber-600 block mt-2">{pendingCount}</span>
         </div>
         <div className="bg-white p-4 sm:p-6 rounded-2xl border border-estate-border shadow-estate">
           <span className="text-xs font-bold text-estate-muted uppercase tracking-wider block">Average Rating</span>
@@ -346,6 +594,7 @@ export default function AdminAgentsPage() {
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
+              <option value="pending">Pending</option>
             </select>
           </div>
 
@@ -410,19 +659,19 @@ export default function AdminAgentsPage() {
             {searchTerm && (
               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full flex items-center gap-1">
                 Search: {searchTerm}
-                <button onClick={() => setSearchTerm("")} className="text-gray-500 hover:text-gray-700">×</button>
+                <button onClick={() => setSearchTerm("")} className="text-gray-500 hover:text-gray-700">&times;</button>
               </span>
             )}
             {statusFilter !== "all" && (
               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full flex items-center gap-1">
                 Status: {statusFilter}
-                <button onClick={() => setStatusFilter("all")} className="text-gray-500 hover:text-gray-700">×</button>
+                <button onClick={() => setStatusFilter("all")} className="text-gray-500 hover:text-gray-700">&times;</button>
               </span>
             )}
             {ratingFilter !== "all" && (
               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full flex items-center gap-1">
                 Rating: {ratingFilter}★ & above
-                <button onClick={() => setRatingFilter("all")} className="text-gray-500 hover:text-gray-700">×</button>
+                <button onClick={() => setRatingFilter("all")} className="text-gray-500 hover:text-gray-700">&times;</button>
               </span>
             )}
           </div>
@@ -443,7 +692,7 @@ export default function AdminAgentsPage() {
                     setSortOrder("asc");
                   }
                 }}>
-                  Agent {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                  Agent {sortBy === "name" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
                 </th>
                 <th className="py-3 px-4">Contact</th>
                 <th className="py-3 px-4">Rating</th>
@@ -455,7 +704,7 @@ export default function AdminAgentsPage() {
                     setSortOrder("desc");
                   }
                 }}>
-                  Properties Listed {sortBy === "propertyCount" && (sortOrder === "asc" ? "↑" : "↓")}
+                  Properties Listed {sortBy === "propertyCount" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
                 </th>
                 <th className="py-3 px-4">Subareas</th>
                 <th className="py-3 px-4">Status</th>
@@ -467,11 +716,12 @@ export default function AdminAgentsPage() {
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-estate-muted">
                     No agents found matching your filters
-                    </td>
-                 </tr>
+                  </td>
+                </tr>
               ) : (
                 filteredAgents.map((agent) => {
                   const subareaCount = getAgentSubareaCount(agent.id);
+                  const requestedCount = getAgentRequestedSubareaCount(agent);
                   return (
                     <tr key={agent.id} className="hover:bg-estate-bg/40 transition">
                       <td className="py-4 px-4">
@@ -490,8 +740,8 @@ export default function AdminAgentsPage() {
                         <div className="text-xs text-estate-text-sec">{agent.phone}</div>
                       </td>
                       <td className="py-4 px-4 text-estate-text-sec">
-                          <AgentRatingDisplay rating={agent.rating} totalRatings={agent.totalRatings} />
-                        </td>
+                        <AgentRatingDisplay rating={agent.rating} totalRatings={agent.totalRatings} />
+                      </td>
                       <td className="py-4 px-4 font-bold text-estate-navy">{agent.propertyCount ?? '-'}</td>
                       <td className="py-4 px-4 text-center">
                         <button
@@ -499,28 +749,40 @@ export default function AdminAgentsPage() {
                           className="text-estate-navy hover:text-estate-navy-mid font-semibold text-xs underline"
                         >
                           View Subareas ({subareaCount})
+                          {agent.status === "pending" && requestedCount > 0 && (
+                            <span className="ml-1 text-amber-600">+{requestedCount} requested</span>
+                          )}
                         </button>
                       </td>
                       <td className="py-4 px-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                          agent.status === 'active' 
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${agent.status === 'active'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : agent.status === 'pending'
+                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
                             : 'bg-rose-100 text-rose-800 border border-rose-200'
-                        }`}>
+                          }`}>
                           {agent.status}
                         </span>
                       </td>
                       <td className="py-4 px-4 text-right">
-                        <button
-                          onClick={() => toggleStatus(agent.id)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition min-h-[44px] ${
-                            agent.status === 'active'
+                        {agent.status === 'pending' ? (
+                          <button
+                            onClick={() => toggleStatus(agent.id)}
+                            className="px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                          >
+                            Approve Agent
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => toggleStatus(agent.id)}
+                            className={`px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border transition ${agent.status === 'active'
                               ? 'bg-estate-red-bg text-estate-red border-estate-red/20 hover:bg-rose-100'
                               : 'bg-estate-success-bg text-estate-success border-estate-success/20 hover:bg-emerald-150'
-                          }`}
-                        >
-                          {agent.status === 'active' ? 'Suspend' : 'Activate'}
-                        </button>
+                              }`}
+                          >
+                            {agent.status === 'active' ? 'Suspend' : 'Activate'}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -529,7 +791,7 @@ export default function AdminAgentsPage() {
             </tbody>
           </table>
         </div>
-        
+
         {/* Results Count */}
         <div className="px-4 sm:px-6 py-3 border-t border-estate-border bg-gray-50 text-xs text-estate-muted flex justify-between items-center">
           <span>Showing {filteredAgents.length} of {agentsList.length} agents</span>
@@ -549,20 +811,72 @@ export default function AdminAgentsPage() {
             <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
               <div>
                 <h2 className="text-xl font-bold text-estate-navy font-serif">
-                  Subareas Managed by {selectedAgent.name}
+                  Subareas for {selectedAgent.name}
                 </h2>
                 <p className="text-sm text-estate-text-sec mt-1">
                   Email: {selectedAgent.email} | Phone: {selectedAgent.phone || "Not provided"}
                 </p>
-                <p className="text-xs text-estate-muted mt-1">
-                  Total Assigned Subareas: {agentSubareas.length}
-                </p>
+                <div className="flex items-center gap-3 mt-2">
+                  <p className="text-xs text-estate-muted">
+                    Status: {selectedAgent.status === "pending" ? (
+                      <span className="text-amber-600 font-medium">Pending Approval</span>
+                    ) : (
+                      <span className="text-emerald-600 font-medium">Active</span>
+                    )}
+                  </p>
+                  {requestedSubareas.length > 0 && (
+                    <p className="text-xs text-amber-600 font-medium">
+                      &bull; {requestedSubareas.length} subarea(s) requested
+                    </p>
+                  )}
+                  {agentSubareas.length > 0 && (
+                    <p className="text-xs text-emerald-600 font-medium">
+                      &bull; {agentSubareas.length} assigned
+                    </p>
+                  )}
+                </div>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
-                ×
+                &times;
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex-shrink-0 flex border-b border-estate-border px-6">
+              <button
+                onClick={() => setActiveTab("assigned")}
+                className={`py-3 px-4 text-sm font-semibold transition border-b-2 ${activeTab === "assigned"
+                  ? "border-estate-navy text-estate-navy"
+                  : "border-transparent text-estate-muted hover:text-estate-text"
+                  }`}
+              >
+                Assigned ({agentSubareas.length})
+              </button>
+              {requestedSubareas.length > 0 && (
+                <button
+                  onClick={() => setActiveTab("requested")}
+                  className={`py-3 px-4 text-sm font-semibold transition border-b-2 ${activeTab === "requested"
+                    ? "border-amber-500 text-amber-600"
+                    : "border-transparent text-estate-muted hover:text-estate-text"
+                    }`}
+                >
+                  Requested ({requestedSubareas.length})
+                  {selectedAgent.status === "pending" && (
+                    <span className="ml-1 text-xs text-amber-600">Pending</span>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={() => setActiveTab("available")}
+                className={`py-3 px-4 text-sm font-semibold transition border-b-2 ${activeTab === "available"
+                  ? "border-estate-navy text-estate-navy"
+                  : "border-transparent text-estate-muted hover:text-estate-text"
+                  }`}
+              >
+                Available ({availableSubareas.length})
               </button>
             </div>
 
@@ -574,63 +888,68 @@ export default function AdminAgentsPage() {
                 </div>
               ) : subareas.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-estate-text-sec">No subareas data available. Please check the backend configuration.</p>
+                  <p className="text-estate-text-sec">No subareas available.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Assigned Subareas */}
-                  <div>
-                    <h3 className="font-bold text-estate-navy mb-3 flex items-center gap-2">
-                      <span className="text-emerald-600">✓</span> Assigned Subareas
-                      <span className="text-xs text-estate-muted">({agentSubareas.length})</span>
-                    </h3>
-                    {agentSubareas.length === 0 ? (
-                      <div className="text-center py-8 bg-gray-50 rounded-xl">
-                        <p className="text-estate-text-sec text-sm">No subareas assigned</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {agentSubareas.map((subarea) => (
-                          <div
-                            key={subarea.id}
-                            className="flex justify-between items-center p-3 bg-emerald-50 border border-emerald-200 rounded-xl"
-                          >
-                            <div>
-                              <p className="font-medium text-estate-navy">{subarea.name}</p>
-                              <p className="text-xs text-estate-muted">{getCityName(subarea.city_id)}</p>
-                            </div>
-                            <button
-                              onClick={() => unassignSubarea(subarea.id)}
-                              className="px-3 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                <>
+                  {/* Assigned Subareas Tab */}
+                  {activeTab === "assigned" && (
+                    <div>
+                      {agentSubareas.length === 0 ? (
+                        <div className="text-center py-8 bg-gray-50 rounded-xl">
+                          <p className="text-estate-text-sec text-sm">No subareas assigned</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 max-h-96 overflow-y-auto">
+                          {agentSubareas.map((subarea) => (
+                            <div
+                              key={subarea.id}
+                              className="flex justify-between items-center p-3 bg-emerald-50 border border-emerald-200 rounded-xl"
                             >
-                              Remove
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                              <div>
+                                <p className="font-medium text-estate-navy">{subarea.name}</p>
+                                <p className="text-xs text-estate-muted">{getCityName(subarea.city_id)}</p>
+                              </div>
+                              <button
+                                onClick={() => unassignSubarea(subarea.id)}
+                                className="px-3 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-                  {/* Available Subareas */}
-                  <div>
-                    <h3 className="font-bold text-estate-navy mb-3 flex items-center gap-2">
-                      <span className="text-gray-400">📌</span> Available Subareas
-                      <span className="text-xs text-estate-muted">({availableSubareas.length})</span>
-                    </h3>
-                    {availableSubareas.length === 0 ? (
-                      <div className="text-center py-8 bg-gray-50 rounded-xl">
-                        <p className="text-estate-text-sec text-sm">No available subareas</p>
-                      </div>
-                    ) : (
+                  {/* Requested Subareas Tab */}
+                  {activeTab === "requested" && requestedSubareas.length > 0 && (
+                    <div>
+                      {selectedAgent.status === "pending" ? (
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <p className="text-xs text-amber-700">
+                            This agent is pending approval. Assign requested subareas individually or use "Approve & Assign All" to activate and assign all at once.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="text-xs text-blue-700">
+                            This agent is already active. Assign additional subareas as needed.
+                          </p>
+                        </div>
+                      )}
+
                       <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {availableSubareas.map((subarea) => (
+                        {requestedSubareas.map((subarea) => (
                           <div
                             key={subarea.id}
-                            className="flex justify-between items-center p-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition"
+                            className="flex justify-between items-center p-3 bg-amber-50 border border-amber-200 rounded-xl"
                           >
                             <div>
                               <p className="font-medium text-estate-navy">{subarea.name}</p>
                               <p className="text-xs text-estate-muted">{getCityName(subarea.city_id)}</p>
+                              <span className="text-xs text-amber-600 font-medium">Requested</span>
                             </div>
                             <button
                               onClick={() => assignSubarea(subarea.id, selectedAgent.id)}
@@ -641,17 +960,70 @@ export default function AdminAgentsPage() {
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
-                </div>
+
+                      {selectedAgent.status === "pending" && (
+                        <div className="mt-4 pt-4 border-t border-estate-border">
+                          <button
+                            onClick={() => approveAgentWithSubareas(selectedAgent.id)}
+                            className="w-full px-4 py-2 min-h-[44px] bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm font-semibold"
+                          >
+                            Approve & Assign All Requested ({requestedSubareas.length})
+                          </button>
+                          <p className="text-xs text-estate-muted mt-2 text-center">
+                            This will assign all requested subareas and activate the agent.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Available Subareas Tab */}
+                  {activeTab === "available" && (
+                    <div>
+                      {availableSubareas.length === 0 ? (
+                        <div className="text-center py-8 bg-gray-50 rounded-xl">
+                          <p className="text-estate-text-sec text-sm">No available subareas</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 max-h-96 overflow-y-auto">
+                          {availableSubareas.map((subarea) => (
+                            <div
+                              key={subarea.id}
+                              className="flex justify-between items-center p-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition"
+                            >
+                              <div>
+                                <p className="font-medium text-estate-navy">{subarea.name}</p>
+                                <p className="text-xs text-estate-muted">{getCityName(subarea.city_id)}</p>
+                              </div>
+                              <button
+                                onClick={() => assignSubarea(subarea.id, selectedAgent.id)}
+                                className="px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
+                              >
+                                Assign
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50">
+            <div className="flex flex-wrap justify-end p-4 sm:p-6 border-t border-estate-border bg-gray-50 gap-3">
+              {selectedAgent.status === "pending" && requestedSubareas.length > 0 && (
+                <button
+                  onClick={() => approveAgentWithSubareas(selectedAgent.id)}
+                  className="px-4 py-2 min-h-[44px] bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition"
+                >
+                  Approve & Assign All Requested
+                </button>
+              )}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
+                className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
               >
                 Close
               </button>

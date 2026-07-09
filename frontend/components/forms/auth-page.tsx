@@ -45,7 +45,6 @@ interface Subarea {
 export function AuthPage({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const { login, register, error: authError, loading, clearError } = useAuth();
-  const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -74,14 +73,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     requiresRegistration,
     clearError: clearGoogleError,
     reset: resetGoogle,
-  } = useGoogleAuth(redirectTo);
-
-  // Read redirect destination from URL query
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const dest = params.get("redirect");
-    if (dest) setRedirectTo(dest);
-  }, []);
+  } = useGoogleAuth();
 
   const isLogin = mode === "login";
   const title = isLogin ? "Sign in to Manish Properties" : "Create your Manish Properties account";
@@ -207,7 +199,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
         );
 
     if (ok) {
-      router.replace(redirectTo || routeForStoredRole());
+      router.replace(routeForStoredRole());
     }
   };
 
