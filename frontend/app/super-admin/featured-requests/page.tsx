@@ -68,8 +68,12 @@ export default function SuperAdminFeaturedRequestsPage() {
       );
       setFeaturedRequests(requests);
       
+      const now = new Date();
       const approved = allProperties.filter(
-        (p: Property) => p.featured === true && p.featuredExpired !== true
+        (p: Property) =>
+          p.featured === true &&
+          p.featuredExpired !== true &&
+          (!p.featuredExpiryDate || new Date(p.featuredExpiryDate) >= now)
       );
       approved.sort((a, b) => {
         if (!a.featuredExpiryDate) return 1;
@@ -77,9 +81,13 @@ export default function SuperAdminFeaturedRequestsPage() {
         return new Date(a.featuredExpiryDate).getTime() - new Date(b.featuredExpiryDate).getTime();
       });
       setApprovedFeatured(approved);
-      
+
       const expired = allProperties.filter(
-        (p: Property) => p.featuredExpired === true
+        (p: Property) =>
+          p.featuredExpired === true ||
+          (p.featured === true &&
+            p.featuredExpiryDate &&
+            new Date(p.featuredExpiryDate) < now)
       );
       expired.sort((a, b) => {
         if (!a.featuredExpiryDate) return 1;
@@ -405,12 +413,23 @@ export default function SuperAdminFeaturedRequestsPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <button
-                        onClick={() => removeExpiredFeatured(property)}
-                        className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
-                      >
-                        Remove from Featured
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        {property.featuredExpired !== true ? (
+                          <button
+                            onClick={() => markAsExpired(property)}
+                            className="px-3 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-lg hover:bg-amber-700 transition min-h-[44px]"
+                          >
+                            Mark as Expired
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => removeExpiredFeatured(property)}
+                            className="px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition min-h-[44px]"
+                          >
+                            Remove from Featured
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

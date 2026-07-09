@@ -75,7 +75,7 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
     const admin = getAdminData();
     if (!admin) {
       // Redirect to login if not authenticated
-      window.location.href = "/auth/login";
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
       return;
     }
 

@@ -48,9 +48,19 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(12px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        pulseAmber: {
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(102, 186, 106, 0.4)" },
+          "50%": { boxShadow: "0 0 0 8px rgba(102, 186, 106, 0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "fade-up": "fadeUp 0.35s ease forwards",
+        "pulse-amber": "pulseAmber 2s infinite",
+        "shimmer": "shimmer 2.5s infinite linear",
       },
     },
   },

@@ -9,15 +9,18 @@ def _normalize_property(payload, status="PENDING"):
         images = payload.get("imgs", [])
     image = payload.get("image") or payload.get("img") or (images[0] if images else "")
 
-    result = {
+    result = dict(payload)
+    result.update({
         "id": str(payload.get("id") or generate_id("prop_")),
         "category": payload.get("category", "residential"),
         "title": payload.get("title"),
         "subtitle": payload.get("subtitle"),
         "description": payload.get("description"),
         "price": payload.get("price"),
-        "priceNum": float(payload.get("priceNum")),
+        "priceNum": float(payload.get("priceNum")) if payload.get("priceNum") else 0,
         "city": payload.get("city"),
+        "city_id": payload.get("city_id"),
+        "sub_area_id": payload.get("sub_area_id"),
         "location": payload.get("location"),
         "pincode": payload.get("pincode"),
         "type": payload.get("type"),
@@ -37,20 +40,52 @@ def _normalize_property(payload, status="PENDING"):
         "reviews": int(float(payload.get("reviews") or 0)),
         "featured": bool(payload.get("featured", False)),
         "isNew": bool(payload.get("isNew", True)),
+
+        # Lister / owner fields
+        "lister_id": payload.get("lister_id"),
+        "lister_type": payload.get("lister_type"),
+        "lister_name": payload.get("lister_name"),
+
+        # Views & RERA
+        "views": int(float(payload.get("views") or 0)),
+        "rera": payload.get("rera"),
+
+        # Moderation fields
         "status": status,
         "moderationStatus": status,
+        "rejectReason": payload.get("rejectReason"),
+
+        # Featured request fields
+        "featuredRequested": bool(payload.get("featuredRequested", False)),
+        "requested_for": payload.get("requested_for"),
+        "granted_for": payload.get("granted_for"),
+        "featuredRequestDate": payload.get("featuredRequestDate"),
+        "featuredPaymentStatus": payload.get("featuredPaymentStatus"),
+        "featuredPaymentProof": payload.get("featuredPaymentProof"),
+        "featuredPaymentAmount": payload.get("featuredPaymentAmount"),
+        "featuredApprovedBy": payload.get("featuredApprovedBy"),
+        "featuredApprovedAt": payload.get("featuredApprovedAt"),
+        "featuredExpiryDate": payload.get("featuredExpiryDate"),
+        "featuredExpired": bool(payload.get("featuredExpired", False)),
+        "featuredRejectionReason": payload.get("featuredRejectionReason"),
+
+        # Location / geo
+        "coordinates": payload.get("coordinates"),
+        "nearbyAmenities": payload.get("nearbyAmenities"),
+
+        # Timestamps
         "createdAt": payload.get("createdAt") or now_iso(),
         "updatedAt": now_iso(),
-    }
+    })
 
-    category = result["category"]
-    if category == "commercial":
+    if result.get("category") == "commercial":
         result["officeType"] = payload.get("officeType")
         result["pantry"] = bool(payload.get("pantry", False))
         result["washrooms"] = int(float(payload.get("washrooms", 0)))
         result["powerBackup"] = bool(payload.get("powerBackup", False))
         result["cabinCount"] = int(float(payload.get("cabinCount", 0)))
         result["conferenceRoom"] = bool(payload.get("conferenceRoom", False))
+        result["parking"] = int(float(payload.get("parking", 0)))
 
     return result
 

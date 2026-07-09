@@ -45,6 +45,7 @@ interface Subarea {
 export function AuthPage({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const { login, register, error: authError, loading, clearError } = useAuth();
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -73,7 +74,14 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     requiresRegistration,
     clearError: clearGoogleError,
     reset: resetGoogle,
-  } = useGoogleAuth();
+  } = useGoogleAuth(redirectTo);
+
+  // Read redirect destination from URL query
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const dest = params.get("redirect");
+    if (dest) setRedirectTo(dest);
+  }, []);
 
   const isLogin = mode === "login";
   const title = isLogin ? "Sign in to Manish Properties" : "Create your Manish Properties account";
@@ -199,7 +207,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
         );
 
     if (ok) {
-      router.replace(routeForStoredRole());
+      router.replace(redirectTo || routeForStoredRole());
     }
   };
 
@@ -223,7 +231,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             One account for every real estate workflow.
           </h1>
           <p className="mt-5 max-w-lg text-sm leading-7 text-white/75">
-            Access saved homes, agent pipelines, admin approvals, and platform controls through the Flask-backed Manis Properties API.
+            Access saved homes, agent pipelines, admin approvals, and platform controls through the Flask-backed Manish Properties API.
           </p>
         </div>
       </div>

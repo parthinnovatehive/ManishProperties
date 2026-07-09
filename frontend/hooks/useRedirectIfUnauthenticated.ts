@@ -11,7 +11,8 @@ export const useRedirectIfUnauthenticated = (allowedRoles: Role[]) => {
   useEffect(() => {
     if (loading) return;
     if (!role) {
-      router.replace("/auth/login");
+      const redirect = encodeURIComponent(window.location.pathname + window.location.search);
+      router.replace(`/auth/login?redirect=${redirect}`);
       return;
     }
     if (!allowedRoles.includes(role)) {

@@ -103,7 +103,14 @@ export function SubmitPropertyPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [coords, setCoords] = useState<any>(null);
-  useAuth();
+  const { role: userRole, loading: authLoading } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !userRole) {
+      router.replace(`/auth/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+    }
+  }, [authLoading, userRole, router]);
   const [nearbyAmenities, setNearbyAmenities] = useState<any>(null);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -546,7 +553,7 @@ export function SubmitPropertyPage() {
 
       const propertyPayload = {
         id: crypto.randomUUID(),
-        category: form.category || "residential",
+        category: (form.category || "residential") as "residential" | "commercial",
         lister_id: userId,
         lister_type: userRole,
         lister_name: userName,
@@ -565,6 +572,8 @@ export function SubmitPropertyPage() {
         beds: form.category === "residential" ? Number(form.bedrooms) : 0,
         bathrooms: form.category === "residential" ? Number(form.bedrooms) : 1,
         area: Number(form.area),
+        parking: 0,
+        rera: "",
         price: `₹${form.price}`,
         priceNum: Number(form.price),
         furnishing: form.furnishing,
@@ -585,6 +594,7 @@ export function SubmitPropertyPage() {
         img: imageUrls[0] || "",
         rating: 0,
         reviews: 0,
+        views: 0,
         isNew: true,
         status: "PENDING",
         moderationStatus: "PENDING",
@@ -594,8 +604,8 @@ export function SubmitPropertyPage() {
           url: img.url,
           public_id: img.public_id
         })),
-        // ✅ Featured fields
-        featured: featuredOption === "plan",
+        // ✅ Featured fields (set to false; becomes true only after admin approves)
+        featured: false,
         featuredRequested: featuredOption === "plan",
         requested_for: featuredOption === "plan" ? selectedPlanData?.requested_for || 0 : 0,
         granted_for: null,
@@ -612,6 +622,21 @@ export function SubmitPropertyPage() {
 
       console.log("FINAL PROPERTY PAYLOAD", propertyPayload);
 
+      const res = await estateApi.properties.submit(propertyPayload);
+      console.log("SUBMIT RESPONSE", res);
+
+      // Track this property ID so MyPropertiesPage can show it
+      const submittedId = propertyPayload.id;
+      if (submittedId) {
+        try {
+          const tracked = JSON.parse(localStorage.getItem("trackedPropertyIds") || "[]");
+          if (!tracked.includes(submittedId)) {
+            tracked.push(submittedId);
+            localStorage.setItem("trackedPropertyIds", JSON.stringify(tracked));
+          }
+        } catch { /* ignore */ }
+      }
+
       toast.success("Property submitted successfully!", {
         description: "Your property is now waiting for admin approval.",
       });
@@ -623,10 +648,11 @@ export function SubmitPropertyPage() {
           router.push("/properties");
         }
       }, 2500);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error("Unable to process property location", {
-        description: "Please verify the address and try again.",
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Something went wrong. Please try again.";
+      toast.error("Failed to submit property", {
+        description: msg,
       });
     } finally {
       setLoading(false);

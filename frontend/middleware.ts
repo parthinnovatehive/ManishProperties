@@ -17,14 +17,17 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('estate_token')?.value;
   const adminData = request.cookies.get('estate_admin_data')?.value;
 
-  // If no token, redirect to login
+  const loginUrl = new URL('/auth/login', request.url);
+  loginUrl.searchParams.set('redirect', request.nextUrl.pathname + request.nextUrl.search);
+
+  // If no token, redirect to login with redirect param
   if (!token) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+    return NextResponse.redirect(loginUrl);
   }
 
-  // If token exists but no admin data, try to get it
+  // If token exists but no admin data, redirect to login with redirect param
   if (!adminData) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+    return NextResponse.redirect(loginUrl);
   }
 
   try {
@@ -46,8 +49,8 @@ export function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
-    // If admin data is invalid, redirect to login
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+    // If admin data is invalid, redirect to login with redirect param
+    return NextResponse.redirect(loginUrl);
   }
 }
 

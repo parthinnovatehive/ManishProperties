@@ -12,7 +12,10 @@ export default function PropertiesPage() {
   useEffect(() => {
     estateApi.properties
       .list()
-      .then(setProperties)
+      .then((items) => {
+        const sorted = [...items].sort((a, b) => Number(b.featured) - Number(a.featured));
+        setProperties(sorted);
+      })
       .finally(() => setLoading(false));
   }, []);
 

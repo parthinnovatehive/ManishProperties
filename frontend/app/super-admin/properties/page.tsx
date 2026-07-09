@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { estateApi } from "@/lib/api";
 import type { PropertyId } from "@/types";
+import PropertyPreviewModal from "@/components/PropertyPreviewModal";
 
 // Define local state interface matching property entries
 interface PropertyListItem {
@@ -27,6 +28,8 @@ export default function AdminPropertiesPage() {
   const [propertiesList, setPropertiesList] = useState<PropertyListItem[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<PropertyListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
+  const rawPropertiesRef = useRef<Map<PropertyId, any>>(new Map());
 
   // Filter & Sort States
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,6 +47,9 @@ export default function AdminPropertiesPage() {
       estateApi.users.list<any>(),
     ])
       .then(([items, agents, users]) => {
+        const rawMap = new Map<PropertyId, any>();
+        items.forEach((raw: any) => rawMap.set(raw.id, raw));
+        rawPropertiesRef.current = rawMap;
         const map = new Map<string, { name: string; phone: string; type: string }>();
         agents.forEach((a: any) => map.set(a.id, { name: a.name || a.email, phone: a.phone || "N/A", type: "Agent" }));
         users.forEach((u: any) => map.set(u.id, { name: u.name || u.email, phone: u.phone || "N/A", type: "Owner" }));
@@ -180,6 +186,9 @@ export default function AdminPropertiesPage() {
               estateApi.agents.list<any>(),
               estateApi.users.list<any>(),
             ]).then(([items, agents, users]) => {
+              const rawMap = new Map<PropertyId, any>();
+              items.forEach((raw: any) => rawMap.set(raw.id, raw));
+              rawPropertiesRef.current = rawMap;
               const map = new Map<string, { name: string; phone: string; type: string }>();
               agents.forEach((a: any) => map.set(a.id, { name: a.name || a.email, phone: a.phone || "N/A", type: "Agent" }));
               users.forEach((u: any) => map.set(u.id, { name: u.name || u.email, phone: u.phone || "N/A", type: "Owner" }));
@@ -397,13 +406,14 @@ export default function AdminPropertiesPage() {
                 </th>
                 <th className="py-3 px-4">Submitted By</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-center">Details</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-estate-border">
               {filteredProperties.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-12 text-estate-muted">
+                  <td colSpan={6} className="text-center py-12 text-estate-muted">
                     No properties found matching your filters
                     </td>
                  </tr>
@@ -444,6 +454,14 @@ export default function AdminPropertiesPage() {
                         {property.approvalStatus}
                       </span>
                       </td>
+                    <td className="py-4 px-4 text-center">
+                      <button
+                        onClick={() => setSelectedProperty(rawPropertiesRef.current.get(property.id) || null)}
+                        className="px-3 py-1.5 min-h-[36px] bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-semibold transition"
+                      >
+                        View Details
+                      </button>
+                      </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex justify-end gap-2 flex-wrap">
                         {property.approvalStatus !== 'Approved' && (
@@ -481,6 +499,33 @@ export default function AdminPropertiesPage() {
           )}
         </div>
       </div>
+      {/* Property Detail Modal */}
+      {selectedProperty && (
+        <PropertyPreviewModal
+          open={!!selectedProperty}
+          onClose={() => setSelectedProperty(null)}
+          property={selectedProperty}
+          approvalStatus={
+            selectedProperty.moderationStatus === "PENDING" ? "Pending"
+            : selectedProperty.moderationStatus === "REJECTED" ? "Rejected"
+            : selectedProperty.moderationStatus === "SUSPENDED" ? "Suspended"
+            : "Approved"
+          }
+          onApprove={async (id: PropertyId) => {
+            await handleApprove(id);
+            const raw = rawPropertiesRef.current.get(id);
+            if (raw) raw.moderationStatus = "APPROVED";
+          }}
+          onReject={async (id: PropertyId) => {
+            await handleReject(id);
+            const raw = rawPropertiesRef.current.get(id);
+            if (raw) raw.moderationStatus = "REJECTED";
+          }}
+          listerName={selectedProperty.lister_name || "Not Assigned"}
+          listerType={selectedProperty.lister_type ? selectedProperty.lister_type.charAt(0).toUpperCase() + selectedProperty.lister_type.slice(1) : "N/A"}
+          listerPhone={selectedProperty.lister_phone || "N/A"}
+        />
+      )}
     </div>
   );
 }

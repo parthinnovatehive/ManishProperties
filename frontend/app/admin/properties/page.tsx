@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { estateApi } from "@/lib/api";
 import type { PropertyId } from "@/types";
+import PropertyPreviewModal from "@/components/PropertyPreviewModal";
 
 // Define local state interface matching property entries
 interface PropertyListItem {
@@ -44,6 +45,8 @@ export default function AdminPropertiesPage() {
   const [loading, setLoading] = useState(true);
   const [adminCity, setAdminCity] = useState<City | null>(null);
   const [adminData, setAdminData] = useState<AdminData | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
+  const rawPropertiesRef = useRef<Map<PropertyId, any>>(new Map());
 
   // Filter & Sort States
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,6 +86,10 @@ export default function AdminPropertiesPage() {
     setLoading(true);
     try {
       const items = await estateApi.adminProperties.list();
+      // Store raw items keyed by id for the detail modal
+      const rawMap = new Map<PropertyId, any>();
+      items.forEach((raw: any) => rawMap.set(raw.id, raw));
+      rawPropertiesRef.current = rawMap;
       const mapped = items.map(toListItem);
       setAllProperties(mapped);
       
@@ -435,13 +442,14 @@ export default function AdminPropertiesPage() {
                 </th>
                 <th className="py-3 px-4">Submitted By</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-center">Details</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-estate-border">
               {filteredProperties.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-12 text-estate-muted">
+                  <td colSpan={6} className="text-center py-12 text-estate-muted">
                     No properties found matching your filters
                    </td>
                  </tr>
@@ -476,6 +484,14 @@ export default function AdminPropertiesPage() {
                       }`}>
                         {property.approvalStatus}
                       </span>
+                      </td>
+                    <td className="py-4 px-4 text-center">
+                      <button
+                        onClick={() => setSelectedProperty(rawPropertiesRef.current.get(property.id) || null)}
+                        className="px-3 py-1.5 min-h-[36px] bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-semibold transition"
+                      >
+                        View Details
+                      </button>
                       </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex flex-wrap justify-end gap-2">
@@ -514,6 +530,33 @@ export default function AdminPropertiesPage() {
           )}
         </div>
       </div>
+      {/* Property Detail Modal */}
+      {selectedProperty && (
+        <PropertyPreviewModal
+          open={!!selectedProperty}
+          onClose={() => setSelectedProperty(null)}
+          property={selectedProperty}
+          approvalStatus={
+            selectedProperty.moderationStatus === "PENDING" ? "Pending"
+            : selectedProperty.moderationStatus === "REJECTED" ? "Rejected"
+            : "Approved"
+          }
+          onApprove={async (id: PropertyId) => {
+            await handleApprove(id);
+            // Update raw data too
+            const raw = rawPropertiesRef.current.get(id);
+            if (raw) raw.moderationStatus = "APPROVED";
+          }}
+          onReject={async (id: PropertyId) => {
+            await handleReject(id);
+            const raw = rawPropertiesRef.current.get(id);
+            if (raw) raw.moderationStatus = "REJECTED";
+          }}
+          listerName={selectedProperty.agent?.name || selectedProperty.lister_name || "Not Assigned"}
+          listerType="Agent"
+          listerPhone={selectedProperty.agent?.email || "N/A"}
+        />
+      )}
     </div>
   );
 }

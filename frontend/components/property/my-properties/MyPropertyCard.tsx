@@ -3,6 +3,7 @@
 import { Property } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   MapPin,
   Bed,
@@ -16,6 +17,8 @@ import {
   Sparkles,
   Clock,
   AlertCircle,
+  Hourglass,
+  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -41,17 +44,18 @@ export function MyPropertyCard({
   const getStatusConfig = (status: string) => {
     switch (status) {
       case "APPROVED":
-        return { variant: "success" as const, label: "Active" };
+        return { variant: "success" as const, label: "Active", icon: CheckCircle };
       case "PENDING":
-        return { variant: "amber" as const, label: "Pending" };
+        return { variant: "amber" as const, label: "Pending Review", icon: Hourglass };
       case "REJECTED":
-        return { variant: "muted" as const, label: "Rejected" };
+        return { variant: "muted" as const, label: "Rejected", icon: AlertCircle };
       default:
-        return { variant: "blue" as const, label: status };
+        return { variant: "blue" as const, label: status, icon: Clock };
     }
   };
 
   const statusConfig = getStatusConfig(property.status);
+  const isPending = property.status === "PENDING";
   const imageSrc =
     !imgError && (property.img || property.image)
       ? property.img || property.image || ""
@@ -84,7 +88,13 @@ export function MyPropertyCard({
   };
 
   return (
-    <Card className="flex flex-col h-full group overflow-hidden cursor-pointer" onClick={handleCardClick}>
+    <Card
+      className={cn(
+        "flex flex-col h-full group overflow-hidden cursor-pointer transition-all duration-300",
+        isPending && "ring-2 ring-estate-amber/30 hover:ring-estate-amber/60 shadow-[0_0_20px_rgba(102,186,106,0.08)]"
+      )}
+      onClick={handleCardClick}
+    >
       {/* Property Image & Badges */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-estate-surface">
         <Image
@@ -96,7 +106,19 @@ export function MyPropertyCard({
           onError={() => setImgError(true)}
         />
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+          <Badge
+            variant={statusConfig.variant}
+            className={cn(
+              "flex items-center gap-1",
+              isPending && "animate-pulse-amber"
+            )}
+          >
+            <statusConfig.icon className={cn(
+              "w-3 h-3",
+              isPending && "animate-pulse"
+            )} />
+            {statusConfig.label}
+          </Badge>
           {property.featured && (
             (() => {
               const daysLeft = getDaysRemaining(property.featuredExpiryDate);
@@ -150,6 +172,7 @@ export function MyPropertyCard({
         <div className="absolute bottom-3 right-3 bg-estate-navy text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md backdrop-blur-sm bg-opacity-90">
           {property.type}
         </div>
+
       </div>
 
       {/* Property Details */}
@@ -200,15 +223,17 @@ export function MyPropertyCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px]"
-            onClick={() => onView?.(property)}
-          >
-            <Eye className="w-3.5 h-3.5" /> View
-          </Button>
+        <div className={cn("grid gap-2 mt-4", isPending ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4")}>
+          {!isPending && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full flex items-center justify-center gap-1 text-[11px] px-1 min-h-[44px]"
+              onClick={() => onView?.(property)}
+            >
+              <Eye className="w-3.5 h-3.5" /> View
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"

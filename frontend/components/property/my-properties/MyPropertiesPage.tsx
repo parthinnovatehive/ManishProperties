@@ -79,11 +79,28 @@ function MyPropertiesPageInner({ role }: MyPropertiesPageProps) {
 
       const items = await estateApi.adminProperties.list();
 
-      const myProperties = items.filter(
-        (item: any) =>
-          item.lister_id === currentUserId &&
-          item.lister_type === role
-      );
+      // Also get locally tracked property IDs (submitted in this browser)
+      let trackedIds: string[] = [];
+      try {
+        trackedIds = JSON.parse(localStorage.getItem("trackedPropertyIds") || "[]");
+      } catch { /* ignore */ }
+
+      const myProperties = items.filter((item: any) => {
+        const itemId = String(item.id);
+        const itemListerId = item.lister_id;
+        const itemListerType = item.lister_type;
+
+        // Exact match on both lister_id and lister_type
+        if (itemListerId === currentUserId && itemListerType === role) return true;
+
+        // Match on lister_id alone (fallback)
+        if (itemListerId === currentUserId && !itemListerType) return true;
+
+        // Include if tracked via localStorage (submitted in this browser)
+        if (trackedIds.includes(itemId)) return true;
+
+        return false;
+      });
 
       setProperties(myProperties);
     } catch (err) {
@@ -142,32 +159,37 @@ function MyPropertiesPageInner({ role }: MyPropertiesPageProps) {
       });
     }
 
-    // Sort
+    // Sort: pending items always on top, then by selected sort
+    const pendingItems = result.filter((p) => p.status === "PENDING");
+    const otherItems = result.filter((p) => p.status !== "PENDING");
+
     switch (sortBy) {
       case "newest":
-        result.sort(
+        otherItems.sort(
           (a, b) =>
             new Date(b.createdAt || 0).getTime() -
             new Date(a.createdAt || 0).getTime()
         );
         break;
       case "oldest":
-        result.sort(
+        otherItems.sort(
           (a, b) =>
             new Date(a.createdAt || 0).getTime() -
             new Date(b.createdAt || 0).getTime()
         );
         break;
       case "price_low":
-        result.sort((a, b) => (a.priceNum || 0) - (b.priceNum || 0));
+        otherItems.sort((a, b) => (a.priceNum || 0) - (b.priceNum || 0));
         break;
       case "price_high":
-        result.sort((a, b) => (b.priceNum || 0) - (a.priceNum || 0));
+        otherItems.sort((a, b) => (b.priceNum || 0) - (a.priceNum || 0));
         break;
       case "views":
-        result.sort((a, b) => (b.views || 0) - (a.views || 0));
+        otherItems.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
     }
+
+    result = [...pendingItems, ...otherItems];
 
     return result;
   }, [properties, filters, sortBy]);

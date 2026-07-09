@@ -37,7 +37,9 @@
     "name": "testadmin",
     "phone": "7410852963",
     "role": "ADMIN",
-    "createdAt": "2026-06-12T09:58:47.660551+00:00"
+    "createdAt": "2026-06-12T09:58:47.660551+00:00",
+    "status": "inactive",
+    "updatedAt": "2026-07-08T17:47:02.687928+00:00"
   },
   {
     "id": "admin_d899cfae5d654ae683207edc269aa0dc",
@@ -61,5 +63,16 @@
     "role": "ADMIN",
     "status": "active",
     "createdAt": "2026-06-16T13:31:41.330812+00:00"
+  },
+  {
+    "id": "admin_1fe1cdc851a54b008ca8e37edcc7b76d",
+    "username": "nskadmin@gmail.com",
+    "email": "nskadmin@gmail.com",
+    "passwordHash": "scrypt:32768:8:1$MLxMWbERFIQ1fM7P$4a376b9140c66d2fc8575ebec80bee4a9b42a1f6a790efa814e5f4394a5fb11bffd9fe519034ef88f8823b79cdd70e10c28a7ef51944061f58b418c1919de318",
+    "name": "nskadmin",
+    "phone": "",
+    "role": "ADMIN",
+    "status": "active",
+    "createdAt": "2026-07-08T17:47:44.185369+00:00"
   }
 ]

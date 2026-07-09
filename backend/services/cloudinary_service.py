@@ -11,8 +11,8 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 CATEGORY_CONFIGS = {
     "property": {
         "max_file_size": 5 * 1024 * 1024,
-        "min_width": 600,
-        "min_height": 400,
+        "min_width": 100,
+        "min_height": 100,
         "max_width": 1200,
         "max_height": 800,
         "transformations": [

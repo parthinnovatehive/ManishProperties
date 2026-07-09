@@ -758,6 +758,85 @@
         "distance": 6.8,
         "travelTime": "20 min"
       }
-    }
+    },
+    "views": 2
+  },
+  {
+    "id": "9415d01a-eb7d-4b98-8bb9-e54e3f40cd3c",
+    "category": "commercial",
+    "lister_id": "user_71670e4f29e94438800bedfa7131569e",
+    "lister_type": "user",
+    "lister_name": "test",
+    "title": "efg",
+    "subtitle": "efg",
+    "description": "fdg",
+    "city": "Nashik",
+    "city_id": "city_nashik",
+    "sub_area_id": "sub_mhasrul",
+    "state": "Maharashtra",
+    "pincode": "422009",
+    "location": "qazedc",
+    "fullLocation": "qazedc, Nashik, Maharashtra, 422009",
+    "type": "Commercial",
+    "listingType": "For Sale",
+    "beds": 0,
+    "bathrooms": 1,
+    "area": 2100,
+    "parking": 0,
+    "rera": "",
+    "price": "₹78500",
+    "priceNum": 78500.0,
+    "furnishing": "Semi-Furnished",
+    "officeType": "Showroom",
+    "pantry": false,
+    "washrooms": 1,
+    "powerBackup": false,
+    "cabinCount": 0,
+    "conferenceRoom": false,
+    "amenities": [
+      "Covered Parking",
+      "Power Backup",
+      "Garden"
+    ],
+    "coordinates": null,
+    "nearbyAmenities": null,
+    "images": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg"
+    ],
+    "imgs": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg"
+    ],
+    "image": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg",
+    "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg",
+    "rating": 0.0,
+    "reviews": 0,
+    "views": 0,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-07-08T13:41:03.700Z",
+    "updatedAt": "2026-07-08T18:40:18.607758+00:00",
+    "cloudinaryImages": [
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg",
+        "public_id": "properties/general/nzfc075ktiv00fhgv3jq"
+      }
+    ],
+    "featured": true,
+    "featuredRequested": false,
+    "requested_for": 2,
+    "granted_for": 2,
+    "featuredRequestDate": "2026-07-08T13:41:03.700Z",
+    "featuredPaymentStatus": "approved",
+    "featuredPaymentProof": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518052/properties/general/pbdg5ggszujehgepruwi.png",
+    "featuredPaymentAmount": 899,
+    "featuredApprovedBy": "admin_084516d1225c4d8a9c737c1db856bdba",
+    "featuredApprovedAt": "2026-07-08T18:40:18.280Z",
+    "featuredExpiryDate": "2026-09-07T18:29:59.999Z",
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "baths": 1,
+    "builder": "Manish Properties",
+    "rejectReason": null
   }
 ]

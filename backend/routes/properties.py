@@ -83,6 +83,7 @@ def get_property_detail(property_id):
 @properties_bp.post("/properties")
 @properties_bp.post("/properties/create")
 @properties_bp.post("/properties/submit")
+@jwt_required(optional=True)
 def create_property_route():
     if _is_admin_request():
         protected = role_required("AGENT", "ADMIN", "SUPER_ADMIN")(lambda: None)
@@ -90,8 +91,18 @@ def create_property_route():
         if auth_result is not None:
             return auth_result
 
+    payload = request.get_json(silent=True) or {}
     status = "PENDING"
-    property_item, error = create_property(request.get_json(silent=True) or {}, status=status)
+
+    # Attach lister identity from JWT if available
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        claims = get_jwt()
+        role = (claims.get("role") or "").lower()
+        payload.setdefault("lister_id", str(current_user_id))
+        payload.setdefault("lister_type", "agent" if role == "agent" else "user")
+
+    property_item, error = create_property(payload, status=status)
     if error:
         return error_response(error, 400)
     return success_response("Property created", data=property_item, property=property_item, status_code=201)
