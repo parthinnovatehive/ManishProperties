@@ -33,6 +33,7 @@ const MENU_ITEMS = [
   { href: "/agent/my-properties", label: "My Properties", icon: Building2 },
   // { href: "/agent/properties", label: "Properties", icon: Building2 },
   { href: "/agent/appointments", label: "Appointments", icon: Calendar },
+  { href: "/agent/enquiries", label: "Enquiries", icon: MessageSquare },
   // { href: "/agent/leads", label: "Leads", icon: Users },
   { href: "/agent/profile", label: "Profile", icon: User },
   { href: "/agent/settings", label: "Settings", icon: Settings },

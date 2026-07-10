@@ -63,5 +63,31 @@
     "icon": "CheckCircle",
     "isRead": false,
     "createdAt": "2026-07-09T17:22:30.857299+00:00"
+  },
+  {
+    "id": "notif_4be87bb530e64d5cb3420b5c7572b932",
+    "userId": "agent_1fd42047de774c71abf194d9b68e8d77",
+    "userType": "AGENT",
+    "title": "New Enquiry Assigned",
+    "message": "You have been assigned an enquiry for Premium Commercial Office Space.",
+    "type": "enquiry",
+    "relatedId": "enq_d7ac56c672be46f98123ec78ffdb5f55",
+    "actionUrl": "/agent/dashboard",
+    "icon": "MessageCircle",
+    "isRead": false,
+    "createdAt": "2026-07-10T14:47:47.290995+00:00"
+  },
+  {
+    "id": "notif_c878094099994d658a057a0798d6af2c",
+    "userId": "agent_1fd42047de774c71abf194d9b68e8d77",
+    "userType": "AGENT",
+    "title": "New Enquiry Assigned",
+    "message": "You have been assigned an enquiry for Premium Commercial Office Space.",
+    "type": "enquiry",
+    "relatedId": "enq_0d28d7ccee1a432fb895150456c9efd6",
+    "actionUrl": "/agent/dashboard",
+    "icon": "MessageCircle",
+    "isRead": false,
+    "createdAt": "2026-07-10T17:10:57.392395+00:00"
   }
 ]

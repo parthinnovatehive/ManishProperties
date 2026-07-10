@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
   MESSAGES: "/api/messages",
   SUBAREAS: "/api/subareas",  // Add SUBAREAS here, not in a separate declaration
   NOTIFICATIONS: "/api/notifications",
+  ENQUIRIES: "/api/enquiries",
   PROPERTIES_COMPARE: "/api/properties/compare",
 } as const;
 

@@ -28,6 +28,7 @@ const navItems = [
   { href: "/super-admin/properties", label: "Manage Properties", icon: BuildingOfficeIcon },
   { href: "/super-admin/featured-requests", label: "Featured Requests", icon: StarIcon },
   { href: "/super-admin/analytics", label: "Platform Analytics", icon: ChartBarIcon },
+  { href: "/super-admin/enquiries", label: "Enquiries", icon: DocumentChartBarIcon },
   { href: "/super-admin/complaints", label: "Complaints", icon: DocumentChartBarIcon },
 ];
 

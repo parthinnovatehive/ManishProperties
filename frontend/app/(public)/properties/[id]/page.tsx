@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Heart, Home, Share2 } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ArrowLeft, Heart, Home, MessageCircle, Share2, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { PropertyEMI } from "@/components/property/property-emi";
 import { PropertyGallery } from "@/components/property/property-gallery";
@@ -73,6 +74,10 @@ export default function PropertyDetailsPage() {
   const [saved, setSaved] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [enquiryOpen, setEnquiryOpen] = useState(false);
+  const [enquiryForm, setEnquiryForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [enquirySending, setEnquirySending] = useState(false);
+  const [enquirySent, setEnquirySent] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -104,6 +109,48 @@ export default function PropertyDetailsPage() {
 
     loadData();
   }, [params?.id]);
+
+  const openEnquiry = async () => {
+    setEnquirySent(false);
+    const account = getAdminData();
+    let name = "", email = "", phone = "";
+    if (account) {
+      try {
+        const user = await estateApi.users.me<any>();
+        name = user?.name || user?.username || "";
+        email = user?.email || "";
+        phone = user?.phone || "";
+      } catch {}
+    }
+    setEnquiryForm({
+      name,
+      email,
+      phone,
+      message: "I'm interested in this property. Please send me more details.",
+    });
+    setEnquiryOpen(true);
+  };
+
+  const handleEnquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!property) return;
+    setEnquirySending(true);
+    try {
+      await estateApi.enquiries.create({
+        propertyId: String(property.id),
+        propertyTitle: property.title,
+        userName: enquiryForm.name,
+        userEmail: enquiryForm.email,
+        userPhone: enquiryForm.phone,
+        message: enquiryForm.message,
+      });
+      setEnquirySent(true);
+    } catch (err) {
+      console.error("Failed to submit enquiry:", err);
+    } finally {
+      setEnquirySending(false);
+    }
+  };
 
   const handleToggleSaved = async () => {
     if (!property) return;
@@ -158,8 +205,9 @@ export default function PropertyDetailsPage() {
   if (!mounted) return null;
 
   return (
+    <>
     <div className="min-h-screen bg-estate-bg pb-28 font-sans selection:bg-estate-blue-pale selection:text-estate-navy">
-        <PropertyTopBar saved={saved} onSavedChange={handleToggleSaved} />
+        <PropertyTopBar saved={saved} onSavedChange={handleToggleSaved} onEnquire={openEnquiry} enquirySent={enquirySent} />
 
         <PropertyGallery
           images={derived.images}
@@ -261,15 +309,81 @@ export default function PropertyDetailsPage() {
           </div>
         </div>
       </div>
+
+      {mounted && enquiryOpen && createPortal(
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="bg-white rounded-3xl w-full sm:max-w-lg">
+            <div className="sticky top-0 bg-white flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-lg sm:text-xl font-bold text-estate-navy font-serif">
+                {enquirySent ? "Enquiry Sent" : "Enquire About This Property"}
+              </h2>
+              <button onClick={() => setEnquiryOpen(false)} className="text-gray-500 hover:text-gray-700 text-2xl">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {enquirySent ? (
+              <div className="p-6 sm:p-8 text-center space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                  <MessageCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <p className="text-estate-text text-lg font-medium">Your enquiry has been submitted!</p>
+                <p className="text-sm text-estate-text-sec">The property team will get back to you shortly.</p>
+                <button
+                  onClick={() => setEnquiryOpen(false)}
+                  className="mt-4 px-6 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleEnquirySubmit} className="p-4 sm:p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-estate-text mb-1">Message</label>
+                  <textarea
+                    rows={4}
+                    value={enquiryForm.message}
+                    onChange={(e) => setEnquiryForm((f) => ({ ...f, message: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-estate-border focus:ring-2 focus:ring-estate-navy focus:border-transparent outline-none transition text-sm resize-none"
+                    placeholder="I'm interested in this property. Please send me more details."
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setEnquiryOpen(false)}
+                    className="flex-1 px-4 py-2.5 min-h-[44px] border border-estate-border text-estate-text-sec rounded-xl hover:bg-estate-bg transition text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={enquirySending}
+                    className="flex-1 px-4 py-2.5 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition text-sm font-medium disabled:opacity-50"
+                  >
+                    {enquirySending ? "Sending..." : "Send Enquiry"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+        </div>
+      , document.body)}
+    </>
   );
 }
 
 function PropertyTopBar({
   saved,
   onSavedChange,
+  onEnquire,
+  enquirySent,
 }: {
   saved: boolean;
   onSavedChange: (saved: boolean) => void;
+  onEnquire: () => void;
+  enquirySent: boolean;
 }) {
   return (
     <div className="sticky top-0 z-40 border-b border-estate-border/80 bg-white/95 shadow-estate backdrop-blur-md">
@@ -282,6 +396,17 @@ function PropertyTopBar({
           Back to Listings
         </button>
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={enquirySent ? undefined : onEnquire}
+            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              enquirySent
+                ? "border-green-200 bg-green-50 text-green-700 cursor-default"
+                : "border-estate-navy bg-estate-navy text-white hover:bg-estate-navy-mid cursor-pointer"
+            }`}
+          >
+            <MessageCircle className="w-4 h-4" />
+            {enquirySent ? "Enquiry Sent ✓" : "Enquire"}
+          </button>
           <button
             onClick={() => onSavedChange(!saved)}
             className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 ${

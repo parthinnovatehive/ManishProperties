@@ -113,6 +113,11 @@ export const estateApi = {
     itemFrom<T>(await apiClient.patch(`/api/subareas/${id}`, payload), "subarea"),
 },
   },
+  enquiries: {
+    list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.ENQUIRIES), "enquiries"),
+    create: async <T = unknown>(payload: T) => itemFrom<T>(await apiClient.post(API_ENDPOINTS.ENQUIRIES, payload), "data"),
+    update: async <T = unknown>(id: string | number, payload: Partial<T>) => itemFrom<T>(await apiClient.patch(`${API_ENDPOINTS.ENQUIRIES}/${id}`, payload), "data"),
+  },
   cities: {
     list: async <T = unknown>() =>
       listFrom<T>(

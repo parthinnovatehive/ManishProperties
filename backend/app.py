@@ -11,6 +11,7 @@ from routes.appointments import appointments_bp
 from routes.auth import auth_bp
 from routes.complaints import complaints_bp
 from routes.content import content_bp
+from routes.enquiries import enquiries_bp
 from routes.messages import messages_bp
 from routes.properties import properties_bp
 from routes.super_admin import super_admin_bp
@@ -75,6 +76,7 @@ def register_blueprints(app):
     app.register_blueprint(properties_bp, url_prefix="/api/public", name="public_properties")
     app.register_blueprint(properties_bp, url_prefix="/api/admin", name="admin_properties")
     app.register_blueprint(appointments_bp, url_prefix="/api/appointments")
+    app.register_blueprint(enquiries_bp, url_prefix="/api/enquiries")
     app.register_blueprint(complaints_bp, url_prefix="/api/complaints")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(content_bp, url_prefix="/api/content")

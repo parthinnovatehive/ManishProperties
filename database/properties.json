@@ -759,7 +759,7 @@
         "travelTime": "20 min"
       }
     },
-    "views": 2
+    "views": 17
   },
   {
     "id": "9415d01a-eb7d-4b98-8bb9-e54e3f40cd3c",
@@ -810,7 +810,7 @@
     "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783518027/properties/general/nzfc075ktiv00fhgv3jq.jpg",
     "rating": 0.0,
     "reviews": 0,
-    "views": 0,
+    "views": 23,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",

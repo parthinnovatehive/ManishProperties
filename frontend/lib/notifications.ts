@@ -10,7 +10,8 @@ export type NotificationType =
   | "property_approved"
   | "property_rejected"
   | "lead_assigned"
-  | "account_update";
+  | "account_update"
+  | "enquiry";
 
 
 export interface Notification {

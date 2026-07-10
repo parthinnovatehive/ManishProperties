@@ -1,0 +1,34 @@
+[
+  {
+    "id": "enq_d7ac56c672be46f98123ec78ffdb5f55",
+    "propertyId": "prop_commercial_001",
+    "propertyTitle": "Premium Commercial Office Space",
+    "userName": "test",
+    "userEmail": "testuser@gmail.com",
+    "userPhone": "7410258963",
+    "message": "test",
+    "createdAt": "2026-07-10T13:51:18.247813+00:00",
+    "agentId": "agent_1fd42047de774c71abf194d9b68e8d77",
+    "agentName": "a",
+    "agentEmail": "test402@gmail.com",
+    "agentPhone": "12",
+    "status": "Contacted",
+    "updatedAt": "2026-07-10T14:47:46.967584+00:00"
+  },
+  {
+    "id": "enq_0d28d7ccee1a432fb895150456c9efd6",
+    "propertyId": "prop_commercial_001",
+    "propertyTitle": "Premium Commercial Office Space",
+    "userName": "test",
+    "userEmail": "testuser@gmail.com",
+    "userPhone": "7410258963",
+    "message": "I am intrested\n",
+    "createdAt": "2026-07-10T16:12:21.015187+00:00",
+    "agentId": "agent_1fd42047de774c71abf194d9b68e8d77",
+    "agentName": "a",
+    "agentEmail": "test402@gmail.com",
+    "agentPhone": "12",
+    "status": "Assigned",
+    "updatedAt": "2026-07-10T17:10:57.081651+00:00"
+  }
+]

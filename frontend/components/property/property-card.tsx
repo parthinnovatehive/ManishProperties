@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Bath, Bed, Heart, MapPin, Maximize2, ShieldCheck, Scale, Plus, Check } from "lucide-react";
+import { Bath, Bed, Heart, MapPin, Maximize2, ShieldCheck, Scale, Plus, Check, MessageCircle } from "lucide-react";
 import type { Property } from "@/types";
 import { useSavedProperties } from "@/lib/saved-properties-context";
 import { cn } from "@/lib/utils";

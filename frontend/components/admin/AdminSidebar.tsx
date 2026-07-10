@@ -12,6 +12,7 @@ const navItems = [
   { href: "/admin/agents", label: "Agents", icon: UsersIcon },
   { href: "/admin/subareas", label: "Subareas", icon: ClipboardDocumentListIcon },
   { href: "/admin/properties", label: "Properties", icon: ClipboardDocumentListIcon },
+  { href: "/admin/enquiries", label: "Enquiries", icon: ClipboardDocumentListIcon },
   { href: "/admin/complaints", label: "Complaints", icon: ClipboardDocumentListIcon },
   { href: "/admin/appointments", label: "Appointments", icon: CalendarIcon },
   { href: "/admin/stats", label: "Stats", icon: ChartBarIcon },
