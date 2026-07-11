@@ -53,6 +53,7 @@ export function PropertyImageUpload({
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 300000,
       });
 
       clearInterval(progressInterval);

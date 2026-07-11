@@ -198,7 +198,15 @@ export default function PropertyDetailsPage() {
     { icon: "🎓", title: "College", data: nearbySummary?.college },
     { icon: "🌳", title: "Park", data: nearbySummary?.park },
     { icon: "✈️", title: "Airport", data: nearbySummary?.airport },
-  ];
+  ].filter(
+    (item) =>
+      item.data &&
+      item.data.name &&
+      item.data.name !== "Nearby Location" &&
+      item.data.name !== "Not Found" &&
+      item.data.distance !== null &&
+      item.data.distance !== undefined
+  );
 
   if (loading) return <PropertyLoadingState />;
   if (!property || !derived) return <PropertyUnavailableState />;
@@ -254,7 +262,7 @@ export default function PropertyDetailsPage() {
               />
 
 
-              {nearbySummary && (
+              {amenitiesList.length > 0 && (
                 <section className="rounded-[20px] border border-estate-border/80 bg-white p-8 shadow-estate">
                   <h2 className="mb-5 text-2xl font-bold text-estate-navy">
                     Nearby Essentials

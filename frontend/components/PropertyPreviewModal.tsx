@@ -182,32 +182,49 @@ export default function PropertyPreviewModal({
 
           {/* Nearby Amenities */}
           {property.nearbyAmenities && typeof property.nearbyAmenities === 'object' && Object.keys(property.nearbyAmenities).length > 0 && (
-            <div>
-              <SectionHeader icon={<NearbyIcon />} title="Nearby Amenities" />
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-4">
-                {Object.entries(property.nearbyAmenities).map(([key, val]) => {
-                  const emoji = NEARBY_ICONS[key] || "📍";
-                  const label = key.replace(/([A-Z])/g, " $1").replace(/^./, s => s.toUpperCase());
-                  const distance = val && typeof val === "object" && val !== null ? (val as any).distance : null;
-                  const unit = val && typeof val === "object" && val !== null ? (val as any).unit : null;
-                  const distanceStr = distance ? (unit ? `${distance} ${unit}` : /[a-z]/i.test(String(distance)) ? distance : `${distance} km`) : null;
-                  return (
-                    <div
-                      key={key}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm hover:border-emerald-200 transition-all duration-200"
-                    >
-                      <span className="text-lg">{emoji}</span>
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-gray-700 truncate">{label}</p>
-                        <p className="text-xs text-gray-400">
-                          {distanceStr ?? "\u2014"}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            (() => {
+              const validEntries = Object.entries(property.nearbyAmenities).filter(([key, val]) => {
+                const distance = val && typeof val === "object" && val !== null ? (val as any).distance : null;
+                const name = val && typeof val === "object" && val !== null ? (val as any).name : null;
+                return (
+                  distance !== null &&
+                  distance !== undefined &&
+                  distance !== "N/A" &&
+                  distance !== "NA" &&
+                  name !== "Not Found" &&
+                  name !== "Nearby Location"
+                );
+              });
+              if (validEntries.length === 0) return null;
+              return (
+                <div>
+                  <SectionHeader icon={<NearbyIcon />} title="Nearby Amenities" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-4">
+                    {validEntries.map(([key, val]) => {
+                      const emoji = NEARBY_ICONS[key] || "📍";
+                      const label = key.replace(/([A-Z])/g, " $1").replace(/^./, s => s.toUpperCase());
+                      const distance = (val as any).distance;
+                      const unit = (val as any).unit;
+                      const distanceStr = unit ? `${distance} ${unit}` : /[a-z]/i.test(String(distance)) ? distance : `${distance} km`;
+                      return (
+                        <div
+                          key={key}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm hover:border-emerald-200 transition-all duration-200"
+                        >
+                          <span className="text-lg">{emoji}</span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-gray-700 truncate">{label}</p>
+                            <p className="text-xs text-gray-400">
+                              {distanceStr}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()
           )}
 
           {/* Owner/Lister Info */}

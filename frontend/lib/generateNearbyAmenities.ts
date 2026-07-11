@@ -22,47 +22,43 @@ export async function generateNearbyAmenities(
   node["amenity"="college"](around:${radius},${lat},${lng});
   node["leisure"="park"](around:${radius},${lat},${lng});
 );
-out body;
+out center;
 `;
 
   const response = await fetch(
-  "https://overpass-api.de/api/interpreter",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    body: query,
-  }
-);
+    "https://overpass-api.de/api/interpreter",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      body: query,
+    }
+  );
 
   const text = await response.text();
 
-console.log("OVERPASS RESPONSE:", text);
+  if (!response.ok) {
+    throw new Error(`Overpass Error: ${response.status}`);
+  }
 
-if (!response.ok) {
-  throw new Error(`Overpass Error: ${response.status}`);
-}
+  let data: any;
 
-let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Overpass API returned non-JSON response");
+  }
 
-try {
-  data = JSON.parse(text);
-} catch {
-  throw new Error(
-    "Overpass API returned non-JSON response"
-  );
-}
+  const elements: any[] = data.elements || [];
 
-  const elements = data.elements || [];
-
-  function nearest(
-    key: string,
-    field: string
-  ) {
+  /**
+   * Find the nearest element matching the given tag key/value pair.
+   * Supports both node elements (lat/lon) and way elements (center.lat/center.lon).
+   */
+  function nearest(key: string, field: string) {
     const matches = elements.filter(
-      (x: any) =>
-        x.tags?.[field] === key
+      (x) => x.tags?.[field] === key
     );
 
     if (!matches.length) return null;
@@ -70,13 +66,13 @@ try {
     let nearestItem = matches[0];
     let minDistance = Infinity;
 
-    matches.forEach((item: any) => {
-      const distance = calculateDistance(
-        lat,
-        lng,
-        item.lat,
-        item.lon
-      );
+    matches.forEach((item) => {
+      // way elements returned with "out center" expose coords in item.center
+      const itemLat = item.lat ?? item.center?.lat;
+      const itemLon = item.lon ?? item.center?.lon;
+      if (itemLat == null || itemLon == null) return;
+
+      const distance = calculateDistance(lat, lng, itemLat, itemLon);
 
       if (distance < minDistance) {
         minDistance = distance;
@@ -84,33 +80,29 @@ try {
       }
     });
 
-    const mins = Math.ceil(
-      (minDistance / 30) * 60
-    );
+    if (minDistance === Infinity) return null;
+
+    const mins = Math.ceil((minDistance / 30) * 60);
 
     return {
-      name:
-        nearestItem.tags?.name ||
-        "Nearby Location",
-      distance: Number(
-        minDistance.toFixed(1)
-      ),
+      name: nearestItem.tags?.name || "Nearby Location",
+      distance: Number(minDistance.toFixed(1)),
       travelTime: `${mins} min`,
     };
   }
 
   return {
-    hospital: nearest("hospital", "amenity"),
-    school: nearest("school", "amenity"),
+    hospital:    nearest("hospital",    "amenity"),
+    school:      nearest("school",      "amenity"),
     supermarket: nearest("supermarket", "shop"),
-    petrol: nearest("fuel", "amenity"),
-    station: nearest("station", "railway"),
-    bank: nearest("bank", "amenity"),
-    restaurant: nearest("restaurant", "amenity"),
-    atm: nearest("atm", "amenity"),
-    pharmacy: nearest("pharmacy", "amenity"),
-    busStation: nearest("bus_station", "amenity"),
-    college: nearest("college", "amenity"),
-    park: nearest("park", "leisure"),
+    petrol:      nearest("fuel",        "amenity"),
+    station:     nearest("station",     "railway"),
+    bank:        nearest("bank",        "amenity"),
+    restaurant:  nearest("restaurant",  "amenity"),
+    atm:         nearest("atm",         "amenity"),
+    pharmacy:    nearest("pharmacy",    "amenity"),
+    busStation:  nearest("bus_station", "amenity"),
+    college:     nearest("college",     "amenity"),
+    park:        nearest("park",        "leisure"),
   };
 }

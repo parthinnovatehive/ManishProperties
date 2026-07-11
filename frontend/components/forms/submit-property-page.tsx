@@ -216,6 +216,7 @@ export function SubmitPropertyPage() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 300000,
       });
 
       const images = response.data?.images || response.images;
@@ -269,6 +270,7 @@ export function SubmitPropertyPage() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 300000,
       });
 
       clearInterval(progressInterval);
@@ -503,10 +505,7 @@ export function SubmitPropertyPage() {
     }
   };
 
-  // includeAmenities: when true, geocode the address and fetch nearby amenities
-  // (current behavior). When false, skip that step so the property can be saved
-  // even without a Google Maps API key / working location lookup.
-  const handleSubmit = async (includeAmenities: boolean = true) => {
+  const handleSubmit = async () => {
     // ✅ Validate all steps before final submission
     if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4) || !validateStep(5)) {
       return;
@@ -533,20 +532,30 @@ export function SubmitPropertyPage() {
       let finalCoords = coords;
       let finalAmenities = nearbyAmenities;
 
-      if (includeAmenities) {
-        finalCoords =
-          coords ||
-          (await geocodeProperty(
+      // --- Always geocode + fetch nearby amenities ---
+      // Use cached coords if the user already picked a location on the map,
+      // otherwise try Nominatim (free, no API key needed).
+      if (!finalCoords) {
+        toast.info("Looking up location…", { duration: 3000 });
+        try {
+          finalCoords = await geocodeProperty(
             `${form.address}, ${form.city}, ${form.state}, ${form.pincode}, India`,
-            ""
-          ));
-        if (!finalCoords) {
-          throw new Error("Location not found");
+            form.city  // city-only fallback
+          );
+        } catch (geoErr) {
+          console.warn("Geocoding failed, submitting without coordinates:", geoErr);
         }
-        finalAmenities =
-          nearbyAmenities ||
-          (await generateNearbyAmenities(finalCoords.lat, finalCoords.lng));
       }
+
+      if (finalCoords && !finalAmenities) {
+        toast.info("Fetching nearby essentials…", { duration: 4000 });
+        try {
+          finalAmenities = await generateNearbyAmenities(finalCoords.lat, finalCoords.lng);
+        } catch (amenityErr) {
+          console.warn("Amenities fetch failed, submitting without amenities:", amenityErr);
+        }
+      }
+
 
       const imageUrls = uploadedImages.map(img => img.url);
       const selectedPlanData = featuredPlans.find(p => p.id === selectedPlan);
@@ -1526,32 +1535,18 @@ export function SubmitPropertyPage() {
             ))}
           </div>
           {step === totalSteps ? (
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleSubmit(false)}
-                disabled={loading || uploadingImages}
-              >
-                {loading ? (
-                  <>Submitting...</>
-                ) : (
-                  <>
-                    <CheckCircle size={16} aria-hidden="true" /> Save without Amenities
-                  </>
-                )}
-              </Button>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center justify-end">
               <Button
                 type="button"
                 variant="amber"
-                onClick={() => handleSubmit(true)}
+                onClick={() => handleSubmit()}
                 disabled={loading || uploadingImages}
               >
                 {loading ? (
-                  <>Submitting...</>
+                  <><Loader2 size={16} className="animate-spin" aria-hidden="true" /> Submitting...</>
                 ) : (
                   <>
-                    <CheckCircle size={16} aria-hidden="true" /> Save with Amenities
+                    <CheckCircle size={16} aria-hidden="true" /> Submit Property
                   </>
                 )}
               </Button>

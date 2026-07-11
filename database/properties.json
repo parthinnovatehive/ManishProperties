@@ -374,7 +374,7 @@
         "travelTime": "35 min"
       }
     },
-    "views": 8
+    "views": 10
   },
   {
     "id": "prop_2b540112c3fd494dbd64636031d6b3e1",
@@ -833,6 +833,386 @@
     "featuredApprovedBy": "admin_084516d1225c4d8a9c737c1db856bdba",
     "featuredApprovedAt": "2026-07-08T18:40:18.280Z",
     "featuredExpiryDate": "2026-09-07T18:29:59.999Z",
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "baths": 1,
+    "builder": "Manish Properties",
+    "rejectReason": null
+  },
+  {
+    "id": "90772ccb-6329-4a2d-8231-ad23768d6589",
+    "category": "commercial",
+    "lister_id": "user_71670e4f29e94438800bedfa7131569e",
+    "lister_type": "user",
+    "lister_name": "test",
+    "title": "testtest",
+    "subtitle": "testtest",
+    "description": "test85",
+    "city": "Nashik",
+    "city_id": "city_nashik",
+    "sub_area_id": "sub_indira_nagar",
+    "state": "Himachal Pradesh",
+    "pincode": "422009",
+    "location": "Rachit Kalpataru, Deepali Nagar, Nashik",
+    "fullLocation": "Rachit Kalpataru, Deepali Nagar, Nashik, Nashik, Himachal Pradesh, 422009",
+    "type": "Commercial",
+    "listingType": "For Rent",
+    "beds": 0,
+    "bathrooms": 1,
+    "area": 1100,
+    "parking": 0,
+    "rera": "",
+    "price": "₹85000",
+    "priceNum": 85000.0,
+    "furnishing": "Semi-Furnished",
+    "officeType": "Office Space",
+    "pantry": false,
+    "washrooms": 1,
+    "powerBackup": false,
+    "cabinCount": 0,
+    "conferenceRoom": false,
+    "amenities": [
+      "Intercom",
+      "Elevator"
+    ],
+    "coordinates": null,
+    "nearbyAmenities": null,
+    "images": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783786457/properties/general/c1q9rlrhefg4wj6mjn0t.png"
+    ],
+    "imgs": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783786457/properties/general/c1q9rlrhefg4wj6mjn0t.png"
+    ],
+    "image": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783786457/properties/general/c1q9rlrhefg4wj6mjn0t.png",
+    "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783786457/properties/general/c1q9rlrhefg4wj6mjn0t.png",
+    "rating": 0.0,
+    "reviews": 0,
+    "views": 4,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-07-11T16:14:23.148Z",
+    "updatedAt": "2026-07-11T16:16:36.462329+00:00",
+    "cloudinaryImages": [
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783786457/properties/general/c1q9rlrhefg4wj6mjn0t.png",
+        "public_id": "properties/general/c1q9rlrhefg4wj6mjn0t"
+      }
+    ],
+    "featured": false,
+    "featuredRequested": false,
+    "requested_for": 0,
+    "granted_for": null,
+    "featuredRequestDate": null,
+    "featuredPaymentStatus": null,
+    "featuredPaymentProof": null,
+    "featuredPaymentAmount": null,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "baths": 1,
+    "builder": "Manish Properties",
+    "rejectReason": null
+  },
+  {
+    "id": "73ffe5b1-7833-4d03-b578-bc4078066875",
+    "category": "commercial",
+    "lister_id": "user_bcc213f144004bcb818059d223a31938",
+    "lister_type": "user",
+    "lister_name": "Parth Darda",
+    "title": "badkjfbgk",
+    "subtitle": "badkjfbgk",
+    "description": "xfbj;gf",
+    "city": "Pune",
+    "city_id": "city_pune",
+    "sub_area_id": "sub_nigdi",
+    "state": "Maharashtra",
+    "pincode": "411044",
+    "location": "PCCOE Boys hostel, Sector 26, Pradhikaran, Pune",
+    "fullLocation": "PCCOE Boys hostel, Sector 26, Pradhikaran, Pune, Pune, Maharashtra, 411044",
+    "type": "Commercial",
+    "listingType": "For Sale",
+    "beds": 0,
+    "bathrooms": 1,
+    "area": 2,
+    "parking": 0,
+    "rera": "",
+    "price": "₹785",
+    "priceNum": 785.0,
+    "furnishing": "Semi-Furnished",
+    "officeType": "Office Space",
+    "pantry": false,
+    "washrooms": 1,
+    "powerBackup": false,
+    "cabinCount": 0,
+    "conferenceRoom": false,
+    "amenities": [
+      "Power Backup",
+      "Elevator"
+    ],
+    "coordinates": {
+      "lat": 18.5213738,
+      "lng": 73.8545071
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Surya Sahyadri Hospital",
+        "distance": 0.1,
+        "travelTime": "1 min"
+      },
+      "school": {
+        "name": "ahilyadevi high school",
+        "distance": 0.5,
+        "travelTime": "1 min"
+      },
+      "supermarket": {
+        "name": "CoEP Department of Mathematics",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "petrol": {
+        "name": "Shell",
+        "distance": 1.1,
+        "travelTime": "3 min"
+      },
+      "station": {
+        "name": "PMC Bhavan",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "bank": {
+        "name": "Nearby Location",
+        "distance": 0.5,
+        "travelTime": "2 min"
+      },
+      "restaurant": {
+        "name": "Sudamache Pohe",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "atm": {
+        "name": "Nearby Location",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Rahul Pharma",
+        "distance": 1.4,
+        "travelTime": "3 min"
+      },
+      "busStation": {
+        "name": "Nearby Location",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "college": {
+        "name": "Engineering College Ground",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "park": {
+        "name": "Sambhaji Park",
+        "distance": 0.8,
+        "travelTime": "2 min"
+      },
+      "airport": {
+        "name": "NDA Gliderdrome",
+        "distance": 9.3,
+        "travelTime": "19 min"
+      }
+    },
+    "images": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783787461/properties/general/dqjgburilvd7n6xbk9hd.jpg"
+    ],
+    "imgs": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783787461/properties/general/dqjgburilvd7n6xbk9hd.jpg"
+    ],
+    "image": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783787461/properties/general/dqjgburilvd7n6xbk9hd.jpg",
+    "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783787461/properties/general/dqjgburilvd7n6xbk9hd.jpg",
+    "rating": 0.0,
+    "reviews": 0,
+    "views": 4,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-07-11T16:31:12.680Z",
+    "updatedAt": "2026-07-11T16:32:28.238095+00:00",
+    "cloudinaryImages": [
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783787461/properties/general/dqjgburilvd7n6xbk9hd.jpg",
+        "public_id": "properties/general/dqjgburilvd7n6xbk9hd"
+      }
+    ],
+    "featured": false,
+    "featuredRequested": false,
+    "requested_for": 0,
+    "granted_for": null,
+    "featuredRequestDate": null,
+    "featuredPaymentStatus": null,
+    "featuredPaymentProof": null,
+    "featuredPaymentAmount": null,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "baths": 1,
+    "builder": "Manish Properties",
+    "rejectReason": null
+  },
+  {
+    "id": "8a53406f-4b47-41c2-b30b-20a3fe6710bc",
+    "category": "commercial",
+    "lister_id": "user_bcc213f144004bcb818059d223a31938",
+    "lister_type": "user",
+    "lister_name": "Parth Darda",
+    "title": "qwef",
+    "subtitle": "qwef",
+    "description": "qwef",
+    "city": "Nashik",
+    "city_id": "city_nashik",
+    "sub_area_id": "sub_indira_nagar",
+    "state": "Maharashtra",
+    "pincode": "422009",
+    "location": "Rachit kalpataru, Deepali Nagar Nashik",
+    "fullLocation": "Rachit kalpataru, Deepali Nagar Nashik, Nashik, Maharashtra, 422009",
+    "type": "Commercial",
+    "listingType": "For Sale",
+    "beds": 0,
+    "bathrooms": 1,
+    "area": 120,
+    "parking": 0,
+    "rera": "",
+    "price": "₹74500",
+    "priceNum": 74500.0,
+    "furnishing": "Semi-Furnished",
+    "officeType": "Office Space",
+    "pantry": false,
+    "washrooms": 1,
+    "powerBackup": false,
+    "cabinCount": 0,
+    "conferenceRoom": false,
+    "amenities": [
+      "Kids Zone",
+      "Garden"
+    ],
+    "coordinates": {
+      "lat": 20.0112475,
+      "lng": 73.7902364
+    },
+    "nearbyAmenities": {
+      "hospital": {
+        "name": "Shraddha Eye Hospital",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "school": {
+        "name": "rp vidyalaya",
+        "distance": 0.8,
+        "travelTime": "2 min"
+      },
+      "supermarket": null,
+      "petrol": {
+        "name": "HP",
+        "distance": 0.2,
+        "travelTime": "1 min"
+      },
+      "station": null,
+      "bank": {
+        "name": "State Bank of India",
+        "distance": 0.3,
+        "travelTime": "1 min"
+      },
+      "restaurant": {
+        "name": "Nearby Location",
+        "distance": 0.7,
+        "travelTime": "2 min"
+      },
+      "atm": {
+        "name": "Nearby Location",
+        "distance": 0.1,
+        "travelTime": "1 min"
+      },
+      "pharmacy": {
+        "name": "Wellness Forever",
+        "distance": 0.8,
+        "travelTime": "2 min"
+      },
+      "busStation": {
+        "name": "Tapovan Depot",
+        "distance": 2.5,
+        "travelTime": "6 min"
+      },
+      "college": {
+        "name": "MVPS RSM Polytechnic",
+        "distance": 2.6,
+        "travelTime": "6 min"
+      },
+      "park": {
+        "name": "Raygad Udyan",
+        "distance": 3,
+        "travelTime": "6 min"
+      }
+    },
+    "images": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789800/properties/general/dowjbvuspjyocorx1chi.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789804/properties/general/olyadzn4gc7rlh3sdwik.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789862/properties/general/zbjdjfjkdzydgpzhlcue.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789863/properties/general/cuhniqr5td2bdohbxjvj.png"
+    ],
+    "imgs": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789800/properties/general/dowjbvuspjyocorx1chi.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789804/properties/general/olyadzn4gc7rlh3sdwik.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789862/properties/general/zbjdjfjkdzydgpzhlcue.jpg",
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789863/properties/general/cuhniqr5td2bdohbxjvj.png"
+    ],
+    "image": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
+    "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
+    "rating": 0.0,
+    "reviews": 0,
+    "views": 4,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-07-11T17:11:17.617Z",
+    "updatedAt": "2026-07-11T17:12:07.349311+00:00",
+    "cloudinaryImages": [
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
+        "public_id": "properties/general/gjuhaaa6wcfrjvlflcqi"
+      },
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789800/properties/general/dowjbvuspjyocorx1chi.jpg",
+        "public_id": "properties/general/dowjbvuspjyocorx1chi"
+      },
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789804/properties/general/olyadzn4gc7rlh3sdwik.jpg",
+        "public_id": "properties/general/olyadzn4gc7rlh3sdwik"
+      },
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789862/properties/general/zbjdjfjkdzydgpzhlcue.jpg",
+        "public_id": "properties/general/zbjdjfjkdzydgpzhlcue"
+      },
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789863/properties/general/cuhniqr5td2bdohbxjvj.png",
+        "public_id": "properties/general/cuhniqr5td2bdohbxjvj"
+      }
+    ],
+    "featured": false,
+    "featuredRequested": false,
+    "requested_for": 0,
+    "granted_for": null,
+    "featuredRequestDate": null,
+    "featuredPaymentStatus": null,
+    "featuredPaymentProof": null,
+    "featuredPaymentAmount": null,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
     "featuredExpired": false,
     "featuredRejectionReason": null,
     "baths": 1,

@@ -120,10 +120,20 @@ export function MapPicker({
   if (loadError) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-          <p className="text-red-600">Error loading Google Maps. Please check your API key.</p>
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-gray-200 rounded-lg">
-            Close
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-xl">
+          <div className="text-5xl mb-4">🗺️</div>
+          <h3 className="text-lg font-bold text-estate-navy mb-2">Map Unavailable</h3>
+          <p className="text-sm text-estate-muted mb-2">
+            Google Maps could not be loaded. The Maps JavaScript API may not be enabled for your API key.
+          </p>
+          <p className="text-xs text-estate-muted mb-6">
+            You can still submit the property — location coordinates will be resolved automatically from your address.
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2.5 bg-estate-navy text-white rounded-lg hover:bg-estate-navy-mid transition font-medium"
+          >
+            Close & Continue
           </button>
         </div>
       </div>

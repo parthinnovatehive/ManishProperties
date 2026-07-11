@@ -57,9 +57,14 @@ export const API_ENDPOINTS = {
 } as const;
 
 /**
- * Request timeout in milliseconds
+ * Request timeout in milliseconds (5 minutes — accommodates large file uploads)
  */
-export const REQUEST_TIMEOUT = 30000;
+export const REQUEST_TIMEOUT = 300000;
+
+/**
+ * Upload-specific timeout in milliseconds (5 minutes)
+ */
+export const UPLOAD_TIMEOUT = 300000;
 
 /**
  * Token storage key

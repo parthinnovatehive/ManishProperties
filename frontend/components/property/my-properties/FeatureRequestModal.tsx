@@ -78,7 +78,10 @@ export function FeatureRequestModal({
       const response = await apiClient.post<{ success: boolean; data?: { images?: { url: string; public_id: string; width: number; height: number }[] }; images?: { url: string; public_id: string; width: number; height: number }[] }>(
         "/api/properties/upload-images?category=payment_proof",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { 
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 300000,
+        }
       );
 
       const images = response.data?.images || response.images;
