@@ -210,22 +210,6 @@ export function ListingPage({ properties }: { properties: Property[] }) {
                 </select>
                 <ChevronDown size={14} aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-estate-muted" />
               </label>
-
-              <div className="flex rounded-xl border border-estate-border bg-estate-bg p-1 shadow-estate">
-                {(["grid", "list"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    aria-label={`${mode} view`}
-                    className={cn(
-                      "flex items-center rounded-lg px-3 py-2 transition",
-                      view === mode ? "bg-white text-estate-navy shadow-estate" : "text-estate-muted",
-                    )}
-                    onClick={() => setView(mode)}
-                  >
-                    {mode === "grid" ? <Grid3X3 size={16} aria-hidden="true" /> : <List size={16} aria-hidden="true" />}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>

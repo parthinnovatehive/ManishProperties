@@ -125,7 +125,7 @@
         "travelTime": "35 min"
       }
     },
-    "views": 4
+    "views": 6
   },
   {
     "id": "2",
@@ -1174,7 +1174,7 @@
     "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1783789796/properties/general/gjuhaaa6wcfrjvlflcqi.jpg",
     "rating": 0.0,
     "reviews": 0,
-    "views": 4,
+    "views": 7,
     "isNew": true,
     "status": "APPROVED",
     "moderationStatus": "APPROVED",
