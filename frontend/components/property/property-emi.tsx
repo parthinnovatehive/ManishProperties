@@ -29,7 +29,7 @@ function formatINR(value: number) {
 
 function sliderGradient(value: number, min: number, max: number) {
   const percentage = ((value - min) / (max - min)) * 100;
-  return `linear-gradient(to right,#164A34 0%,#164A34 ${percentage}%,#DDE8DD ${percentage}%,#DDE8DD 100%)`;
+  return `linear-gradient(to right,#1A3A5C 0%,#1A3A5C ${percentage}%,#DBEAFE ${percentage}%,#DBEAFE 100%)`;
 }
 
 export function PropertyEMI({ price }: PropertyEMIProps) {
@@ -154,7 +154,7 @@ export function PropertyEMI({ price }: PropertyEMIProps) {
             ].map(({ label, value, highlight }) => (
               <div key={label} className="flex items-center justify-between py-3 border-t border-white/10 first:border-t-0">
                 <span className="text-xs text-white/50 font-light">{label}</span>
-                <span className={`text-sm font-semibold ${highlight ? "text-[#BFE6BF] text-base" : "text-white"}`}>
+                <span className={`text-sm font-semibold ${highlight ? "text-[#90CAF9] text-base" : "text-white"}`}>
                   {value}
                 </span>
               </div>

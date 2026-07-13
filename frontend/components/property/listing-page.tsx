@@ -166,7 +166,7 @@ export function ListingPage({ properties }: { properties: Property[] }) {
 
   return (
     <div className="min-h-screen bg-estate-bg">
-      <div className="border-b border-estate-border bg-white px-6 py-8 shadow-[0_10px_28px_rgba(22,74,52,0.04)]">
+      <div className="border-b border-estate-border bg-white px-6 py-8 shadow-[0_10px_28px_rgba(26,58,92,0.04)]">
         <div className="container-wide px-0">
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>

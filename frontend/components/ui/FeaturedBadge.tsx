@@ -8,8 +8,8 @@ export function FeaturedBadge() {
         display: "inline-flex",
         alignItems: "center",
         gap: "4px",
-        background: "#EFF8EF",
-        color: "#3E7B45",
+        background: "#EFF6FF",
+        color: "#2563EB",
         padding: "3px 8px",
         borderRadius: "99px",
         fontSize: "11px",
@@ -18,7 +18,7 @@ export function FeaturedBadge() {
         whiteSpace: "nowrap",
       }}
     >
-      <Star size={10} fill="#3E7B45" style={{ color: "#3E7B45" }} /> Featured
+      <Star size={10} fill="#2563EB" style={{ color: "#2563EB" }} /> Featured
     </span>
   );
 }

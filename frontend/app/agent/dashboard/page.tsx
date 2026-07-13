@@ -231,13 +231,13 @@ export default function AgentDashboardPage() {
               <line x1="0" y1="40" x2="500" y2="40" stroke="#f3f4f6" strokeWidth="1" />
               <line x1="0" y1="90" x2="500" y2="90" stroke="#f3f4f6" strokeWidth="1" />
               <line x1="0" y1="140" x2="500" y2="140" stroke="#f3f4f6" strokeWidth="1" />
-              <line x1="0" y1="190" x2="500" y2="190" stroke="#164A34" strokeWidth="1.5" strokeOpacity="0.1" />
+              <line x1="0" y1="190" x2="500" y2="190" stroke="#1A3A5C" strokeWidth="1.5" strokeOpacity="0.1" />
 
               {/* Gradient overlay */}
               <defs>
                 <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#164A34" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#164A34" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#1A3A5C" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#1A3A5C" stopOpacity="0" />
                 </linearGradient>
               </defs>
 
@@ -251,16 +251,16 @@ export default function AgentDashboardPage() {
               <path
                 d="M 10 170 C 80 160, 100 120, 180 100 C 250 85, 280 60, 360 50 C 420 40, 460 25, 490 20"
                 fill="none"
-                stroke="#164A34"
+                stroke="#1A3A5C"
                 strokeWidth="3.5"
                 strokeLinecap="round"
               />
 
               {/* Data points */}
-              <circle cx="10" cy="170" r="5" fill="#164A34" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx="180" cy="100" r="5" fill="#164A34" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx="360" cy="50" r="5" fill="#164A34" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx="490" cy="20" r="5" fill="#164A34" stroke="#ffffff" strokeWidth="1.5" />
+              <circle cx="10" cy="170" r="5" fill="#1A3A5C" stroke="#ffffff" strokeWidth="1.5" />
+              <circle cx="180" cy="100" r="5" fill="#1A3A5C" stroke="#ffffff" strokeWidth="1.5" />
+              <circle cx="360" cy="50" r="5" fill="#1A3A5C" stroke="#ffffff" strokeWidth="1.5" />
+              <circle cx="490" cy="20" r="5" fill="#1A3A5C" stroke="#ffffff" strokeWidth="1.5" />
             </svg>
             <div className="flex justify-between items-center text-[10px] font-bold text-estate-muted mt-2 px-1">
               {monthBuckets.map((bucket) => (

@@ -17,7 +17,7 @@
 
   body {
     margin: 0;
-    background: #f8faf8;
+    background: #f8fafc;
     color: #1f2937;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     text-rendering: optimizeLegibility;
@@ -40,7 +40,7 @@
   }
 
   input[type="range"] {
-    accent-color: #164a34;
+    accent-color: #1A3A5C;
   }
 
   ::-webkit-scrollbar {
@@ -49,11 +49,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #f3f6f2;
+    background: #F1F5F9;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #c7d8c8;
+    background: #BDD4EA;
     border-radius: 999px;
   }
 }
@@ -68,15 +68,15 @@
   }
 
   .hero-overlay {
-    background: linear-gradient(135deg, rgba(22, 74, 52, 0.88) 0%, rgba(22, 74, 52, 0.54) 54%, rgba(31, 41, 55, 0.18) 100%);
+    background: linear-gradient(135deg, rgba(26, 58, 92, 0.88) 0%, rgba(26, 58, 92, 0.54) 54%, rgba(31, 41, 55, 0.18) 100%);
   }
 
   .auth-overlay {
-    background: linear-gradient(to top, rgba(22, 74, 52, 0.92) 0%, rgba(22, 74, 52, 0.46) 54%, transparent 100%);
+    background: linear-gradient(to top, rgba(26, 58, 92, 0.92) 0%, rgba(26, 58, 92, 0.46) 54%, transparent 100%);
   }
 
   .city-overlay {
-    background: linear-gradient(to top, rgba(22, 74, 52, 0.82) 0%, rgba(31, 41, 55, 0.18) 64%, transparent 100%);
+    background: linear-gradient(to top, rgba(26, 58, 92, 0.82) 0%, rgba(31, 41, 55, 0.18) 64%, transparent 100%);
   }
 
   .focus-field {

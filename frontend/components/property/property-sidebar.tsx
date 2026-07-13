@@ -218,8 +218,8 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
                 <h3 className="text-white font-semibold text-[15px] leading-tight">Manish Properties Luxe</h3>
                 <p className="text-white/55 text-xs mt-1 font-light">Senior Property Consultant</p>
                 <div className="flex items-center gap-1.5 mt-2.5 bg-white/10 border border-white/15 rounded-full px-2.5 py-1 w-fit">
-                  <BadgeCheck className="w-3 h-3 text-[#BFE6BF]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#BFE6BF]">Certified Advisor</span>
+                  <BadgeCheck className="w-3 h-3 text-[#90CAF9]" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#90CAF9]">Certified Advisor</span>
                 </div>
               </div>
             </div>

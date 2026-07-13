@@ -89,7 +89,7 @@ export default function UserProfilePage() {
               {initials}
             </div>
             <div className="text-center sm:text-left">
-              <h3 className="text-lg font-bold text-estate-text">{profile.name || "EstateElite User"}</h3>
+              <h3 className="text-lg font-bold text-estate-text">{profile.name || "User"}</h3>
               <p className="text-sm text-estate-text-sec">{profile.email}</p>
               <span className="inline-block mt-2 px-3 py-1 rounded-full bg-estate-blue-pale text-estate-navy text-xs font-semibold uppercase tracking-wider">
                 User

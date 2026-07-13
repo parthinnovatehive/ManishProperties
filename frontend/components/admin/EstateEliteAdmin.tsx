@@ -27,23 +27,23 @@ import { FeaturedBadge } from "@/components/ui/FeaturedBadge";
    DESIGN SYSTEM — matches EstateElite frontend
 ============================================================ */
 const C = {
-  navy: "#164A34", navyMid: "#1E5D3D", navyLight: "#2E7450",
-  blue: "#1E5D3D", blueLight: "#66BB6A", bluePale: "#E8F5E9",
-  amber: "#66BB6A", amberDark: "#3E7B45", amberPale: "#EFF8EF",
-  white: "#FFFFFF", bg: "#F8FAF8", surface: "#F3F6F2",
-  text: "#1F2937", textSec: "#5D6B61", muted: "#8A9A90",
-  border: "#DDE8DD", borderMed: "#C7D8C8",
-  success: "#2F8F46", successBg: "#E8F5E9", successLight: "#DFF0E1",
+  navy: "#1A3A5C", navyMid: "#1E5A8A", navyLight: "#2563A0",
+  blue: "#1E5A8A", blueLight: "#42A5F5", bluePale: "#E3F2FD",
+  amber: "#42A5F5", amberDark: "#2563EB", amberPale: "#EFF6FF",
+  white: "#FFFFFF", bg: "#F8FAFC", surface: "#F1F5F9",
+  text: "#1F2937", textSec: "#5B6B7A", muted: "#8A99A8",
+  border: "#DBEAFE", borderMed: "#BDD4EA",
+  success: "#1976D2", successBg: "#E3F2FD", successLight: "#DBEAFE",
   warning: "#9A7B35", warningBg: "#F8F4EA", warningLight: "#F1E8C9",
   danger: "#B94B4B", dangerBg: "#FFF1F1", dangerLight: "#FBE2E2",
-  info: "#1E5D3D", infoBg: "#E8F5E9",
-  sidebar: "#123826",
+  info: "#1E5A8A", infoBg: "#E3F2FD",
+  sidebar: "#0F2744",
   sidebarHov: "rgba(255,255,255,0.07)",
   sidebarActive: "rgba(255,255,255,0.12)",
   sidebarBorder: "rgba(255,255,255,0.08)",
-  shadow: "0 4px 20px rgba(22,74,52,0.08)",
-  shadowMd: "0 12px 34px rgba(22,74,52,0.10)",
-  shadowLg: "0 22px 54px rgba(22,74,52,0.12)",
+  shadow: "0 4px 20px rgba(26,58,92,0.08)",
+  shadowMd: "0 12px 34px rgba(26,58,92,0.10)",
+  shadowLg: "0 22px 54px rgba(26,58,92,0.12)",
 };
 const serif = { fontFamily: "'Playfair Display', Georgia, serif" };
 const sans = { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" };
@@ -915,7 +915,7 @@ const tableProperties = filteredProperties.filter(p => {
         @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #C7D8C8; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb { background: #BDD4EA; border-radius: 999px; }
         input:focus { outline: none; }
 
         /* Responsive dashboard grids */

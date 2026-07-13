@@ -338,7 +338,7 @@ export function HeroSearch() {
         className="absolute inset-0 h-full w-full scale-[1.02] object-cover"
       />
       <div className="hero-overlay absolute inset-0" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,42,30,0.84)_0%,rgba(22,74,52,0.62)_46%,rgba(22,74,52,0.18)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,33,55,0.84)_0%,rgba(26,58,92,0.62)_46%,rgba(26,58,92,0.18)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-estate-bg/80 to-transparent" />
 
       <div className="container-wide relative py-24 sm:py-28">
@@ -355,7 +355,7 @@ export function HeroSearch() {
         <h1 className="max-w-4xl font-serif text-[clamp(2.8rem,6vw,5.3rem)] font-semibold leading-[0.98] text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
           Find a Home
           <br />
-          <span className="text-[#BFE6BF]">That Matches Your Life</span>
+          <span className="text-[#90CAF9]">That Matches Your Life</span>
         </h1>
         <p className="mt-7 max-w-2xl text-base leading-8 text-white/[0.84] sm:text-lg">
           Explore 85,000+ verified listings with transparent pricing, RERA-compliant properties, and expert guidance.

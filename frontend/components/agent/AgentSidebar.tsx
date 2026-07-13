@@ -61,7 +61,7 @@ export default function AgentSidebar({ isOpen, onClose, isCollapsed, setIsCollap
       {/* Main Sidebar Panel */}
       <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#123826] text-white shadow-estate-lg transition-all duration-300 ease-in-out",
+          "fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#0F2744] text-white shadow-estate-lg transition-all duration-300 ease-in-out",
           // Desktop width handling
           isCollapsed ? "lg:w-20" : "lg:w-64",
           // Mobile state handling

@@ -90,7 +90,7 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 border-b border-white/60 bg-white/90 backdrop-blur-2xl transition-all duration-300",
         scrolled
-          ? "border-estate-border/80 shadow-[0_12px_34px_rgba(22,74,52,0.10)]"
+          ? "border-estate-border/80 shadow-[0_12px_34px_rgba(26,58,92,0.10)]"
           : "shadow-[0_1px_0_rgba(229,231,235,0.9)]",
       )}
     >
@@ -197,7 +197,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-68px)] overflow-y-auto border-t border-estate-border/80 bg-white/95 px-6 pb-6 pt-4 shadow-[0_28px_60px_rgba(22,74,52,0.18)] backdrop-blur-2xl md:hidden">
+        <div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-68px)] overflow-y-auto border-t border-estate-border/80 bg-white/95 px-6 pb-6 pt-4 shadow-[0_28px_60px_rgba(26,58,92,0.18)] backdrop-blur-2xl md:hidden">
           <div className="mb-4 grid gap-2">
             {links.map((link) => (
               <Link
@@ -273,7 +273,7 @@ export function Navbar() {
                 <User size={14} aria-hidden="true" /> Sign In
               </Button>
             )}
-            <Button href="/submit-property" variant="navy" size="sm" fullWidth className="min-h-11 shadow-[0_14px_28px_rgba(22,74,52,0.18)]" onClick={() => setMobileOpen(false)}>
+            <Button href="/submit-property" variant="navy" size="sm" fullWidth className="min-h-11 shadow-[0_14px_28px_rgba(26,58,92,0.18)]" onClick={() => setMobileOpen(false)}>
               <Plus size={14} aria-hidden="true" /> Post Property
             </Button>
           </div>

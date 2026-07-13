@@ -8,7 +8,7 @@ type PropertyTrustProps = {
 export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProps) {
   return (
     <>
-      <div className="rounded-[20px] bg-gradient-to-br from-estate-navy via-estate-navy-mid to-[#0F3A29] p-8 text-white shadow-estate">
+      <div className="rounded-[20px] bg-gradient-to-br from-estate-navy via-estate-navy-mid to-[#0D2137] p-8 text-white shadow-estate">
         <div className="flex items-start gap-4 mb-6">
           <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
             <ShieldCheck className="w-5 h-5 text-white" />
@@ -27,7 +27,7 @@ export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProp
             { value: responseRate, label: "Avg. Response" },
           ].map(({ value, label }) => (
             <div key={label} className="text-center bg-white/[0.07] rounded-xl py-4 border border-white/10">
-              <p className="mb-1 text-2xl font-semibold tracking-tight text-[#BFE6BF]">{value}</p>
+              <p className="mb-1 text-2xl font-semibold tracking-tight text-[#90CAF9]">{value}</p>
               <p className="text-[10px] text-white/45 uppercase tracking-[0.08em] font-semibold">{label}</p>
             </div>
           ))}
@@ -49,7 +49,7 @@ export function PropertyTrust({ rera, responseRate = "< 2h" }: PropertyTrustProp
         </div>
         <div className="rounded-[20px] bg-gradient-to-br from-estate-navy to-estate-navy-mid p-6 text-white transition-shadow duration-300 hover:shadow-estate-lg">
           <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10">
-            <ShieldCheck className="w-5 h-5 text-[#BFE6BF]" />
+            <ShieldCheck className="w-5 h-5 text-[#90CAF9]" />
           </div>
           <h3 className="text-base font-semibold mb-2">Verified Authenticity</h3>
           <p className="text-sm leading-relaxed text-white/75">

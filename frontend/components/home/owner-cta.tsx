@@ -7,7 +7,7 @@ export function OwnerCta() {
   return (
     <section className="bg-estate-navy px-6 py-16 sm:py-24 text-center lg:py-28">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-4 text-[13px] font-bold uppercase tracking-[0.08em] text-[#BFE6BF]">For Property Owners</div>
+        <div className="mb-4 text-[13px] font-bold uppercase tracking-[0.08em] text-[#90CAF9]">For Property Owners</div>
         <h2 className="font-serif text-[clamp(1.8rem,3vw,2.8rem)] leading-tight text-white">
           List Your Property & Reach Lakhs of Verified Buyers
         </h2>
@@ -25,7 +25,7 @@ export function OwnerCta() {
         <div className="mt-7 flex flex-wrap justify-center gap-7">
           {features.map((feature) => (
             <span key={feature} className="flex items-center gap-2 text-[13px] text-white/70">
-              <CheckCircle size={14} aria-hidden="true" className="text-[#BFE6BF]" />
+              <CheckCircle size={14} aria-hidden="true" className="text-[#90CAF9]" />
               {feature}
             </span>
           ))}

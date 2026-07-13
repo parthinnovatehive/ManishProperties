@@ -10,22 +10,22 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   // Premium design color tokens mapping colors & icons
   const config: Record<string, { bg: string; color: string; icon: React.ReactNode; label: string }> = {
-    // Green: Active, Approved, Available
+    // Blue: Active, Approved, Available
     APPROVED: {
-      bg: "#E8F5E9",
-      color: "#2F8F46",
+      bg: "#E3F2FD",
+      color: "#1976D2",
       icon: <CheckCircle size={13} />,
       label: "Approved",
     },
     ACTIVE: {
-      bg: "#E8F5E9",
-      color: "#2F8F46",
+      bg: "#E3F2FD",
+      color: "#1976D2",
       icon: <CheckCircle size={13} />,
       label: "Active",
     },
     AVAILABLE: {
-      bg: "#E8F5E9",
-      color: "#2F8F46",
+      bg: "#E3F2FD",
+      color: "#1976D2",
       icon: <CheckCircle size={13} />,
       label: "Available",
     },
@@ -59,8 +59,8 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   };
 
   const badgeConfig = config[s] || {
-    bg: "#F3F6F2",
-    color: "#5D6B61",
+    bg: "#F1F5F9",
+    color: "#5B6B7A",
     icon: <HelpCircle size={13} />,
     label: status || "Unknown",
   };

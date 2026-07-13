@@ -76,7 +76,7 @@ export default function UserSidebar({ isOpen, onClose, isCollapsed, setIsCollaps
 
       <aside
         className={cn(
-          "flex flex-col bg-[#123826] text-white shadow-estate-lg transition-all duration-300 ease-in-out",
+          "flex flex-col bg-[#0F2744] text-white shadow-estate-lg transition-all duration-300 ease-in-out",
           isCollapsed ? "w-20" : "w-64",
           // Mobile drawer behavior: overlay when open, hidden on mobile otherwise
           isOpen ? "fixed inset-0 z-50 w-64 lg:static lg:translate-x-0" : "hidden lg:block lg:static",
