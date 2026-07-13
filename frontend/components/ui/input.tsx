@@ -23,7 +23,7 @@ export function Input({ label, icon, rightIcon, required, className, ...props }:
           className={cn(
             "focus-field w-full rounded-[14px] border-[1.5px] border-estate-border bg-white py-3 pr-4 text-sm text-estate-text placeholder:text-estate-muted min-h-[44px]",
             icon ? "pl-9" : "pl-3.5",
-            rightIcon && "pr-11",
+            rightIcon ? "pr-11" : undefined,
             className,
           )}
           {...props}
