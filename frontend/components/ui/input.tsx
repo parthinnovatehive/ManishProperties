@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   icon?: ReactNode;
+  rightIcon?: ReactNode;
 };
 
-export function Input({ label, icon, required, className, ...props }: InputProps) {
+export function Input({ label, icon, rightIcon, required, className, ...props }: InputProps) {
   return (
     <label className="mb-4 block w-full">
       {label && (
@@ -22,10 +23,12 @@ export function Input({ label, icon, required, className, ...props }: InputProps
           className={cn(
             "focus-field w-full rounded-[14px] border-[1.5px] border-estate-border bg-white py-3 pr-4 text-sm text-estate-text placeholder:text-estate-muted min-h-[44px]",
             icon ? "pl-9" : "pl-3.5",
+            rightIcon && "pr-11",
             className,
           )}
           {...props}
         />
+        {rightIcon && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-estate-muted">{rightIcon}</span>}
       </span>
     </label>
   );

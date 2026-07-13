@@ -226,56 +226,61 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
           </div>
 
           <div className="p-6 space-y-3.5">
-            <div className="rounded-[16px] border border-estate-border bg-estate-bg px-4 py-3.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-1">Asking Price</p>
-              <p className="text-2xl font-light text-gray-900 tracking-tight">{price}</p>
-              {sqftPrice && <p className="text-xs text-gray-400 mt-1 font-light">Est. {sqftPrice} / sqft</p>}
-            </div>
+  <div className="rounded-[16px] border border-estate-border bg-estate-bg px-4 py-3.5">
+    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-1">Asking Price</p>
+    <p className="text-2xl font-light text-gray-900 tracking-tight">{price}</p>
+    {sqftPrice && <p className="text-xs text-gray-400 mt-1 font-light">Est. {sqftPrice} / sqft</p>}
+  </div>
 
-            <div className="rounded-[16px] border border-estate-border bg-estate-blue-pale px-4 py-3">
-              <p className="text-xs leading-relaxed text-estate-navy">
-                Hi, I&apos;m interested in {shortTitle}. Please share more details.
-              </p>
-            </div>
+  <div className="rounded-[16px] border border-estate-border bg-estate-blue-pale px-4 py-3">
+    <p className="text-xs leading-relaxed text-estate-navy">
+      Hi, I&apos;m interested in {shortTitle}. Please share more details.
+    </p>
+  </div>
 
-            <button
-              onClick={handleMessage}
-              className={`w-full py-3.5 px-6 rounded-xl font-semibold text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 active:scale-[0.98] ${
-                messageSent ? "bg-estate-success hover:bg-estate-success/90 text-white" : "bg-estate-navy hover:bg-estate-navy-mid text-white"
-              }`}
-            >
-              {messageSent ? <Check className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-              {messageSent ? "Message Sent" : "Send Message"}
-            </button>
+  <button
+    onClick={handleMessage}
+    className={`w-full py-3.5 px-6 rounded-xl font-semibold text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 active:scale-[0.98] ${
+      messageSent ? "bg-estate-success hover:bg-estate-success/90 text-white" : "bg-estate-navy hover:bg-estate-navy-mid text-white"
+    }`}
+  >
+    {messageSent ? <Check className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+    {messageSent ? "Message Sent" : "Send Message"}
+  </button>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                onClick={handleCall}
-                className="flex items-center justify-center gap-2 rounded-xl border border-estate-border bg-white px-4 py-3 text-sm font-medium text-estate-text transition-all duration-200 hover:border-estate-border-med hover:bg-estate-bg"
-              >
-                <Phone className="w-4 h-4" />
-                Call
-              </button>
-              <button
-                onClick={() => setShowComplaintModal(true)}
-                className="py-3 px-4 rounded-xl border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                <AlertTriangle className="w-4 h-4" />
-                Complain
-              </button>
-            </div>
+  {/* Enquire Button */}
+  <button
+    onClick={handleEnquire}
+    className="w-full py-3.5 px-6 rounded-xl font-semibold text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2.5 active:scale-[0.98] bg-gradient-to-r from-estate-blue to-estate-navy hover:opacity-90 text-white shadow-md"
+  >
+    <MessageCircle className="w-4 h-4" />
+    Enquire Now
+  </button>
 
-            <div className="space-y-2.5 border-t border-estate-border pt-4">
-              {/* <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
-                <Eye className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <span>42 highly interested buyers</span>
-              </div> */}
-              <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
-                <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <span>Usually responds within 1 hour</span>
-              </div>
-            </div>
-          </div>
+  <div className="grid grid-cols-2 gap-2.5">
+    <button
+      onClick={handleCall}
+      className="flex items-center justify-center gap-2 rounded-xl border border-estate-border bg-white px-4 py-3 text-sm font-medium text-estate-text transition-all duration-200 hover:border-estate-border-med hover:bg-estate-bg"
+    >
+      <Phone className="w-4 h-4" />
+      Call
+    </button>
+    <button
+      onClick={() => setShowComplaintModal(true)}
+      className="py-3 px-4 rounded-xl border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2"
+    >
+      <AlertTriangle className="w-4 h-4" />
+      Complain
+    </button>
+  </div>
+
+  <div className="space-y-2.5 border-t border-estate-border pt-4">
+    <div className="flex items-center gap-2.5 text-xs text-gray-500 font-light">
+      <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+      <span>Usually responds within 1 hour</span>
+    </div>
+  </div>
+</div>
         </div>
 
         <div className="rounded-[20px] border border-estate-border/80 bg-white p-6 shadow-estate">

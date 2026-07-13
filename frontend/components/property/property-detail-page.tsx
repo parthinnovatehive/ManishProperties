@@ -278,13 +278,43 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
                 </div>
               </div>
 
-              <textarea
-                value={contactMessage}
-                onChange={(event) => setContactMessage(event.target.value)}
-                placeholder={`Hi, I'm interested in ${property.title}. Please share more details.`}
-                rows={3}
-                className="focus-field mb-4 w-full resize-none rounded-[10px] border-[1.5px] border-estate-border px-3.5 py-2.5 text-[13px] leading-6 text-estate-text"
-              />
+             <textarea
+  value={contactMessage}
+  onChange={(event) => setContactMessage(event.target.value)}
+  placeholder={`Hi, I'm interested in ${property.title}. Please share more details.`}
+  rows={3}
+  className="focus-field mb-4 w-full resize-none rounded-[10px] border-[1.5px] border-estate-border px-3.5 py-2.5 text-[13px] leading-6 text-estate-text"
+/>
+
+<Button variant="navy" fullWidth className="mb-2.5 rounded-[10px]">
+  <MessageCircle size={16} aria-hidden="true" /> Send Message
+</Button>
+
+{/* Enquire Button */}
+<Button 
+  variant="primary" 
+  fullWidth 
+  className="mb-2.5 rounded-[10px] bg-estate-blue hover:bg-estate-blue-dark text-white font-semibold"
+  onClick={() => {
+    // Replace this with your actual enquire logic
+    // Example: open a modal, navigate to enquiry form, etc.
+    console.log(`Enquiring about property: ${property.id}`);
+    // If you have a modal state, you can set it here
+    // setShowEnquireModal(true);
+  }}
+>
+  <ShieldCheck size={16} aria-hidden="true" /> Enquire Now
+</Button>
+
+<div className="grid grid-cols-2 gap-2">
+  <button className="flex items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-estate-border bg-white px-3 py-2.5 text-[13px] font-semibold text-estate-text">
+    <Phone size={15} aria-hidden="true" className="text-estate-success" /> Call
+  </button>
+  
+  <button className="flex items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-[#25D366] bg-green-50 px-3 py-2.5 text-[13px] font-semibold text-green-600">
+    <MessageCircle size={15} aria-hidden="true" /> WhatsApp
+  </button>
+</div>
 
               <Button variant="navy" fullWidth className="mb-2.5 rounded-[10px]">
                 <MessageCircle size={16} aria-hidden="true" /> Send Message
@@ -293,6 +323,7 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
                 <button className="flex items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-estate-border bg-white px-3 py-2.5 text-[13px] font-semibold text-estate-text">
                   <Phone size={15} aria-hidden="true" className="text-estate-success" /> Call
                 </button>
+                
                 <button className="flex items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-[#25D366] bg-green-50 px-3 py-2.5 text-[13px] font-semibold text-green-600">
                   <MessageCircle size={15} aria-hidden="true" /> WhatsApp
                 </button>

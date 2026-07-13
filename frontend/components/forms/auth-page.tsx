@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, Lock, Mail, Phone, User, MapPin, Building, X, Plus, Search } from "lucide-react";
+import { Building2, Lock, Mail, Phone, User, MapPin, Building, X, Plus, Search, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -62,6 +62,8 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const [filteredSubareas, setFilteredSubareas] = useState<Subarea[]>([]);
   const [subareaSearch, setSubareaSearch] = useState("");
   const [loadingLocations, setLoadingLocations] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [googleStep, setGoogleStep] = useState<"idle" | "form">("idle");
   const {
@@ -428,10 +430,15 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
 
               <Input
                 label="Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={form.password}
                 onChange={(event) => update("password", event.target.value)}
                 icon={<Lock size={15} />}
+                rightIcon={
+                  <button type="button" tabIndex={-1} onClick={() => setShowPassword((p) => !p)} className="text-estate-muted hover:text-estate-text transition">
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                }
                 required
                 disabled={loading}
               />
@@ -439,10 +446,15 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
               {!isLogin && (
                 <Input
                   label="Confirm Password"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={form.confirmPassword}
                   onChange={(event) => update("confirmPassword", event.target.value)}
                   icon={<Lock size={15} />}
+                  rightIcon={
+                    <button type="button" tabIndex={-1} onClick={() => setShowConfirmPassword((p) => !p)} className="text-estate-muted hover:text-estate-text transition">
+                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
                   required
                   disabled={loading}
                 />
