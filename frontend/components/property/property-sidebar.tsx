@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { AlertTriangle, BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, Phone, ShieldCheck, TrendingUp, X } from "lucide-react";
+import { AlertTriangle, BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, MessageCircle, Phone, ShieldCheck, TrendingUp, X } from "lucide-react";
 import { getAdminData } from "@/lib/utils/token";
 import { estateApi } from "@/lib/api";
 
@@ -118,6 +118,19 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
       return;
     }
     window.open(`tel:${adminPhone}`, "_blank");
+  };
+
+  const handleEnquire = () => {
+    if (!adminPhone) {
+      alert("City admin contact not available.");
+      return;
+    }
+    const msg = encodeURIComponent(
+      `Hi, I'd like to enquire about "${title}" listed at ${price}. Located in ${city}. Please share more details.`
+    );
+    window.open(`https://wa.me/${adminPhone}?text=${msg}`, "_blank");
+    setMessageSent(true);
+    window.setTimeout(() => setMessageSent(false), 3000);
   };
 
   const handleBookVisit = async () => {
