@@ -31,7 +31,22 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { apiClient } from "@/lib/api/client";
 import { estateApi } from "@/lib/api";
-import { MapPicker } from "@/components/ui/MapPicker";
+import dynamic from "next/dynamic";
+
+const LeafletMapPicker = dynamic(
+  () => import("@/components/ui/LeafletMapPicker").then((mod) => mod.LeafletMapPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-6 max-w-md w-full text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-estate-navy" />
+          <p className="mt-2 text-estate-muted">Loading map...</p>
+        </div>
+      </div>
+    ),
+  }
+);
 
 const states = State.getStatesOfCountry("IN");
 
@@ -1503,7 +1518,7 @@ export function SubmitPropertyPage() {
         </div>
 
         {/* Map Picker Modal */}
-        <MapPicker
+        <LeafletMapPicker
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
           onLocationSelect={handleLocationSelect}

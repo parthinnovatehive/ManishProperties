@@ -105,6 +105,22 @@ def create_property_route():
     property_item, error = create_property(payload, status=status)
     if error:
         return error_response(error, 400)
+
+    # Auto-fetch nearby amenities from Google Places API if coordinates exist
+    coords = payload.get("coordinates") or property_item.get("coordinates")
+    if coords and isinstance(coords, dict):
+        lat = coords.get("lat")
+        lng = coords.get("lng")
+        if lat and lng:
+            try:
+                amenities = get_nearby_amenities(float(lat), float(lng))
+                if amenities:
+                    from services.json_service import update_json
+                    property_item["nearbyAmenities"] = amenities
+                    update_json("properties", property_item["id"], {"nearbyAmenities": amenities})
+            except Exception as e:
+                print(f"Error fetching nearby amenities: {e}")
+
     return success_response("Property created", data=property_item, property=property_item, status_code=201)
 
 

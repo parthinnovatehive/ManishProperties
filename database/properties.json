@@ -1218,5 +1218,78 @@
     "baths": 1,
     "builder": "Manish Properties",
     "rejectReason": null
+  },
+  {
+    "id": "b9721c6c-7770-41ed-b5cf-06bc2e71a162",
+    "category": "residential",
+    "lister_id": "user_bcc213f144004bcb818059d223a31938",
+    "lister_type": "user",
+    "lister_name": "Parth Darda",
+    "title": "12",
+    "subtitle": "12",
+    "description": "23",
+    "city": "Pune",
+    "city_id": "city_pune",
+    "sub_area_id": "sub_chinchwad",
+    "state": "Maharashtra",
+    "pincode": "411044",
+    "location": "Pimpri Chinchwad College Of Engineering, Krantisinha Nana Patil Road, Nigdi, Pimpri-Chinchwad, Haveli Subdistrict, Pune District, Maharashtra, 411044, India",
+    "fullLocation": "Pimpri Chinchwad College Of Engineering, Krantisinha Nana Patil Road, Nigdi, Pimpri-Chinchwad, Haveli Subdistrict, Pune District, Maharashtra, 411044, India, Pune, Maharashtra, 411044",
+    "type": "Apartment",
+    "listingType": "For Sale",
+    "beds": 3,
+    "bathrooms": 3,
+    "area": 23,
+    "parking": 0,
+    "rera": "",
+    "price": "₹322",
+    "priceNum": 322.0,
+    "furnishing": "Semi-Furnished",
+    "amenities": [
+      "Power Backup"
+    ],
+    "coordinates": {
+      "lat": 18.5213738,
+      "lng": 73.8545071
+    },
+    "nearbyAmenities": null,
+    "images": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1784143929/properties/general/v9enomw1daei3o95t7o5.jpg"
+    ],
+    "imgs": [
+      "https://res.cloudinary.com/dxmihmbuk/image/upload/v1784143929/properties/general/v9enomw1daei3o95t7o5.jpg"
+    ],
+    "image": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1784143929/properties/general/v9enomw1daei3o95t7o5.jpg",
+    "img": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1784143929/properties/general/v9enomw1daei3o95t7o5.jpg",
+    "rating": 0.0,
+    "reviews": 0,
+    "views": 2,
+    "isNew": true,
+    "status": "APPROVED",
+    "moderationStatus": "APPROVED",
+    "createdAt": "2026-07-15T19:32:27.874Z",
+    "updatedAt": "2026-07-15T19:33:11.900201+00:00",
+    "cloudinaryImages": [
+      {
+        "url": "https://res.cloudinary.com/dxmihmbuk/image/upload/v1784143929/properties/general/v9enomw1daei3o95t7o5.jpg",
+        "public_id": "properties/general/v9enomw1daei3o95t7o5"
+      }
+    ],
+    "featured": false,
+    "featuredRequested": false,
+    "requested_for": 0,
+    "granted_for": null,
+    "featuredRequestDate": null,
+    "featuredPaymentStatus": null,
+    "featuredPaymentProof": null,
+    "featuredPaymentAmount": null,
+    "featuredApprovedBy": null,
+    "featuredApprovedAt": null,
+    "featuredExpiryDate": null,
+    "featuredExpired": false,
+    "featuredRejectionReason": null,
+    "baths": 3,
+    "builder": "Manish Properties",
+    "rejectReason": null
   }
 ]
