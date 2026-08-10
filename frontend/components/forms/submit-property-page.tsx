@@ -951,7 +951,7 @@ export function SubmitPropertyPage() {
                     </select>
                   </label>
                 )}
-                <Button
+                {/* <Button
                   type="button"
                   onClick={previewAmenities}
                   disabled={
@@ -963,7 +963,7 @@ export function SubmitPropertyPage() {
                   }
                 >
                   {loadingAmenities ? "Finding Nearby Amenities..." : "Check Nearby Amenities"}
-                </Button>
+                </Button> */}
                 {nearbyAmenities && (
                   <>
                     {coords && (

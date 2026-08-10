@@ -10,7 +10,9 @@ build/
 
 # Local env files
 .env*
+!.env.example
 !frontend/.env.example
+!backend/.env.example
 
 # Logs
 npm-debug.log*

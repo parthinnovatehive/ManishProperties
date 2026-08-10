@@ -1,0 +1,6 @@
+{
+    "private": true,
+    "scripts": {
+        "deploy:prepare": "node scripts/prepare-frontend.js && python scripts/prepare-backend.py && python scripts/verify-deployment.py"
+    }
+}

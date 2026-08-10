@@ -102,8 +102,6 @@ export class AuthService {
       if (sub_area_ids.length > 0) payload.sub_area_ids = sub_area_ids;
     }
 
-    console.log("Register payload:", payload);
-
     const response = await apiClient.post<LoginResponse>(
       API_ENDPOINTS.AUTH.REGISTER,
       payload

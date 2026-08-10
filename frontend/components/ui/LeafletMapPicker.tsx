@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
-import { Loader2, X, LocateFixed, Search } from "lucide-react";
+import { X, LocateFixed } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 interface LeafletMapPickerProps {
@@ -69,7 +69,6 @@ export function LeafletMapPicker({
     initialLat && initialLng ? [initialLat, initialLng] : null
   );
   const [searchAddress, setSearchAddress] = useState(address || "");
-  const [loadingAddress, setLoadingAddress] = useState(false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     setMarkerPosition([lat, lng]);
@@ -116,37 +115,6 @@ export function LeafletMapPicker({
     );
   }, [getAddressFromCoords]);
 
-  const handleSearchAddress = useCallback(async () => {
-    if (!searchAddress.trim()) return;
-
-    setLoadingAddress(true);
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(searchAddress)}`,
-        {
-          headers: {
-            "Accept-Language": "en",
-            "User-Agent": "ManishProperties/1.0",
-          },
-        }
-      );
-      const data = await response.json();
-      if (data && data.length > 0) {
-        const lat = Number(data[0].lat);
-        const lng = Number(data[0].lon);
-        setMarkerPosition([lat, lng]);
-        setSearchAddress(data[0].display_name);
-      } else {
-        alert("Address not found. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error searching address:", error);
-      alert("Error searching address. Please try again.");
-    } finally {
-      setLoadingAddress(false);
-    }
-  }, [searchAddress]);
-
   const handleConfirmLocation = useCallback(() => {
     if (markerPosition) {
       onLocationSelect(markerPosition[0], markerPosition[1], searchAddress);
@@ -167,25 +135,6 @@ export function LeafletMapPicker({
         </div>
 
         <div className="p-4">
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={searchAddress}
-              onChange={(e) => setSearchAddress(e.target.value)}
-              placeholder="Search address..."
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none text-sm"
-              onKeyDown={(e) => e.key === "Enter" && handleSearchAddress()}
-            />
-            <button
-              onClick={handleSearchAddress}
-              disabled={loadingAddress}
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium flex items-center gap-1"
-            >
-              {loadingAddress ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-              Search
-            </button>
-          </div>
-
           <div className="rounded-xl overflow-hidden border border-gray-200" style={{ height: "400px" }}>
             <MapContainer
               center={markerPosition || defaultCenter}

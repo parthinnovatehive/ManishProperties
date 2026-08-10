@@ -65,7 +65,7 @@ function setAdminDataCookie(data: AdminData): void {
     // Set cookie with 7 days expiry
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
-    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=${encodeURIComponent(jsonData)}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=${encodeURIComponent(jsonData)}; path=/; expires=${expires.toUTCString()}; SameSite=Lax; Secure`;
   } catch (error) {
     console.error("Failed to set admin data cookie:", error);
   }
@@ -77,7 +77,7 @@ function setAdminDataCookie(data: AdminData): void {
 function clearAdminDataCookie(): void {
   if (typeof window === "undefined") return;
   try {
-    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+    document.cookie = `${ADMIN_DATA_COOKIE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Secure`;
   } catch (error) {
     console.error("Failed to clear admin data cookie:", error);
   }
