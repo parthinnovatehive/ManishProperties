@@ -53,10 +53,36 @@ $FrontendSource = Join-Path $RootFolder "frontend"
 
 Set-Location $FrontendSource
 Write-Host "Installing frontend dependencies..."
-npm ci
+if (-not (Test-Path "node_modules")) {
+    npm ci
+} else {
+    Write-Host "node_modules exists, skipping npm ci for speed..."
+}
+
+Write-Host "Cleaning Next.js cache to ensure a clean production build..."
+if (Test-Path ".next") {
+    node -e "fs.rmSync('.next', {recursive:true, force:true})"
+}
 
 Write-Host "Building Next.js (Standalone Mode)..."
+$env:NODE_ENV="production"
+$env:NEXT_TELEMETRY_DISABLED="1"
 npm run build
+
+Write-Host "Verifying production chunks..."
+$localhostMatches = Get-ChildItem -Path ".next" -Recurse -File -Include "*.js","*.html","*.json" | Where-Object { $_.FullName -notmatch "cache" } | Select-String -Pattern "http://localhost:5000" -Quiet
+
+if ($localhostMatches -contains $true) {
+    Write-Host "ERROR: Found localhost:5000 in production build!" -ForegroundColor Red
+    exit 1
+}
+
+$prodApiMatches = Get-ChildItem -Path ".next/static/chunks" -Recurse -File -Include "*.js" | Select-String -Pattern "https://api.manishpropertyconsultant.in" -Quiet
+if (-not ($prodApiMatches -contains $true)) {
+    Write-Host "ERROR: Production API URL not found in client chunks!" -ForegroundColor Red
+    exit 1
+}
+Write-Host "Verification passed: No local URL found, Production API URL confirmed."
 
 Write-Host "Copying frontend files to deployment folder..."
 $FrontendFilesToCopy = @(
@@ -71,7 +97,12 @@ $FrontendFilesToCopy = @(
 foreach ($item in $FrontendFilesToCopy) {
     $srcPath = Join-Path $FrontendSource $item
     if (Test-Path $srcPath) {
-        Copy-Item -Path $srcPath -Destination $FrontendDeploy -Recurse -Force
+        if ($item -eq ".next") {
+            New-Item -ItemType Directory -Force -Path (Join-Path $FrontendDeploy ".next") | Out-Null
+            Get-ChildItem -Path $srcPath | Where-Object { $_.Name -ne "cache" } | Copy-Item -Destination (Join-Path $FrontendDeploy ".next") -Recurse -Force
+        } else {
+            Copy-Item -Path $srcPath -Destination $FrontendDeploy -Recurse -Force
+        }
     }
 }
 
@@ -81,6 +112,17 @@ if (-not (Test-Path $StandaloneStaticDest)) {
     New-Item -ItemType Directory -Force -Path $StandaloneStaticDest | Out-Null
 }
 Copy-Item -Path (Join-Path $FrontendSource ".next/static/*") -Destination $StandaloneStaticDest -Recurse -Force
+
+# The standalone public assets need to be copied into the standalone folder
+$StandalonePublicDest = Join-Path $FrontendDeploy ".next/standalone/public"
+if (-not (Test-Path $StandalonePublicDest)) {
+    New-Item -ItemType Directory -Force -Path $StandalonePublicDest | Out-Null
+}
+Copy-Item -Path (Join-Path $FrontendSource "public/*") -Destination $StandalonePublicDest -Recurse -Force
+
+# The production env file needs to be in the standalone folder
+Copy-Item -Path (Join-Path $FrontendSource ".env.production") -Destination (Join-Path $FrontendDeploy ".next/standalone/.env.production") -Force
+
 Write-Host "Frontend packaging complete."
 
 # --------------------------------------------------------

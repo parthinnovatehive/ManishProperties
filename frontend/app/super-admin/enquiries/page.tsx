@@ -5,6 +5,7 @@ import { estateApi } from "@/lib/api";
 import { notificationService } from "@/lib/notifications";
 import PropertyPreviewModal from "@/components/PropertyPreviewModal";
 import type { Property } from "@/types";
+import { toast } from "sonner";
 
 interface Enquiry {
   id: string;
@@ -129,7 +130,7 @@ export default function SuperAdminEnquiriesPage() {
       setPreviewProperty(property);
       setPreviewOpen(true);
     } catch {
-      alert("Property not found or has been removed.");
+      toast.error("Property not found or has been removed.");
     }
   };
 
@@ -186,7 +187,7 @@ export default function SuperAdminEnquiriesPage() {
 
   const handleAssignAgent = async () => {
     if (!assignEnquiry || !selectedAgent) {
-      alert("Please select an agent");
+      toast.error("Please select an agent");
       return;
     }
     setIsSubmitting(true);
@@ -229,7 +230,7 @@ export default function SuperAdminEnquiriesPage() {
       fetchEnquiries();
     } catch (err) {
       console.error("Error assigning agent:", err);
-      alert("Failed to assign agent");
+      toast.error("Failed to assign agent");
     } finally {
       setIsSubmitting(false);
     }

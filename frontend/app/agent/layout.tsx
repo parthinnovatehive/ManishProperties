@@ -144,7 +144,7 @@ function WaitingForApprovalPage() {
             <li>You can then access all agent features</li>
           </ul>
         </div>
-
+ 
         <div className="flex flex-col gap-3">
           <button
             onClick={checkStatus}

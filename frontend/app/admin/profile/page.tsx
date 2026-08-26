@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import { getAdminData } from "@/lib/utils/token";
 import { X, Shield, Building2, Calendar, Mail, Phone, User, BadgeCheck, AlertCircle, KeyRound, Eye, EyeOff, CheckCircle, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface AdminProfile {
   id: string;
@@ -143,10 +144,10 @@ export default function AdminProfilePage() {
         localStorage.setItem("adminData", JSON.stringify(userData));
       }
 
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     }
   };
 
@@ -172,8 +173,9 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-up">
-      {/* Page Header */}
+    <>
+      <div className="space-y-8 animate-fade-up">
+        {/* Page Header */}
       <div className="px-4 sm:px-0">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-estate-navy tracking-tight font-serif">
           Admin Profile
@@ -301,6 +303,7 @@ export default function AdminProfilePage() {
           </div>
         </div>
       </div>
+    </div>
 
       {/* Reset Password Modal */}
       {showPasswordModal && (
@@ -358,13 +361,13 @@ export default function AdminProfilePage() {
                       value={passwordForm.newPassword}
                       onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                       placeholder="••••••••"
-                      className="w-full p-2.5 pr-10 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-sm font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
+                      className="w-full px-4 py-3 min-h-[44px] pr-12 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-sm font-semibold focus:ring-4 focus:ring-estate-blue-pale/50 bg-white"
                       autoFocus
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-estate-muted hover:text-estate-text transition"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-estate-muted hover:text-estate-text transition p-2 flex items-center justify-center"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -381,12 +384,12 @@ export default function AdminProfilePage() {
                       value={passwordForm.confirmPassword}
                       onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                       placeholder="••••••••"
-                      className="w-full p-2.5 pr-10 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-sm font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
+                      className="w-full px-4 py-3 min-h-[44px] pr-12 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-sm font-semibold focus:ring-4 focus:ring-estate-blue-pale/50 bg-white"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-estate-muted hover:text-estate-text transition"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-estate-muted hover:text-estate-text transition p-2 flex items-center justify-center"
                     >
                       {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -458,7 +461,7 @@ export default function AdminProfilePage() {
                     required
                     value={formState.name}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
+                    className="w-full px-4 py-3 min-h-[44px] border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50 bg-white"
                   />
                 </label>
                 <label>
@@ -469,7 +472,7 @@ export default function AdminProfilePage() {
                     type="email"
                     value={formState.email}
                     disabled
-                    className="w-full p-2.5 border border-gray-200 bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-3 min-h-[44px] border border-gray-200 bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed"
                   />
                   <p className="text-[8px] text-estate-muted mt-1">Email cannot be changed</p>
                 </label>
@@ -481,7 +484,7 @@ export default function AdminProfilePage() {
                     type="tel"
                     value={formState.phone}
                     onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
-                    className="w-full p-2.5 border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50"
+                    className="w-full px-4 py-3 min-h-[44px] border border-estate-border rounded-xl focus:border-estate-navy outline-none text-xs font-semibold focus:ring-4 focus:ring-estate-blue-pale/50 bg-white"
                   />
                 </label>
               </div>
@@ -504,6 +507,6 @@ export default function AdminProfilePage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

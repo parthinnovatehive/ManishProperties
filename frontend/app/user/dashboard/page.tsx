@@ -134,8 +134,11 @@ export default function UserDashboardPage() {
       </div>
     )}
     {loading && (
-      <div className="rounded-2xl border border-estate-border bg-white p-4 text-sm font-semibold text-estate-text-sec">
-        Loading dashboard data...
+      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/60 backdrop-blur-md">
+        <div className="bg-white px-8 py-6 rounded-3xl shadow-xl flex flex-col items-center border border-estate-border">
+          <Loader2 className="w-10 h-10 animate-spin text-estate-navy mb-4" />
+          <p className="text-base font-bold text-estate-navy font-serif tracking-tight">Loading your dashboard...</p>
+        </div>
       </div>
     )}
     <FeaturedExpiryNotification />

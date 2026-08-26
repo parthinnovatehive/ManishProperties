@@ -7,7 +7,11 @@ const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 export function GoogleOAuthWrapper({ children }: { children: React.ReactNode }) {
   if (!googleClientId) {
     console.warn("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Google OAuth will not work.");
-    return <>{children}</>;
+    return (
+      <GoogleOAuthProvider clientId="dummy_client_id_to_prevent_crash">
+        {children}
+      </GoogleOAuthProvider>
+    );
   }
 
   return (

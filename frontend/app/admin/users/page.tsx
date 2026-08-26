@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import Link from "next/link";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import type { Property } from "@/types";
 
 interface User {
@@ -28,6 +29,15 @@ export default function AdminUsersPage() {
   const [isLoadingProperties, setIsLoadingProperties] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    userId: string;
+    newStatus: "active" | "suspended";
+  }>({
+    isOpen: false,
+    userId: "",
+    newStatus: "active"
+  });
 
   // Filter & Sort States
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,7 +70,6 @@ export default function AdminUsersPage() {
 
   const fetchProperties = () => {
     estateApi.adminProperties.list().then((properties: Property[]) => {
-      console.log("All properties loaded:", properties.length);
       setAllProperties(properties);
     }).catch(error => {
       console.error("Error loading properties:", error);
@@ -129,7 +138,17 @@ export default function AdminUsersPage() {
 
   const toggleStatus = async (id: string) => {
     const user = usersList.find((item) => item.id === id);
-    const newStatus = user?.status === "active" ? "suspended" : "active";
+    if (!user) return;
+    const newStatus = user.status === "active" ? "suspended" : "active";
+    setConfirmModal({
+      isOpen: true,
+      userId: id,
+      newStatus
+    });
+  };
+
+  const executeToggleStatus = async () => {
+    const { userId: id, newStatus } = confirmModal;
     await estateApi.users.update<User>(id, { status: newStatus });
     setUsersList(prev =>
       prev.map(u => {
@@ -153,7 +172,6 @@ export default function AdminUsersPage() {
           property.lister_type === 'user'
       );
       
-      console.log(`Found ${filteredProperties.length} properties for user ${user.name}`);
       setUserProperties(filteredProperties);
     } catch (error) {
       console.error("Error fetching user properties:", error);
@@ -788,6 +806,16 @@ export default function AdminUsersPage() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={executeToggleStatus}
+        title={confirmModal.newStatus === "suspended" ? "Suspend User" : "Activate User"}
+        description={`Are you sure you want to ${confirmModal.newStatus === "suspended" ? "suspend" : "activate"} this user?`}
+        confirmText={confirmModal.newStatus === "suspended" ? "Suspend" : "Activate"}
+        isDestructive={confirmModal.newStatus === "suspended"}
+      />
     </div>
   );
 }

@@ -105,10 +105,17 @@ export function ListingPage({ properties }: { properties: Property[] }) {
     });
 
     return [...next].sort((a, b) => {
+      // Always put featured properties at the top
+      const aFeatured = a.featured === true;
+      const bFeatured = b.featured === true;
+      
+      if (aFeatured && !bFeatured) return -1;
+      if (!aFeatured && bFeatured) return 1;
+
       if (sort === "Price: Low to High") return a.priceNum - b.priceNum;
       if (sort === "Price: High to Low") return b.priceNum - a.priceNum;
       if (sort === "Newest First") return Number(b.isNew) - Number(a.isNew);
-      if (sort === "Most Popular") return b.rating * b.reviews - a.rating * a.reviews;
+      if (sort === "Most Popular") return (b.rating || 0) * (b.reviews || 0) - (a.rating || 0) * (a.reviews || 0);
 
       const aId = Number(a.id);
       const bId = Number(b.id);

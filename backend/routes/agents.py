@@ -120,11 +120,36 @@ def update(agent_id):
     
     # Ensure sub_area_ids is properly handled
     if "sub_area_ids" in changes:
-        # Make sure it's a list
-        if not isinstance(changes["sub_area_ids"], list):
-            changes["sub_area_ids"] = []
-        # Remove duplicates and convert to list
-        changes["sub_area_ids"] = list(set(changes["sub_area_ids"]))
+        subarea_ids = changes.pop("sub_area_ids")
+        if not isinstance(subarea_ids, list):
+            subarea_ids = []
+        subarea_ids = list(set(str(sid) for sid in subarea_ids if sid and str(sid).strip() != ""))
+        
+        # Find current assignments
+        sub_area_agents = load_json("sub_area_agents") or []
+        current_subarea_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(agent_id)]
+        
+        to_add = set(subarea_ids) - set(current_subarea_ids)
+        to_remove = set(current_subarea_ids) - set(subarea_ids)
+        
+        import requests
+        from services.supabase_service import _get_supabase_config, _headers
+        from services.json_service import append_json
+        url, key = _get_supabase_config()
+        
+        if url and key:
+            if to_remove:
+                for sid in to_remove:
+                    endpoint = f"{url}/rest/v1/sub_area_agents?agent_id=eq.{agent_id}&sub_area_id=eq.{sid}"
+                    requests.delete(endpoint, headers=_headers(), timeout=10)
+            if to_add:
+                for sid in to_add:
+                    append_json("sub_area_agents", {
+                        "id": generate_id("saa_"),
+                        "agent_id": agent_id, 
+                        "sub_area_id": sid,
+                        "createdAt": __import__('datetime').datetime.now().isoformat()
+                    })
     
     agent = update_json("agents", agent_id, changes)
     if not agent:
@@ -153,6 +178,9 @@ def debug_check_agent(agent_id):
     if not agent:
         return error_response("Agent not found", 404)
     
+    sub_area_agents = load_json("sub_area_agents") or []
+    sub_area_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(agent_id)]
+    
     return success_response(
         "Agent data for debug",
         data={
@@ -160,8 +188,8 @@ def debug_check_agent(agent_id):
             "name": agent.get("name"),
             "status": agent.get("status"),
             "city_id": agent.get("city_id"),
-            "sub_area_ids": agent.get("sub_area_ids", []),
-            "sub_area_ids_count": len(agent.get("sub_area_ids", [])),
+            "sub_area_ids": sub_area_ids,
+            "sub_area_ids_count": len(sub_area_ids),
             "all_agent_data": agent
         }
     )
@@ -177,11 +205,11 @@ def get_agent_subareas(agent_id):
     if not agent:
         return error_response("Agent not found", 404)
     
-    subareas = load_json("sub_areas")
-    assigned_subareas = [
-        s for s in subareas 
-        if agent_id in s.get("agent_ids", [])
-    ]
+    sub_area_agents = load_json("sub_area_agents") or []
+    assigned_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(agent_id)]
+    
+    subareas = load_json("sub_areas") or []
+    assigned_subareas = [s for s in subareas if str(s.get("id")) in assigned_ids]
     
     return success_response(
         "Agent subareas fetched",
@@ -202,28 +230,37 @@ def update_agent_subareas_endpoint(agent_id):
     if not agent:
         return error_response("Agent not found", 404)
     
-    # Update all subareas
-    subareas = load_json("sub_areas")
-    for subarea in subareas:
-        if str(subarea.get("id")) in [str(sid) for sid in subarea_ids]:
-            # Add agent to subarea
-            if agent_id not in subarea.get("agent_ids", []):
-                subarea["agent_ids"] = subarea.get("agent_ids", []) + [agent_id]
-        else:
-            # Remove agent from subarea
-            if agent_id in subarea.get("agent_ids", []):
-                subarea["agent_ids"] = [aid for aid in subarea.get("agent_ids", []) if aid != agent_id]
+    # Find current assignments
+    sub_area_agents = load_json("sub_area_agents") or []
+    current_subarea_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(agent_id)]
     
-    # Save updated subareas
-    from services.json_service import save_json
-    save_json("sub_areas", subareas)
+    new_subarea_ids = [str(sid) for sid in subarea_ids if sid and str(sid).strip() != ""]
     
-    # Update agent's sub_area_ids
-    update_json("agents", agent_id, {"sub_area_ids": subarea_ids})
+    to_add = set(new_subarea_ids) - set(current_subarea_ids)
+    to_remove = set(current_subarea_ids) - set(new_subarea_ids)
+    
+    import requests
+    from services.supabase_service import _get_supabase_config, _headers
+    from services.json_service import append_json
+    url, key = _get_supabase_config()
+    
+    if url and key:
+        if to_remove:
+            for sid in to_remove:
+                endpoint = f"{url}/rest/v1/sub_area_agents?agent_id=eq.{agent_id}&sub_area_id=eq.{sid}"
+                requests.delete(endpoint, headers=_headers(), timeout=10)
+        if to_add:
+            for sid in to_add:
+                append_json("sub_area_agents", {
+                    "id": generate_id("saa_"),
+                    "agent_id": agent_id, 
+                    "sub_area_id": sid,
+                    "createdAt": __import__('datetime').datetime.now().isoformat()
+                })
     
     return success_response(
         "Agent subareas updated",
-        data={"agent_id": agent_id, "subarea_ids": subarea_ids}
+        data={"agent_id": agent_id, "subarea_ids": new_subarea_ids}
     )
 
 
@@ -246,17 +283,12 @@ def request_subareas(agent_id):
     if str(agent.get("id")) != current_user_id:
         return jsonify({"success": False, "message": "Unauthorized"}), 403
 
-    new_subarea_ids = payload.get("sub_area_ids", [])
+    new_subarea_ids = [str(sid) for sid in payload.get("sub_area_ids", []) if sid and str(sid).strip() != ""]
     if not isinstance(new_subarea_ids, list) or len(new_subarea_ids) == 0:
         return jsonify({"success": False, "message": "At least one subarea must be selected"}), 400
 
-    # Merge with existing sub_area_ids (no duplicates)
-    existing_ids = agent.get("sub_area_ids", [])
-    merged_ids = list(set(existing_ids + new_subarea_ids))
-    merged_ids.sort()
-
     # Validate all subareas exist
-    subareas = load_json("sub_areas")
+    subareas = load_json("sub_areas") or []
     subarea_names = []
     for sid in new_subarea_ids:
         found = next((s for s in subareas if str(s.get("id")) == str(sid)), None)
@@ -264,8 +296,25 @@ def request_subareas(agent_id):
             return jsonify({"success": False, "message": f"Subarea with id '{sid}' not found"}), 400
         subarea_names.append(found.get("name", sid))
 
-    # Update agent
-    update_json("agents", agent_id, {"sub_area_ids": merged_ids})
+    sub_area_agents = load_json("sub_area_agents") or []
+    existing_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(agent_id)]
+    merged_ids = list(set(existing_ids + new_subarea_ids))
+    merged_ids.sort()
+
+    to_add = set(new_subarea_ids) - set(existing_ids)
+    import requests
+    from services.supabase_service import _get_supabase_config, _headers
+    from services.json_service import append_json
+    url, key = _get_supabase_config()
+    
+    if url and key and to_add:
+        for sid in to_add:
+            append_json("sub_area_agents", {
+                "id": generate_id("saa_"),
+                "agent_id": agent_id, 
+                "sub_area_id": sid,
+                "createdAt": __import__('datetime').datetime.now().isoformat()
+            })
 
     # Find all admin users to notify
     admins = load_json("admins")

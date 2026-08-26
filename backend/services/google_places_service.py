@@ -50,11 +50,11 @@ def get_place_details(place_id):
 
 def get_nearby_amenities(lat, lng, radius=2000):
     """
-    Get nearby amenities for a property location
-    
-    Returns:
-        dict: Categorized amenities
+    Get nearby amenities for a property location using Google Places API (New)
     """
+    import requests
+    import json
+    
     amenities = {
         'hospital': [],
         'school': [],
@@ -73,45 +73,75 @@ def get_nearby_amenities(lat, lng, radius=2000):
         'gym': []
     }
     
-    # Map amenity types to Google Places types
+    # Map amenity types to Google Places types (New API types)
     amenity_mapping = {
-        'hospital': 'hospital',
-        'school': 'school',
-        'supermarket': 'supermarket',
-        'petrol': 'gas_station',
-        'station': 'train_station',
-        'bank': 'bank',
-        'restaurant': 'restaurant',
-        'atm': 'atm',
-        'pharmacy': 'pharmacy',
-        'busStation': 'bus_station',
-        'college': 'university',
-        'park': 'park',
-        'airport': 'airport',
-        'mall': 'shopping_mall',
-        'gym': 'gym'
+        'hospital': ['hospital'],
+        'school': ['school'],
+        'supermarket': ['supermarket', 'grocery_store'],
+        'petrol': ['gas_station'],
+        'station': ['train_station', 'light_rail_station', 'subway_station'],
+        'bank': ['bank'],
+        'restaurant': ['restaurant'],
+        'atm': ['atm'],
+        'pharmacy': ['pharmacy'],
+        'busStation': ['bus_station'],
+        'college': ['university'],
+        'park': ['park'],
+        'airport': ['airport'],
+        'mall': ['shopping_mall'],
+        'gym': ['gym']
     }
     
-    for category, place_type in amenity_mapping.items():
+    url = 'https://places.googleapis.com/v1/places:searchNearby'
+    headers = {
+        'X-Goog-Api-Key': Config.GOOGLE_PLACES_API_KEY.strip() if Config.GOOGLE_PLACES_API_KEY else '',
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types',
+        'Content-Type': 'application/json',
+        'Referer': 'https://manishpropertyconsultant.in/'  # Bypasses HTTP Referrer restriction on the key
+    }
+    
+    if not headers['X-Goog-Api-Key']:
+        print("Error: GOOGLE_PLACES_API_KEY is not set.")
+        return amenities
+
+    for category, place_types in amenity_mapping.items():
         try:
-            results = search_place(place_type, location=(lat, lng), radius=radius)
+            data = {
+                'includedTypes': place_types,
+                'maxResultCount': 3,
+                'locationRestriction': {
+                    'circle': {
+                        'center': {'latitude': lat, 'longitude': lng},
+                        'radius': float(radius)
+                    }
+                }
+            }
             
-            # Get details for top 3 results
-            for place in results[:3]:
-                place_id = place.get('place_id')
-                if place_id:
-                    details = get_place_details(place_id)
-                    if details:
-                        amenities[category].append({
-                            'name': details.get('name'),
-                            'address': details.get('formatted_address'),
-                            'distance': calculate_distance(lat, lng, 
-                                                         details.get('geometry', {}).get('location', {}).get('lat'),
-                                                         details.get('geometry', {}).get('location', {}).get('lng')),
-                            'rating': details.get('rating'),
-                            'total_ratings': details.get('user_ratings_total'),
-                            'types': details.get('types', [])
-                        })
+            response = requests.post(url, headers=headers, json=data, timeout=10)
+            
+            if response.status_code == 200:
+                results = response.json().get('places', [])
+                for place in results:
+                    p_lat = place.get('location', {}).get('latitude')
+                    p_lng = place.get('location', {}).get('longitude')
+                    
+                    dist = 0
+                    if p_lat and p_lng:
+                        dist = calculate_distance(lat, lng, p_lat, p_lng)
+                    
+                    name = place.get('displayName', {}).get('text', 'Unknown')
+                    
+                    amenities[category].append({
+                        'name': name,
+                        'address': place.get('formattedAddress'),
+                        'distance': dist,
+                        'rating': place.get('rating'),
+                        'total_ratings': place.get('userRatingCount'),
+                        'types': place.get('types', [])
+                    })
+            else:
+                print(f"Google Places API Error for {category}: {response.status_code} {response.text}")
+                
         except Exception as e:
             print(f"Error fetching {category}: {e}")
             continue

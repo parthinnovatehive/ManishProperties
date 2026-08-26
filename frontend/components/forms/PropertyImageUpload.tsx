@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { apiClient } from "@/lib/api/client";
+import { toast } from "sonner";
 
 interface PropertyImageUploadProps {
   onImagesUploaded: (urls: string[]) => void;
@@ -25,7 +26,7 @@ export function PropertyImageUpload({
     if (!files || files.length === 0) return;
 
     if (images.length + files.length > maxImages) {
-      alert(`Maximum ${maxImages} images allowed`);
+      toast.error(`Maximum ${maxImages} images allowed`);
       return;
     }
 
@@ -67,7 +68,7 @@ export function PropertyImageUpload({
       }
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Failed to upload images. Please try again.');
+      toast.error('Failed to upload images. Please try again.');
     } finally {
       setUploading(false);
       setUploadProgress(0);

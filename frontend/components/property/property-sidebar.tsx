@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { AlertTriangle, BadgeCheck, Building2, Calendar, Check, Clock, Eye, Mail, MessageCircle, Phone, ShieldCheck, TrendingUp, X } from "lucide-react";
 import { getAdminData } from "@/lib/utils/token";
 import { estateApi } from "@/lib/api";
+import { toast } from "sonner";
 
 type PropertySidebarProps = {
   propertyId: string;
@@ -101,7 +102,7 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
 
   const handleMessage = () => {
     if (!adminPhone) {
-      alert("City admin contact not available.");
+      toast.error("City admin contact not available.");
       return;
     }
     const msg = encodeURIComponent(
@@ -114,7 +115,7 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
 
   const handleCall = () => {
     if (!adminPhone) {
-      alert("City admin contact not available.");
+      toast.error("City admin contact not available.");
       return;
     }
     window.open(`tel:${adminPhone}`, "_blank");
@@ -122,7 +123,7 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
 
   const handleEnquire = () => {
     if (!adminPhone) {
-      alert("City admin contact not available.");
+      toast.error("City admin contact not available.");
       return;
     }
     const msg = encodeURIComponent(
@@ -136,7 +137,7 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
   const handleBookVisit = async () => {
     const account = getAdminData();
     if (!account) {
-      alert("Please log in to schedule a site visit.");
+      toast.error("Please log in to schedule a site visit.");
       window.location.href = `/auth/login?redirect=/properties/${propertyId}`;
       return;
     }
@@ -164,12 +165,12 @@ export function PropertySidebar({ propertyId, title, price, area, city, cityId }
 
   const handleComplaintSubmit = async () => {
     if (!complaintSubject.trim() || !complaintDesc.trim()) {
-      alert("Please fill in both subject and description.");
+      toast.error("Please fill in both subject and description.");
       return;
     }
     const account = getAdminData();
     if (!account) {
-      alert("Please log in to submit a complaint.");
+      toast.error("Please log in to submit a complaint.");
       window.location.href = `/auth/login?redirect=/properties/${propertyId}`;
       return;
     }

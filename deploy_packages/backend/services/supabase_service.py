@@ -106,8 +106,12 @@ def append_json(collection: str, item: Dict[str, Any]) -> Dict[str, Any]:
             if isinstance(inserted, list) and len(inserted) > 0:
                 return inserted[0]
             return inserted
+        else:
+            _logger.error(f"Supabase append_json({collection}) error {resp.status_code}: {resp.text}")
+            raise Exception(f"Database error: {resp.text}")
     except Exception as e:
         _logger.error(f"Supabase append_json({collection}) exception: {e}")
+        raise
     return item
 
 

@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MapPin, User, Settings, AlertTriangle, ShieldCheck, Mail, Phone, Lock, Edit } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import { estateApi } from "@/lib/api";
 import { API_ENDPOINTS } from "@/lib/api/config";
 
@@ -47,6 +50,15 @@ export default function SuperAdminAdminsPage() {
   const [phone, setPhone] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    adminId: string;
+    newStatus: "active" | "inactive";
+  }>({
+    isOpen: false,
+    adminId: "",
+    newStatus: "active"
+  });
   const [selectedCity, setSelectedCity] = useState("");
   const [cityAssignedMsg, setCityAssignedMsg] = useState("");
 
@@ -188,7 +200,17 @@ export default function SuperAdminAdminsPage() {
 
   const toggleStatus = async (id: string) => {
     const admin = adminsList.find((item) => item.id === id);
-    const newStatus = admin?.status === "active" ? "inactive" : "active";
+    if (!admin) return;
+    const newStatus = admin.status === "active" ? "inactive" : "active";
+    setConfirmModal({
+      isOpen: true,
+      adminId: id,
+      newStatus
+    });
+  };
+
+  const executeToggleStatus = async () => {
+    const { adminId: id, newStatus } = confirmModal;
     await estateApi.admins.update<AdminUser>(id, { status: newStatus });
 
     if (newStatus === "inactive") {
@@ -219,9 +241,9 @@ export default function SuperAdminAdminsPage() {
     const newPassword = prompt("Enter new password for admin (min 6 characters):");
     if (newPassword && newPassword.length >= 6) {
       await estateApi.admins.update<AdminUser>(id, { password: newPassword });
-      alert("Password reset successfully!");
+      toast.success("Password reset successfully!");
     } else if (newPassword) {
-      alert("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
     }
   };
 
@@ -576,6 +598,16 @@ export default function SuperAdminAdminsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={executeToggleStatus}
+        title={confirmModal.newStatus === "inactive" ? "Suspend Admin" : "Activate Admin"}
+        description={`Are you sure you want to ${confirmModal.newStatus === "inactive" ? "suspend" : "activate"} this admin?`}
+        confirmText={confirmModal.newStatus === "inactive" ? "Suspend" : "Activate"}
+        isDestructive={confirmModal.newStatus === "inactive"}
+      />
     </div>
   );
 }

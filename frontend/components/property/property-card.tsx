@@ -113,6 +113,11 @@ export function PropertyCard({
               {property.category === "residential" ? "🏠 Residential" : "🏢 Commercial"}
             </Badge>
           )} */}
+          {property.featured && (
+            <Badge variant="amber" className="shadow-[0_8px_22px_rgba(0,0,0,0.12)] bg-gradient-to-r from-amber-500 to-amber-600 text-white border-none gap-1 font-bold">
+              <span className="text-[10px]">★</span> Featured
+            </Badge>
+          )}
           {verified && (
             <Badge variant="success" className="shadow-[0_8px_22px_rgba(0,0,0,0.12)]">
               <ShieldCheck size={10} aria-hidden="true" /> Verified

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { estateApi } from "@/lib/api";
 import { notificationService } from "@/lib/notifications";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import type { Property } from "@/types/property";
 
 interface UserRatingEntry {
@@ -58,6 +59,15 @@ export default function AdminAgentsPage() {
   const [requestedSubareas, setRequestedSubareas] = useState<Subarea[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoadingSubareas, setIsLoadingSubareas] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    agentId: string;
+    newStatus: "active" | "inactive";
+  }>({
+    isOpen: false,
+    agentId: "",
+    newStatus: "active"
+  });
   const [availableSubareas, setAvailableSubareas] = useState<Subarea[]>([]);
   const [activeTab, setActiveTab] = useState<"assigned" | "requested" | "available">("assigned");
 
@@ -480,6 +490,18 @@ export default function AdminAgentsPage() {
     }
 
     const newStatus = agent.status === "active" ? "inactive" : "active";
+    setConfirmModal({
+      isOpen: true,
+      agentId: id,
+      newStatus
+    });
+  };
+
+  const executeToggleStatus = async () => {
+    const { agentId: id, newStatus } = confirmModal;
+    const agent = agentsList.find((item) => item.id === id);
+    if (!agent) return;
+    
     const statusMessage = newStatus === "inactive" ? "suspended" : "activated";
 
     try {
@@ -853,7 +875,7 @@ export default function AdminAgentsPage() {
                   : "border-transparent text-estate-muted hover:text-estate-text"
                   }`}
               >
-                Assigned ({agentSubareas.length})
+                {selectedAgent?.status?.toLowerCase() === "pending" ? "Requested Areas" : "Assigned"} ({agentSubareas.length})
               </button>
               {requestedSubareas.length > 0 && (
                 <button
@@ -864,7 +886,7 @@ export default function AdminAgentsPage() {
                     }`}
                 >
                   Requested ({requestedSubareas.length})
-                  {selectedAgent.status === "pending" && (
+                  {selectedAgent?.status === "pending" && (
                     <span className="ml-1 text-xs text-amber-600">Pending</span>
                   )}
                 </button>
@@ -897,7 +919,9 @@ export default function AdminAgentsPage() {
                     <div>
                       {agentSubareas.length === 0 ? (
                         <div className="text-center py-8 bg-gray-50 rounded-xl">
-                          <p className="text-estate-text-sec text-sm">No subareas assigned</p>
+                          <p className="text-estate-text-sec text-sm">
+                            {selectedAgent?.status?.toLowerCase() === "pending" ? "No requested areas" : "No subareas assigned"}
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -953,7 +977,7 @@ export default function AdminAgentsPage() {
                             </div>
                             <button
                               onClick={() => assignSubarea(subarea.id, selectedAgent.id)}
-                              className="px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
+                              className="hidden px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
                             >
                               Assign
                             </button>
@@ -1031,6 +1055,16 @@ export default function AdminAgentsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={executeToggleStatus}
+        title={confirmModal.newStatus === "inactive" ? "Suspend Agent" : "Activate Agent"}
+        description={`Are you sure you want to ${confirmModal.newStatus === "inactive" ? "suspend" : "activate"} this agent?`}
+        confirmText={confirmModal.newStatus === "inactive" ? "Suspend" : "Activate"}
+        isDestructive={confirmModal.newStatus === "inactive"}
+      />
     </div>
   );
 }

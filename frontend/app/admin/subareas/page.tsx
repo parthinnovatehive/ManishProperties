@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
 import { notificationService } from "@/lib/notifications";
+import { toast } from "sonner";
 
 interface Agent {
   id: string;
@@ -50,6 +51,11 @@ export default function AdminSubareasPage() {
 
   const [selectedSubarea, setSelectedSubarea] = useState<Subarea | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingAgentId, setLoadingAgentId] = useState<string | null>(null);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({ name: "", city_id: "", status: "active" });
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -69,6 +75,7 @@ export default function AdminSubareasPage() {
 
       if (assignedCity) {
         setAdminCity(assignedCity);
+        setCreateForm(prev => ({ ...prev, city_id: assignedCity.id }));
         const [allSubareas, allAgents] = await Promise.all([
           estateApi.content.subareas.list<Subarea>(),
           estateApi.agents.list<Agent>(),
@@ -111,8 +118,37 @@ export default function AdminSubareasPage() {
     setIsModalOpen(true);
   };
 
+  const handleCreateSubarea = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createForm.name || !createForm.city_id) return;
+    
+    try {
+      setIsCreating(true);
+      const newSubarea = await estateApi.content.subareas.create<Subarea>(createForm);
+      setSubareas(prev => [...prev, newSubarea]);
+      setIsCreateModalOpen(false);
+      setCreateForm({ name: "", city_id: adminCity?.id || "", status: "active" });
+      
+      if (adminData?.id) {
+        await notificationService.addNotification({
+          userId: adminData.id,
+          userType: "ADMIN",
+          title: "Subarea Created",
+          message: `Successfully created subarea ${createForm.name}.`,
+          type: "account_update",
+        });
+      }
+    } catch (error) {
+      console.error("Error creating subarea:", error);
+      toast.error("Failed to create subarea");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   const toggleAgentAssignment = async (subareaId: string, agentId: string, isAssigned: boolean) => {
     try {
+      setLoadingAgentId(agentId);
       const payload: { remove_agent?: string; add_agent?: string } = isAssigned
         ? { remove_agent: agentId }
         : { add_agent: agentId };
@@ -131,6 +167,17 @@ export default function AdminSubareasPage() {
           };
         })
       );
+      
+      setSelectedSubarea(prev => {
+        if (!prev || prev.id !== subareaId) return prev;
+        const currentIds = prev.agent_ids || [];
+        return {
+          ...prev,
+          agent_ids: isAssigned
+            ? currentIds.filter(id => id !== agentId)
+            : [...currentIds, agentId],
+        };
+      });
 
       const agent = agents.find(a => a.id === agentId);
       const subarea = subareas.find(s => s.id === subareaId);
@@ -151,7 +198,9 @@ export default function AdminSubareasPage() {
       }
     } catch (error) {
       console.error("Error toggling agent assignment:", error);
-      alert("Failed to update assignment");
+      toast.error("Failed to update assignment");
+    } finally {
+      setLoadingAgentId(null);
     }
   };
 
@@ -178,12 +227,20 @@ export default function AdminSubareasPage() {
             {adminCity ? `Managing subareas for ${adminCity.name}` : "All subareas"}
           </p>
         </div>
-        <button
-          onClick={loadData}
-          className="px-4 py-2 min-h-[44px] bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition shadow-md"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="px-4 py-2 min-h-[44px] bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition shadow-md"
+          >
+            + Create Subarea
+          </button>
+          <button
+            onClick={loadData}
+            className="px-4 py-2 min-h-[44px] bg-estate-navy text-white font-semibold rounded-xl hover:bg-estate-navy-mid transition shadow-md"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -265,7 +322,9 @@ export default function AdminSubareasPage() {
               ) : (
                 filteredSubareas.map((subarea) => {
                   const assignedAgents = getAssignedAgents(subarea);
-                  const agentCount = (subarea.agent_ids || []).length;
+                  const validAgentCount = assignedAgents.length;
+                  const displayAgents = assignedAgents.slice(0, 2);
+                  const remainingCount = validAgentCount - displayAgents.length;
                   return (
                     <tr key={subarea.id} className="hover:bg-estate-bg/40 transition">
                       <td className="py-4 px-4">
@@ -276,11 +335,11 @@ export default function AdminSubareasPage() {
                         {getCityName(subarea.city_id)}
                       </td>
                       <td className="py-4 px-4">
-                        {agentCount === 0 ? (
+                        {validAgentCount === 0 ? (
                           <span className="text-xs text-amber-600 font-medium">No agents assigned</span>
                         ) : (
                           <div className="flex flex-wrap gap-1">
-                            {assignedAgents.map(agent => (
+                            {displayAgents.map(agent => (
                               <span
                                 key={agent.id}
                                 className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
@@ -288,9 +347,9 @@ export default function AdminSubareasPage() {
                                 {agent.name || agent.email}
                               </span>
                             ))}
-                            {agentCount > assignedAgents.length && (
+                            {remainingCount > 0 && (
                               <span className="text-xs text-estate-muted">
-                                +{agentCount - assignedAgents.length} more
+                                +{remainingCount} more
                               </span>
                             )}
                           </div>
@@ -310,7 +369,7 @@ export default function AdminSubareasPage() {
                           onClick={() => openManageModal(subarea)}
                           className="px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold border border-estate-navy/30 text-estate-navy hover:bg-estate-navy hover:text-white transition"
                         >
-                          Manage Agents ({agentCount})
+                          Manage Agents ({validAgentCount})
                         </button>
                       </td>
                     </tr>
@@ -391,13 +450,21 @@ export default function AdminSubareasPage() {
                         </div>
                         <button
                           onClick={() => toggleAgentAssignment(selectedSubarea.id, agent.id, isAssigned)}
+                          disabled={loadingAgentId === agent.id}
                           className={`px-3 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition ${
-                            isAssigned
+                            loadingAgentId === agent.id
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                              : isAssigned
                               ? "text-rose-600 hover:bg-rose-100 border border-rose-200"
                               : "text-emerald-600 hover:bg-emerald-100 border border-emerald-200"
                           }`}
                         >
-                          {isAssigned ? "Remove" : "Assign"}
+                          {loadingAgentId === agent.id ? (
+                            <span className="flex items-center gap-1">
+                              <span className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                              Wait...
+                            </span>
+                          ) : isAssigned ? "Remove" : "Assign"}
                         </button>
                       </div>
                     );
@@ -415,6 +482,88 @@ export default function AdminSubareasPage() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Create Subarea Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md mx-0 sm:mx-4 flex flex-col">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-estate-border">
+              <h2 className="text-xl font-bold text-estate-navy font-serif">Create Subarea</h2>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleCreateSubarea} className="p-4 sm:p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-estate-text mb-1">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g., Downtown, North Side"
+                  className="w-full px-3 py-2 rounded-lg border border-estate-border focus:ring-2 focus:ring-estate-navy focus:border-transparent outline-none transition"
+                />
+              </div>
+              
+              {!adminCity && (
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">City</label>
+                  <select
+                    required
+                    value={createForm.city_id}
+                    onChange={(e) => setCreateForm(prev => ({ ...prev, city_id: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-estate-border focus:ring-2 focus:ring-estate-navy focus:border-transparent outline-none transition bg-white"
+                  >
+                    <option value="">Select a city</option>
+                    {cities.map(city => (
+                      <option key={city.id} value={city.id}>{city.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-semibold text-estate-text mb-1">Status</label>
+                <select
+                  value={createForm.status}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, status: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg border border-estate-border focus:ring-2 focus:ring-estate-navy focus:border-transparent outline-none transition bg-white"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="flex-1 px-4 py-2 min-h-[44px] bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className={`flex-1 px-4 py-2 min-h-[44px] text-white font-semibold rounded-xl transition ${
+                    isCreating ? "bg-estate-navy/70 cursor-not-allowed" : "bg-estate-navy hover:bg-estate-navy-mid"
+                  }`}
+                >
+                  {isCreating ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      Creating...
+                    </span>
+                  ) : "Create"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

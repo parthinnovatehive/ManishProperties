@@ -3,6 +3,23 @@ from utils.helpers import generate_id, now_iso
 from utils.validators import MODERATION_STATUSES, validate_property_payload
 
 
+def _safe_int(val, default=None):
+    try:
+        return int(float(val)) if val is not None and str(val).strip() != "" else default
+    except (ValueError, TypeError):
+        return default
+
+def _safe_float(val, default=None):
+    try:
+        return float(val) if val is not None and str(val).strip() != "" else default
+    except (ValueError, TypeError):
+        return default
+
+def _safe_fk(val):
+    """Ensure empty strings are converted to None for strict PostgreSQL Foreign Keys."""
+    return val if val and str(val).strip() != "" else None
+
+
 def _normalize_property(payload, status="PENDING"):
     images = payload.get("images")
     if images is None:
@@ -10,6 +27,11 @@ def _normalize_property(payload, status="PENDING"):
     image = payload.get("image") or payload.get("img") or (images[0] if images else "")
 
     result = dict(payload)
+    
+    # Remove keys that do not exist in the Supabase schema
+    for key in ["rera", "rejectReason", "featuredRejectionReason"]:
+        result.pop(key, None)
+
     result.update({
         "id": str(payload.get("id") or generate_id("prop_")),
         "category": payload.get("category", "residential"),
@@ -17,61 +39,59 @@ def _normalize_property(payload, status="PENDING"):
         "subtitle": payload.get("subtitle"),
         "description": payload.get("description"),
         "price": payload.get("price"),
-        "priceNum": float(payload.get("priceNum")) if payload.get("priceNum") else 0,
+        "priceNum": _safe_float(payload.get("priceNum")),
         "city": payload.get("city"),
-        "city_id": payload.get("city_id"),
-        "sub_area_id": payload.get("sub_area_id"),
+        "city_id": _safe_fk(payload.get("city_id")),
+        "sub_area_id": _safe_fk(payload.get("sub_area_id")),
+        "state": payload.get("state"),
         "location": payload.get("location"),
+        "fullLocation": payload.get("fullLocation"),
         "pincode": payload.get("pincode"),
         "type": payload.get("type"),
         "listingType": payload.get("listingType"),
-        "beds": int(float(payload.get("beds"))),
-        "bathrooms": int(float(payload.get("bathrooms"))),
-        "baths": int(float(payload.get("bathrooms"))),
-        "area": int(float(payload.get("area"))),
+        "beds": _safe_int(payload.get("beds")),
+        "bathrooms": _safe_int(payload.get("bathrooms")),
+        "baths": _safe_int(payload.get("baths") or payload.get("bathrooms")),
+        "area": _safe_float(payload.get("area")),
         "furnishing": payload.get("furnishing"),
         "amenities": payload.get("amenities") if isinstance(payload.get("amenities"), list) else [],
         "images": images if isinstance(images, list) else [],
         "imgs": images if isinstance(images, list) else [],
         "image": image,
         "img": image,
+        "cloudinaryImages": payload.get("cloudinaryImages") if isinstance(payload.get("cloudinaryImages"), list) else [],
         "builder": payload.get("builder") or "Manish Properties",
-        "rating": float(payload.get("rating") or 0),
-        "reviews": int(float(payload.get("reviews") or 0)),
+        "rating": _safe_float(payload.get("rating"), 0),
+        "reviews": _safe_int(payload.get("reviews"), 0),
         "featured": bool(payload.get("featured", False)),
         "isNew": bool(payload.get("isNew", True)),
 
         # Lister / owner fields
-        "lister_id": payload.get("lister_id"),
-        "lister_type": payload.get("lister_type"),
         "lister_name": payload.get("lister_name"),
 
-        # Views & RERA
-        "views": int(float(payload.get("views") or 0)),
-        "rera": payload.get("rera"),
+        # Views
+        "views": _safe_int(payload.get("views"), 0),
 
         # Moderation fields
         "status": status,
         "moderationStatus": status,
-        "rejectReason": payload.get("rejectReason"),
 
         # Featured request fields
         "featuredRequested": bool(payload.get("featuredRequested", False)),
-        "requested_for": payload.get("requested_for"),
-        "granted_for": payload.get("granted_for"),
+        "requested_for": _safe_int(payload.get("requested_for")),
+        "granted_for": _safe_int(payload.get("granted_for")),
         "featuredRequestDate": payload.get("featuredRequestDate"),
         "featuredPaymentStatus": payload.get("featuredPaymentStatus"),
         "featuredPaymentProof": payload.get("featuredPaymentProof"),
-        "featuredPaymentAmount": payload.get("featuredPaymentAmount"),
+        "featuredPaymentAmount": _safe_float(payload.get("featuredPaymentAmount")),
         "featuredApprovedBy": payload.get("featuredApprovedBy"),
         "featuredApprovedAt": payload.get("featuredApprovedAt"),
         "featuredExpiryDate": payload.get("featuredExpiryDate"),
         "featuredExpired": bool(payload.get("featuredExpired", False)),
-        "featuredRejectionReason": payload.get("featuredRejectionReason"),
 
         # Location / geo
-        "coordinates": payload.get("coordinates"),
-        "nearbyAmenities": payload.get("nearbyAmenities"),
+        "coordinates": payload.get("coordinates") if isinstance(payload.get("coordinates"), dict) else {},
+        "nearbyAmenities": payload.get("nearbyAmenities") if isinstance(payload.get("nearbyAmenities"), (list, dict)) else [],
 
         # Timestamps
         "createdAt": payload.get("createdAt") or now_iso(),
@@ -80,12 +100,12 @@ def _normalize_property(payload, status="PENDING"):
 
     if result.get("category") == "commercial":
         result["officeType"] = payload.get("officeType")
-        result["pantry"] = bool(payload.get("pantry", False))
-        result["washrooms"] = int(float(payload.get("washrooms", 0)))
-        result["powerBackup"] = bool(payload.get("powerBackup", False))
-        result["cabinCount"] = int(float(payload.get("cabinCount", 0)))
-        result["conferenceRoom"] = bool(payload.get("conferenceRoom", False))
-        result["parking"] = int(float(payload.get("parking", 0)))
+        result["pantry"] = "yes" if payload.get("pantry") else "no"
+        result["washrooms"] = _safe_int(payload.get("washrooms"))
+        result["powerBackup"] = "yes" if payload.get("powerBackup") else "no"
+        result["cabinCount"] = _safe_int(payload.get("cabinCount"))
+        result["conferenceRoom"] = "yes" if payload.get("conferenceRoom") else "no"
+        result["parking"] = str(payload.get("parking")) if payload.get("parking") is not None else None
 
     return result
 
@@ -97,7 +117,7 @@ def list_properties(status=None, public_only=False):
     elif status:
         normalized = status.upper()
         properties = [item for item in properties if item.get("status") == normalized]
-    return sorted(properties, key=lambda item: item.get("createdAt", ""), reverse=True)
+    return sorted(properties, key=lambda item: item.get("createdAt") or "", reverse=True)
 
 
 def get_property(property_id, public_only=False):
@@ -114,7 +134,10 @@ def create_property(payload, status="PENDING"):
     if validation_message:
         return None, validation_message
     property_item = _normalize_property(payload, status)
-    append_json("properties", property_item)
+    try:
+        append_json("properties", property_item)
+    except Exception as e:
+        return None, f"Failed to save property to database: {str(e)}"
     return property_item, None
 
 

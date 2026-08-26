@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-lea
 import L from "leaflet";
 import { X, LocateFixed } from "lucide-react";
 import "leaflet/dist/leaflet.css";
+import { toast } from "sonner";
 
 interface LeafletMapPickerProps {
   isOpen: boolean;
@@ -69,6 +70,7 @@ export function LeafletMapPicker({
     initialLat && initialLng ? [initialLat, initialLng] : null
   );
   const [searchAddress, setSearchAddress] = useState(address || "");
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     setMarkerPosition([lat, lng]);
@@ -97,20 +99,23 @@ export function LeafletMapPicker({
 
   const handleUseCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      toast.error("Geolocation is not supported by your browser.");
       return;
     }
 
+    setIsLoadingLocation(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         setMarkerPosition([lat, lng]);
         getAddressFromCoords(lat, lng);
+        setIsLoadingLocation(false);
       },
       (error) => {
         console.error("Error getting location:", error);
-        alert("Unable to get your location. Please check your browser permissions.");
+        toast.error("Unable to get your location. Please check your browser permissions.");
+        setIsLoadingLocation(false);
       }
     );
   }, [getAddressFromCoords]);
@@ -154,9 +159,22 @@ export function LeafletMapPicker({
           <div className="mt-4 flex gap-3">
             <button
               onClick={handleUseCurrentLocation}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-sm flex items-center justify-center gap-1"
+              disabled={isLoadingLocation}
+              className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-sm flex items-center justify-center gap-2 ${isLoadingLocation ? "opacity-75 cursor-not-allowed" : ""}`}
             >
-              <LocateFixed size={14} /> Use My Location
+              {isLoadingLocation ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-gray-600" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Locating...
+                </>
+              ) : (
+                <>
+                  <LocateFixed size={14} /> Use My Location
+                </>
+              )}
             </button>
             <button
               onClick={handleConfirmLocation}

@@ -772,7 +772,6 @@ useEffect(() => {
         const assignedCity = citiesData.find((city: any) => city.admin_id === admin.id);
         if (assignedCity) {
           setAdminCity(assignedCity.id);
-          console.log("Admin assigned to city:", assignedCity.name);
         }
       }
     } catch (err) {

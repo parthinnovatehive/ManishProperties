@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { estateApi } from "@/lib/api";
 import { getAdminData, clearAllAuthData, type AdminData } from "@/lib/utils/token";
+import { toast } from "sonner";
 
 interface SavedPropertiesContextType {
   savedProperties: string[];
@@ -104,7 +105,7 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
       // Revert on error
       setSavedProperties(savedProperties);
       localStorage.setItem(storageKey, JSON.stringify(savedProperties));
-      alert("Failed to save property. Please try again.");
+      toast.error("Failed to save property. Please try again.");
     }
   };
 

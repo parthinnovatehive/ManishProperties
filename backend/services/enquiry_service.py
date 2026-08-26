@@ -2,6 +2,9 @@ from services.json_service import append_json, delete_json, load_json, update_js
 from utils.helpers import generate_id, now_iso
 
 
+def _safe_fk(val):
+    return val if val and str(val).strip() != "" else None
+
 def list_enquiries():
     return load_json("enquiries")
 
@@ -14,13 +17,18 @@ def create_enquiry(payload):
     enquiry = {
         "id": str(payload.get("id") or generate_id("enq_")),
         **payload,
+        "propertyId": _safe_fk(payload.get("propertyId")),
+        "agentId": _safe_fk(payload.get("agentId")),
         "createdAt": now_iso(),
     }
     return append_json("enquiries", enquiry)
 
 
 def update_enquiry(enquiry_id, payload):
-    return update_json("enquiries", enquiry_id, {**payload, "updatedAt": now_iso()})
+    updates = {**payload, "updatedAt": now_iso()}
+    if "propertyId" in updates: updates["propertyId"] = _safe_fk(updates["propertyId"])
+    if "agentId" in updates: updates["agentId"] = _safe_fk(updates["agentId"])
+    return update_json("enquiries", enquiry_id, updates)
 
 
 def delete_enquiry(enquiry_id):

@@ -295,12 +295,8 @@ export function PropertyDetailPage({ properties, propertyId }: { properties: Pro
   variant="primary" 
   fullWidth 
   className="mb-2.5 rounded-[10px] bg-estate-blue hover:bg-estate-blue-dark text-white font-semibold"
-  onClick={() => {
-    // Replace this with your actual enquire logic
-    // Example: open a modal, navigate to enquiry form, etc.
-    console.log(`Enquiring about property: ${property.id}`);
-    // If you have a modal state, you can set it here
-    // setShowEnquireModal(true);
+  onClick={(e) => {
+    e.preventDefault();
   }}
 >
   <ShieldCheck size={16} aria-hidden="true" /> Enquire Now

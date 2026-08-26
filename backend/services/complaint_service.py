@@ -2,6 +2,9 @@ from services.json_service import append_json, delete_json, load_json, update_js
 from utils.helpers import generate_id, now_iso
 
 
+def _safe_fk(val):
+    return val if val and str(val).strip() != "" else None
+
 def list_complaints():
     return load_json("complaints")
 
@@ -16,13 +19,18 @@ def create_complaint(payload):
         "status": payload.get("status") or "Open",
         "priority": payload.get("priority") or "Medium",
         **payload,
+        "propertyId": _safe_fk(payload.get("propertyId")),
+        "userId": _safe_fk(payload.get("userId")),
         "createdAt": now_iso(),
     }
     return append_json("complaints", complaint)
 
 
 def update_complaint(complaint_id, payload):
-    return update_json("complaints", complaint_id, {**payload, "updatedAt": now_iso()})
+    updates = {**payload, "updatedAt": now_iso()}
+    if "propertyId" in updates: updates["propertyId"] = _safe_fk(updates["propertyId"])
+    if "userId" in updates: updates["userId"] = _safe_fk(updates["userId"])
+    return update_json("complaints", complaint_id, updates)
 
 
 def delete_complaint(complaint_id):

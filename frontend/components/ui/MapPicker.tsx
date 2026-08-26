@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface MapPickerProps {
   isOpen: boolean;
@@ -54,7 +55,7 @@ export function MapPicker({
 
   const handleUseCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      toast.error("Geolocation is not supported by your browser.");
       return;
     }
 
@@ -68,7 +69,7 @@ export function MapPicker({
       },
       (error) => {
         console.error("Error getting location:", error);
-        alert("Unable to get your location. Please check your browser permissions.");
+        toast.error("Unable to get your location. Please check your browser permissions.");
       }
     );
   }, []);
@@ -107,11 +108,11 @@ export function MapPicker({
         setMarkerPosition({ lat: location.lat, lng: location.lng });
         setSearchAddress(data.results[0].formatted_address);
       } else {
-        alert("Address not found. Please try again.");
+        toast.error("Address not found. Please try again.");
       }
     } catch (error) {
       console.error("Error searching address:", error);
-      alert("Error searching address. Please try again.");
+      toast.error("Error searching address. Please try again.");
     }
   }, [searchAddress]);
 

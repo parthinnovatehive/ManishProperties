@@ -22,9 +22,6 @@ export function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   const loadHomeData = async () => {
-    const featuredProperties = await estateApi.properties.featured();
-
-    console.log("Featured Properties:", featuredProperties);
     setLoading(true);
     setError(null);
     try {
@@ -82,7 +79,6 @@ export function HomePage() {
   useEffect(() => {
     loadHomeData();
   }, []);
-  console.log("HomePage properties state:", properties);
   return (
     <>
       <HeroSearch />

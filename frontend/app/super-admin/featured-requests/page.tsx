@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
+import { apiClient } from "@/lib/api/client";
 import { X, AlertCircle, CheckCircle, AlertTriangle, Info } from "lucide-react";
 import type { Property } from "@/types";
 
@@ -18,6 +19,7 @@ interface Notification {
 }
 
 export default function SuperAdminFeaturedRequestsPage() {
+  const isAdmin = false;
   // ✅ Role defined inside component
   const role = "super-admin";
   
@@ -32,8 +34,25 @@ export default function SuperAdminFeaturedRequestsPage() {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<number>(1);
+  const [isApproving, setIsApproving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isAddPlanModalOpen, setIsAddPlanModalOpen] = useState(false);
+  const [isAddingPlan, setIsAddingPlan] = useState(false);
+  const [newPlan, setNewPlan] = useState({
+    id: "",
+    name: "",
+    requested_for: 1,
+    duration: 30,
+    price: 0,
+    description: "",
+    features: "",
+    qr_code_image: ""
+  });
+  const [isEditingPlan, setIsEditingPlan] = useState<string | null>(null);
+  const [isUploadingQr, setIsUploadingQr] = useState(false);
+  const [isViewPlansModalOpen, setIsViewPlansModalOpen] = useState(false);
+  const [featuredPlansList, setFeaturedPlansList] = useState<any[]>([]);
 
   const addNotification = (type: Notification["type"], message: string) => {
     const id = Date.now();
@@ -121,6 +140,7 @@ export default function SuperAdminFeaturedRequestsPage() {
   const approveFeaturedRequest = async () => {
     if (!selectedProperty) return;
     
+    setIsApproving(true);
     const currentAdmin = JSON.parse(localStorage.getItem("adminData") || "{}");
     
     const approvedAt = new Date();
@@ -140,7 +160,6 @@ export default function SuperAdminFeaturedRequestsPage() {
         featuredPaymentStatus: "approved",
         featuredApprovedBy: currentAdmin.id,
         featuredApprovedAt: approvedAt.toISOString(),
-        featuredRejectionReason: null,
         granted_for: selectedPlan,
         featuredExpiryDate: expiryDate.toISOString(),
         featuredExpired: false
@@ -153,6 +172,8 @@ export default function SuperAdminFeaturedRequestsPage() {
     } catch (error) {
       console.error("Error approving request:", error);
       addNotification("error", "Failed to approve request");
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -287,6 +308,121 @@ export default function SuperAdminFeaturedRequestsPage() {
   return `${day}/${month}/${year}`;
 };
 
+  const fetchPlans = async () => {
+    try {
+      const plans = await estateApi.content.featuredPlans.list();
+      setFeaturedPlansList(plans);
+    } catch (error) {
+      console.error("Error fetching featured plans:", error);
+      addNotification("error", "Failed to load featured plans");
+    }
+  };
+
+  const handleDeletePlan = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this featured plan?")) return;
+    try {
+      await estateApi.content.featuredPlans.remove(id);
+      addNotification("success", "Featured plan deleted successfully!");
+      fetchPlans();
+    } catch (error) {
+      console.error("Error deleting featured plan:", error);
+      addNotification("error", "Failed to delete featured plan");
+    }
+  };
+
+  const handleEditPlanClick = (plan: any) => {
+    setNewPlan({
+      id: plan.id,
+      name: plan.name,
+      requested_for: plan.requested_for || 1,
+      duration: plan.duration || 30,
+      price: plan.price || 0,
+      description: plan.description || "",
+      features: (plan.features || []).join("\n"),
+      qr_code_image: plan.qr_code_image || ""
+    });
+    setIsEditingPlan(plan.id);
+    setIsViewPlansModalOpen(false);
+    setIsAddPlanModalOpen(true);
+  };
+
+  const uploadQrImage = async (file: File) => {
+    setIsUploadingQr(true);
+    const formData = new FormData();
+    formData.append("images", file);
+
+    try {
+      const response = await apiClient.post<{ success: boolean; data?: { images?: { url: string }[] }; images?: { url: string }[] }>(
+        "/api/properties/upload-images?category=default",
+        formData,
+        { 
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 300000,
+        }
+      );
+
+      const images = response.data?.images || response.images;
+      if (response.success && images && images.length > 0) {
+        setNewPlan({ ...newPlan, qr_code_image: images[0].url });
+        addNotification("success", "QR Code image uploaded!");
+      } else {
+        addNotification("error", "Failed to get QR code image URL");
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      addNotification("error", "Failed to upload QR Code image");
+    } finally {
+      setIsUploadingQr(false);
+    }
+  };
+
+  const handleAddPlan = async () => {
+    if (!newPlan.id || !newPlan.name) {
+      addNotification("warning", "Plan ID and Name are required");
+      return;
+    }
+    
+    setIsAddingPlan(true);
+    try {
+      const featuresArray = newPlan.features
+        .split(/[,\n]/)
+        .map(f => f.trim())
+        .filter(f => f.length > 0);
+        
+      const planPayload = {
+        ...newPlan,
+        features: featuresArray
+      };
+      
+      if (isEditingPlan) {
+        await estateApi.content.featuredPlans.update(isEditingPlan, planPayload);
+        addNotification("success", "Featured plan updated successfully!");
+        setIsEditingPlan(null);
+      } else {
+        await estateApi.content.featuredPlans.create(planPayload);
+        addNotification("success", "Featured plan added successfully!");
+      }
+      
+      setIsAddPlanModalOpen(false);
+      setNewPlan({
+        id: "",
+        name: "",
+        requested_for: 1,
+        duration: 30,
+        price: 0,
+        description: "",
+        features: "",
+        qr_code_image: ""
+      });
+      fetchData();
+    } catch (error) {
+      console.error("Error adding featured plan:", error);
+      addNotification("error", "Failed to add featured plan");
+    } finally {
+      setIsAddingPlan(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Notifications */}
@@ -320,12 +456,46 @@ export default function SuperAdminFeaturedRequestsPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-estate-navy font-serif">Featured Requests Management</h1>
           <p className="text-sm text-estate-text-sec">Manage featured property requests and approve/reject listings.</p>
         </div>
-        <button
-          onClick={fetchData}
-          className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-3">
+          {!isAdmin && (
+            <>
+              <button
+                onClick={() => {
+                  fetchPlans();
+                  setIsViewPlansModalOpen(true);
+                }}
+                className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px] font-semibold"
+              >
+                View Plans
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditingPlan(null);
+                  setNewPlan({
+                    id: "",
+                    name: "",
+                    requested_for: 1,
+                    duration: 30,
+                    price: 0,
+                    description: "",
+                    features: "",
+                    qr_code_image: ""
+                  });
+                  setIsAddPlanModalOpen(true);
+                }}
+                className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition min-h-[44px] font-semibold"
+              >
+                + Add Featured Plan
+              </button>
+            </>
+          )}
+          <button
+            onClick={fetchData}
+            className="px-4 py-2 bg-estate-navy text-white rounded-xl hover:bg-estate-navy-mid transition min-h-[44px]"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -762,15 +932,27 @@ export default function SuperAdminFeaturedRequestsPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsApproveModalOpen(false)}
-                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px]"
+                disabled={isApproving}
+                className="flex-1 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition min-h-[44px] disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={approveFeaturedRequest}
-                className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition min-h-[44px]"
+                disabled={isApproving}
+                className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition min-h-[44px] disabled:opacity-50 flex justify-center items-center gap-2"
               >
-                Approve Request
+                {isApproving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Approving...
+                  </>
+                ) : (
+                  "Approve Request"
+                )}
               </button>
             </div>
           </div>
@@ -822,6 +1004,224 @@ export default function SuperAdminFeaturedRequestsPage() {
               >
                 Reject Request
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Featured Plan Modal */}
+      {isAddPlanModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-estate-navy font-serif">
+                {isEditingPlan ? "Edit Featured Plan" : "Add Featured Plan"}
+              </h2>
+              <button
+                onClick={() => setIsAddPlanModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">Plan ID *</label>
+                  <input
+                    type="text"
+                    value={newPlan.id}
+                    onChange={(e) => setNewPlan({...newPlan, id: e.target.value})}
+                    placeholder="e.g. plan_3_month"
+                    className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                  />
+                  <p className="text-[10px] text-gray-500 mt-1">Must be unique (no spaces).</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">Plan Name *</label>
+                  <input
+                    type="text"
+                    value={newPlan.name}
+                    onChange={(e) => setNewPlan({...newPlan, name: e.target.value})}
+                    placeholder="e.g. 3 Months Featured"
+                    className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">Requested For (Level)</label>
+                  <input
+                    type="number"
+                    value={newPlan.requested_for}
+                    onChange={(e) => setNewPlan({...newPlan, requested_for: parseInt(e.target.value) || 1})}
+                    className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">Duration (Days)</label>
+                  <input
+                    type="number"
+                    value={newPlan.duration}
+                    onChange={(e) => setNewPlan({...newPlan, duration: parseInt(e.target.value) || 30})}
+                    className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-estate-text mb-1">Price (₹)</label>
+                  <input
+                    type="number"
+                    value={newPlan.price}
+                    onChange={(e) => setNewPlan({...newPlan, price: parseFloat(e.target.value) || 0})}
+                    className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-estate-text mb-1">Description</label>
+                <input
+                  type="text"
+                  value={newPlan.description}
+                  onChange={(e) => setNewPlan({...newPlan, description: e.target.value})}
+                  placeholder="Short description of the plan"
+                  className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-estate-text mb-1">QR Code Image</label>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          uploadQrImage(e.target.files[0]);
+                        }
+                      }}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                      disabled={isUploadingQr}
+                    />
+                  </div>
+                  {isUploadingQr && <span className="text-sm text-gray-500">Uploading...</span>}
+                  {newPlan.qr_code_image && (
+                    <div className="w-12 h-12 border border-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                      <img src={newPlan.qr_code_image} alt="QR Code" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-estate-text mb-1">Features (one per line or comma-separated)</label>
+                <textarea
+                  value={newPlan.features}
+                  onChange={(e) => setNewPlan({...newPlan, features: e.target.value})}
+                  placeholder="Priority in search results\nHighlighted property badge\nTop of category listings"
+                  rows={4}
+                  className="w-full px-4 py-2 rounded-xl border border-estate-border focus:ring-2 focus:ring-estate-navy outline-none text-sm"
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-8">
+              <button
+                onClick={() => setIsAddPlanModalOpen(false)}
+                className="px-6 py-2 rounded-xl border border-estate-border text-estate-text font-semibold hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddPlan}
+                disabled={isAddingPlan}
+                className="px-6 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition disabled:opacity-50"
+              >
+                {isAddingPlan ? "Adding..." : "Add Plan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Plans Modal */}
+      {isViewPlansModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-estate-navy font-serif">Listed Featured Plans</h2>
+              <button
+                onClick={() => setIsViewPlansModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+              {featuredPlansList.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  No featured plans found.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {featuredPlansList.map((plan: any) => (
+                    <div key={plan.id} className="border border-gray-200 rounded-xl p-4 hover:border-estate-navy/30 transition shadow-sm">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-bold text-lg text-estate-navy">{plan.name}</h3>
+                        <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">
+                          ₹{plan.price?.toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mb-3 font-mono bg-gray-50 px-2 py-1 rounded inline-block">ID: {plan.id}</p>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                        <div>
+                          <span className="text-gray-500 text-xs">Duration:</span>
+                          <p className="font-semibold text-estate-text">{plan.duration} Days</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 text-xs">Target Level:</span>
+                          <p className="font-semibold text-estate-text">{plan.requested_for}</p>
+                        </div>
+                      </div>
+                      
+                      {plan.description && (
+                        <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
+                      )}
+                      
+                      {plan.features && plan.features.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold text-gray-500 mb-1">Features:</p>
+                          <ul className="list-disc pl-4 text-sm text-gray-700 space-y-1">
+                            {plan.features.map((feature: string, idx: number) => (
+                              <li key={idx}>{feature}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+                        <button
+                          onClick={() => handleEditPlanClick(plan)}
+                          className="flex-1 py-1.5 text-xs font-semibold text-estate-navy border border-estate-border rounded-lg hover:bg-gray-50 transition"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeletePlan(plan.id)}
+                          className="flex-1 py-1.5 text-xs font-semibold text-rose-600 border border-rose-100 rounded-lg hover:bg-rose-50 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

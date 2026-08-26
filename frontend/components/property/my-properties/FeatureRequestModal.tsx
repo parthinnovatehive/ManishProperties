@@ -17,6 +17,7 @@ interface FeaturedPlan {
   price: number;
   description: string;
   features: string[];
+  qr_code_image?: string;
 }
 
 interface UploadedImage {
@@ -209,7 +210,7 @@ export function FeatureRequestModal({
                       </div>
                     </div>
                     <span className="font-bold text-estate-amber text-lg">
-                      ₹{plan.price.toLocaleString()}
+                      ₹{(plan.price || 0).toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-estate-text-sec mt-2 ml-8">
@@ -246,14 +247,14 @@ export function FeatureRequestModal({
                   <p className="text-xs text-estate-muted mb-2">Scan to Pay</p>
                   <div className="w-40 h-40 mx-auto border-2 border-gray-200 rounded-xl overflow-hidden bg-white flex items-center justify-center">
                     <Image
-                      src={qrImage}
+                      src={selectedPlan.qr_code_image || qrImage}
                       alt="Payment QR Code"
                       width={150}
                       height={150}
                       className="object-contain"
                       onError={() => setQrImage("")}
                     />
-                    {!qrImage && (
+                    {(!selectedPlan.qr_code_image && !qrImage) && (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
                         <span className="text-2xl mb-1">📱</span>
                         <span className="text-xs text-estate-muted">QR Code</span>
@@ -261,7 +262,7 @@ export function FeatureRequestModal({
                     )}
                   </div>
                   <p className="text-xs text-estate-muted mt-2">
-                    Amount: ₹{selectedPlan.price.toLocaleString()}
+                    Amount: ₹{(selectedPlan.price || 0).toLocaleString()}
                   </p>
                 </div>
 

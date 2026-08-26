@@ -13,6 +13,7 @@ export default function PropertiesPage() {
     estateApi.properties
       .list()
       .then((items) => {
+        console.log(".");
         const sorted = [...items].sort((a, b) => Number(b.featured) - Number(a.featured));
         setProperties(sorted);
       })

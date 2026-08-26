@@ -19,6 +19,7 @@ import {
 import { estateApi } from "@/lib/api";
 import { getAdminData } from "@/lib/utils/token";
 import PropertyPreviewModal from "@/components/PropertyPreviewModal";
+import { toast } from "sonner";
 
 interface Enquiry {
   id: string;
@@ -139,7 +140,7 @@ export default function AgentEnquiriesPage() {
       setPreviewProperty(property);
       setPreviewOpen(true);
     } catch {
-      alert("Property not found or has been removed.");
+      toast.error("Property not found or has been removed.");
     }
   };
 

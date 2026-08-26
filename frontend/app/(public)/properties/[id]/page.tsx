@@ -16,6 +16,7 @@ import { estateApi } from "@/lib/api";
 import type { Property } from "@/types";
 import { getAdminData } from "@/lib/utils/token";
 import PropertyMapClient from "@/components/property/property-map-client";
+import { toast } from "sonner";
 
 
 type PropertyResponse = {
@@ -156,7 +157,7 @@ export default function PropertyDetailsPage() {
     if (!property) return;
     const account = getAdminData();
     if (!account) {
-      alert("Please log in to save properties.");
+      toast.error("Please log in to save properties.");
       window.location.href = `/auth/login?redirect=/properties/${property.id}`;
       return;
     }

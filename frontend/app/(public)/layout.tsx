@@ -9,17 +9,15 @@ export const metadata: Metadata = {
   description: "Premium frontend-only real estate marketplace prototype built with Next.js.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function PublicLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
-        <SiteShell>{children}</SiteShell>
-        <Toaster
-  position="top-right"
-  richColors
-  closeButton
-/>
-      </body>
-    </html>
+    <>
+      <SiteShell>{children}</SiteShell>
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+      />
+    </>
   );
 }

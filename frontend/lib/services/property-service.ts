@@ -144,10 +144,10 @@ export class PropertyService {
   /**
    * Approve property
    */
-  async approveProperty(id: string | number): Promise<Property> {
+  async approveProperty(id: string | number, fetchAmenities: boolean = false): Promise<Property> {
     const response = await apiClient.patch<PropertyApproveResponse>(
       `${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/approve`,
-      {}
+      { fetch_amenities: fetchAmenities }
     );
 
     const property = (response.property || response.data) as Property;

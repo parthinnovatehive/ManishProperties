@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckCircle, ChevronLeft, ChevronRight, Grid, Heart, Images, Share2, X } from "lucide-react";
+import { toast } from "sonner";
 
 type PropertyGalleryProps = {
   images: string[];
@@ -136,21 +137,10 @@ export function PropertyGallery({
     return validImages.length > 0 ? validImages : [fallbackImage];
   }, [images]);
 
-  const normalizedImages = useMemo(() => {
-    const validImages = images.filter((image) => image.trim().length > 0);
-    const displayImages = validImages.length > 0 ? [...validImages] : [fallbackImage];
-
-    while (displayImages.length < 5) {
-      displayImages.push(displayImages[0]);
-    }
-
-    return displayImages;
-  }, [images]);
-
   const allPhotoCount = displayAllImages.length;
   const isSaved = saved ?? localSaved;
   const sqftPrice = pricePerSqft(price, area);
-  const activeImage = normalizedImages[activeImageIndex] ?? normalizedImages[0] ?? fallbackImage;
+  const activeImage = displayAllImages[activeImageIndex] ?? displayAllImages[0] ?? fallbackImage;
 
   const toggleSaved = () => {
     const nextSaved = !isSaved;
@@ -273,7 +263,7 @@ export function PropertyGallery({
                 }).catch(() => {});
               } else {
                 navigator.clipboard.writeText(window.location.href);
-                alert("Link copied to clipboard!");
+                toast.success("Link copied to clipboard!");
               }
             }}
             className="rounded-full border border-white/50 bg-white/90 p-2 text-gray-700 shadow-md backdrop-blur-md transition-all duration-200 hover:text-estate-navy"
@@ -311,137 +301,159 @@ export function PropertyGallery({
       </div>
 
       {/* Desktop View: Grid Layout (visible on >= md) */}
-      <div className="hidden md:grid group relative h-[52vh] min-h-[460px] grid-cols-1 overflow-hidden rounded-[20px] shadow-estate-lg md:h-[64vh] md:grid-cols-4 md:grid-rows-2 md:gap-1.5">
-        <div 
-          className="relative col-span-1 cursor-pointer overflow-hidden bg-estate-surface md:col-span-2 md:row-span-2"
-          onClick={() => {
-            setModalActiveIndex(activeImageIndex);
-            setModalViewMode("lightbox");
-            setIsModalOpen(true);
-          }}
-        >
-          <img
-            src={activeImage}
-            alt={title || "Property"}
-            className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-[1.04]"
-            onError={(event) => {
-              event.currentTarget.src = fallbackImage;
-            }}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-estate-navy/80 via-estate-navy/10 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-estate-navy/20 via-transparent to-transparent" />
+      {(() => {
+        const L = displayAllImages.length;
+        let gridClasses = "hidden md:grid group relative h-[52vh] min-h-[460px] overflow-hidden rounded-[20px] shadow-estate-lg md:h-[64vh] gap-1.5 ";
+        let mainClasses = "relative cursor-pointer overflow-hidden bg-estate-surface ";
+        let showCount = 0;
 
-          <div className="absolute top-5 left-5 flex items-center gap-2 z-10">
-            <span className="flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-estate-navy shadow-sm backdrop-blur-md">
-              <CheckCircle className="w-3 h-3 text-emerald-600 flex-shrink-0" />
-              Verified
-            </span>
-            <span className="rounded-full bg-estate-navy px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white shadow-sm">
-              {listingType || "For Sale"}
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full bg-gray-900/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white shadow-sm backdrop-blur-md">
-              Premium
-            </span>
-          </div>
+        if (L === 1) {
+          gridClasses += "grid-cols-1";
+          mainClasses += "col-span-1 row-span-1";
+          showCount = 0;
+        } else if (L === 2) {
+          gridClasses += "grid-cols-2";
+          mainClasses += "col-span-1 row-span-1";
+          showCount = 1;
+        } else if (L === 3) {
+          gridClasses += "grid-cols-2 grid-rows-2";
+          mainClasses += "col-span-1 row-span-2";
+          showCount = 2;
+        } else if (L === 4) {
+          gridClasses += "grid-cols-3 grid-rows-2";
+          mainClasses += "col-span-2 row-span-2";
+          showCount = 2; // We only render 2 secondary tiles to maintain a clean layout
+        } else {
+          gridClasses += "grid-cols-4 grid-rows-2";
+          mainClasses += "col-span-2 row-span-2";
+          showCount = 4;
+        }
 
-          {price && (
-            <div className="absolute bottom-6 left-6 right-6 z-10">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/55 mb-1.5">Asking Price</p>
-                  <p className="text-3xl md:text-4xl font-light text-white tracking-tight leading-none">{price}</p>
-                  {sqftPrice && <p className="text-xs text-white/50 mt-1.5 font-light">{sqftPrice} / sqft</p>}
-                </div>
-                <div className="flex items-center gap-2 bg-white/12 backdrop-blur-md border border-white/20 rounded-full px-3.5 py-2 flex-shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-                  <span className="text-[11px] text-white font-medium whitespace-nowrap">42 viewing now</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        const secondaryImages = displayAllImages.slice(1, 1 + showCount);
 
-        {normalizedImages.slice(1, 5).map((image, index) => {
-          const imageIndex = index + 1;
-          const isActionTile = imageIndex === 2;
-          const isAllPhotosTile = imageIndex === 4;
-
-          return (
-            <div
-              key={`${image}-${imageIndex}`}
-              className="relative hidden cursor-pointer overflow-hidden bg-estate-surface md:block"
+        return (
+          <div className={gridClasses}>
+            {/* Main Image */}
+            <div 
+              className={mainClasses}
               onClick={() => {
-                if (isAllPhotosTile) {
-                  setModalActiveIndex(0);
-                  setModalViewMode("grid");
-                  setIsModalOpen(true);
-                } else {
-                  setActiveImageIndex(imageIndex);
-                }
+                setModalActiveIndex(0);
+                setModalViewMode("lightbox");
+                setIsModalOpen(true);
               }}
             >
               <img
-                src={image}
-                alt={isAllPhotosTile ? "View all photos" : `${title} ${imageIndex}`}
-                className="w-full h-full object-cover transition-transform duration-[1.5s] hover:scale-110"
+                src={displayAllImages[0]}
+                alt={title || "Property"}
+                className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-[1.04]"
                 onError={(event) => {
                   event.currentTarget.src = fallbackImage;
                 }}
               />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-estate-navy/80 via-estate-navy/10 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-estate-navy/20 via-transparent to-transparent" />
 
-              {isActionTile && (
-                <div className="absolute top-4 right-4 flex gap-2 z-10">
-                  <button
-                    aria-label={isSaved ? "Remove saved property" : "Save property"}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      toggleSaved();
-                    }}
-                    className={`p-2.5 rounded-full shadow-md backdrop-blur-md border transition-all duration-200 ${
-                      isSaved
-                        ? "bg-red-500 border-red-400/50 text-white"
-                        : "bg-white/90 border-white/50 text-gray-700 hover:text-red-500"
-                    }`}
-                  >
-                    <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-current" : ""}`} />
-                  </button>
-                  <button
-                    aria-label="Share property"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      if (navigator.share) {
-                        navigator.share({
-                          title: title,
-                          url: window.location.href
-                        }).catch(() => {});
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert("Link copied to clipboard!");
-                      }
-                    }}
-                    className="rounded-full border border-white/50 bg-white/90 p-2.5 text-gray-700 shadow-md backdrop-blur-md transition-all duration-200 hover:text-estate-navy"
-                  >
-                    <Share2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
+              <div className="absolute top-5 left-5 flex items-center gap-2 z-10">
+                <span className="flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-estate-navy shadow-sm backdrop-blur-md">
+                  <CheckCircle className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                  Verified
+                </span>
+                <span className="rounded-full bg-estate-navy px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white shadow-sm">
+                  {listingType || "For Sale"}
+                </span>
+                <span className="flex items-center gap-1.5 rounded-full bg-gray-900/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white shadow-sm backdrop-blur-md">
+                  Premium
+                </span>
+              </div>
 
-              {isAllPhotosTile ? (
-                <div className="absolute inset-0 bg-black/35 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                  <div className="text-center">
-                    <Images className="w-6 h-6 text-white mx-auto mb-2" />
-                    <span className="text-white text-xs font-semibold tracking-wide">
-                      View All {allPhotoCount} Photos
-                    </span>
+              {price && (
+                <div className="absolute bottom-6 left-6 right-6 z-10 w-2/3">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/60 mb-0.5">Asking Price</p>
+                    <div className="flex items-end gap-4">
+                      <p className="text-3xl md:text-4xl font-light text-white tracking-tight leading-none">{price}</p>
+                      {sqftPrice && <p className="text-xs text-white/70 mb-1 font-medium">{sqftPrice} / sqft</p>}
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="absolute inset-0 bg-black/10 hover:bg-transparent transition-colors duration-300" />
               )}
             </div>
-          );
-        })}
-      </div>
+
+            {/* Secondary Images */}
+            {secondaryImages.map((image, index) => (
+              <div
+                key={`${image}-${index}`}
+                className="relative hidden cursor-pointer overflow-hidden bg-estate-surface md:block"
+                onClick={() => {
+                  setModalActiveIndex(index + 1);
+                  setModalViewMode("lightbox");
+                  setIsModalOpen(true);
+                }}
+              >
+                <img
+                  src={image}
+                  alt={`${title} ${index + 2}`}
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] hover:scale-110"
+                  onError={(event) => {
+                    event.currentTarget.src = fallbackImage;
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/10 hover:bg-transparent transition-colors duration-300" />
+              </div>
+            ))}
+
+            {/* Absolute Action Buttons */}
+            <div className="absolute top-5 right-5 flex gap-2 z-20">
+              <button
+                aria-label={isSaved ? "Remove saved property" : "Save property"}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleSaved();
+                }}
+                className={`p-2.5 rounded-full shadow-md backdrop-blur-md border transition-all duration-200 ${
+                  isSaved
+                    ? "bg-red-500 border-red-400/50 text-white"
+                    : "bg-white/95 border-gray-200 text-gray-700 hover:text-red-500"
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+              </button>
+              <button
+                aria-label="Share property"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: title,
+                      url: window.location.href
+                    }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Link copied to clipboard!");
+                  }
+                }}
+                className="rounded-full border border-gray-200 bg-white/95 p-2.5 text-gray-700 shadow-md backdrop-blur-md transition-all duration-200 hover:text-estate-navy"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* View All Photos Button */}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setModalActiveIndex(0);
+                setModalViewMode("grid");
+                setIsModalOpen(true);
+              }}
+              className="absolute bottom-5 right-5 z-20 flex items-center gap-2 rounded-xl bg-white/95 hover:bg-white px-4 py-2.5 text-sm font-semibold text-estate-navy shadow-md backdrop-blur-md transition-all border border-gray-200 active:scale-95"
+            >
+              <Grid className="w-4 h-4" />
+              Show all photos
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Fullscreen Photo Gallery Modal Portal */}
       {isModalOpen && mounted && createPortal(

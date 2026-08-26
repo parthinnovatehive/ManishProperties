@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import jsonify, request
-import jwt
-from config import Config
+from flask_jwt_extended import verify_jwt_in_request, get_jwt
 
 def role_required(allowed_roles):
     """Decorator to check if user has any of the allowed roles"""
@@ -9,17 +8,15 @@ def role_required(allowed_roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            token = request.headers.get('Authorization')
-            if not token:
-                return jsonify({'message': 'Token is missing!'}), 401
-            
             try:
-                token = token.split(' ')[1]
-                data = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
-                if data.get('role', '').upper() not in allowed_set:
-                    return jsonify({'message': 'Insufficient permissions!'}), 403
-            except jwt.InvalidTokenError:
-                return jsonify({'message': 'Invalid token!'}), 401
+                verify_jwt_in_request()
+            except Exception as e:
+                return jsonify({'message': f'Invalid or missing token: {str(e)}'}), 401
+                
+            claims = get_jwt()
+            role = claims.get('role', '')
+            if str(role).upper() not in allowed_set:
+                return jsonify({'message': f'Insufficient permissions! Role is {role}'}), 403
             
             return f(*args, **kwargs)
         return decorated_function

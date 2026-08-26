@@ -430,6 +430,11 @@ export function SubmitPropertyPage() {
           toast.error("Please select a city");
           return false;
         }
+        if (!form.sub_area_id) {
+          setError("Please select a sub-area");
+          toast.error("Please select a sub-area");
+          return false;
+        }
         if (!form.pincode.trim()) {
           setError("Please enter pincode");
           toast.error("Please enter pincode");
@@ -506,6 +511,7 @@ export function SubmitPropertyPage() {
     if (validateStep(step)) {
       if (step < totalSteps) {
         setStep(step + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
@@ -515,6 +521,7 @@ export function SubmitPropertyPage() {
     if (step > 1) {
       setStep(step - 1);
       setError(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       router.push("/");
     }
@@ -644,10 +651,7 @@ export function SubmitPropertyPage() {
         featuredRejectionReason: null,
       };
 
-      console.log("FINAL PROPERTY PAYLOAD", propertyPayload);
-
       const res = await estateApi.properties.submit(propertyPayload);
-      console.log("SUBMIT RESPONSE", res);
 
       // Track this property ID so MyPropertiesPage can show it
       const submittedId = propertyPayload.id;
@@ -667,9 +671,9 @@ export function SubmitPropertyPage() {
 
       setTimeout(() => {
         if (userRole === "agent") {
-          router.push("/agent/properties");
+          router.push("/agent/my-properties");
         } else {
-          router.push("/properties");
+          router.push("/user/my-properties");
         }
       }, 2500);
     } catch (err: unknown) {
@@ -856,6 +860,43 @@ export function SubmitPropertyPage() {
               <h2 className="mb-1.5 font-serif text-[22px] text-estate-navy">Where is your property?</h2>
               <p className="mb-7 text-sm text-estate-text-sec">Accurate location details help buyers find your property</p>
 
+              <div
+                className="mb-6 flex h-[200px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-estate-border-med bg-estate-bg transition hover:bg-estate-blue-pale"
+                onClick={() => setIsMapOpen(true)}
+              >
+                <MapPin size={32} aria-hidden="true" className="mb-2.5 text-estate-blue" />
+                <div className="mb-1 text-[15px] font-semibold text-estate-navy">Pin Location on Map</div>
+                <div className="text-[13px] text-estate-muted">Click to open map and select exact location</div>
+                {coords && (
+                  <div className="mt-2 text-xs text-estate-muted">
+                    Selected: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+                  </div>
+                )}
+                <div className="mt-3.5 flex gap-2">
+                  <Button
+                    size="sm"
+                    disabled={loading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMapOpen(true);
+                    }}
+                  >
+                    <LocateFixed size={14} aria-hidden="true" /> Use My Location
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={loading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMapOpen(true);
+                    }}
+                  >
+                    Open Map
+                  </Button>
+                </div>
+              </div>
+
               <Input
                 label="Full Address"
                 value={form.address}
@@ -874,7 +915,6 @@ export function SubmitPropertyPage() {
                     value={form.state}
                     onChange={(e) => {
                       update("state", e.target.value);
-                      update("city", "");
                       setNearbyAmenities(null);
                       setCoords(null);
                     }}
@@ -1010,43 +1050,6 @@ export function SubmitPropertyPage() {
                     </div>
                   </>
                 )}
-              </div>
-
-              <div
-                className="mt-2 flex h-[200px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-estate-border-med bg-estate-bg transition hover:bg-estate-blue-pale"
-                onClick={() => setIsMapOpen(true)}
-              >
-                <MapPin size={32} aria-hidden="true" className="mb-2.5 text-estate-blue" />
-                <div className="mb-1 text-[15px] font-semibold text-estate-navy">Pin Location on Map</div>
-                <div className="text-[13px] text-estate-muted">Click to open map and select exact location</div>
-                {coords && (
-                  <div className="mt-2 text-xs text-estate-muted">
-                    Selected: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
-                  </div>
-                )}
-                <div className="mt-3.5 flex gap-2">
-                  <Button
-                    size="sm"
-                    disabled={loading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsMapOpen(true);
-                    }}
-                  >
-                    <LocateFixed size={14} aria-hidden="true" /> Use My Location
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={loading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsMapOpen(true);
-                    }}
-                  >
-                    Open Map
-                  </Button>
-                </div>
               </div>
             </div>
           )}
@@ -1263,6 +1266,7 @@ export function SubmitPropertyPage() {
                               alt={`Property image ${index + 1}`}
                               fill
                               className="object-cover"
+                              unoptimized={true}
                             />
                           </div>
                           <button

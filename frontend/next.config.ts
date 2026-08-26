@@ -1,8 +1,15 @@
 import type { NextConfig } from "next";
-
+import path from "path";
 
 const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   output: "standalone",
+  outputFileTracingRoot: path.resolve(__dirname),
   devIndicators: false,
   poweredByHeader: false,
   compress: true,

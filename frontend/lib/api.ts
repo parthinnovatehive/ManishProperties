@@ -40,17 +40,21 @@ export const estateApi = {
         return [];
       }
     },
+    fetchAmenities: async (lat: number, lng: number, radius: number = 2000) => {
+      const response = await apiClient.post<{ data: any }>("/api/properties/fetch-amenities", { lat, lng, radius });
+      return response.data;
+    },
   },
   adminProperties: {
     list: async () => listFrom<Property>(await apiClient.get(API_ENDPOINTS.ADMIN.PROPERTIES), "properties"),
     create: async (payload: Partial<Property>) => itemFrom<Property>(await apiClient.post(API_ENDPOINTS.ADMIN.PROPERTIES_CREATE, payload), "property"),
     update: async (id: string | number, payload: Partial<Property>) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}`, payload), "property"),
     remove: async (id: string | number) => apiClient.delete(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}`),
-    approve: async (id: string | number) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/approve`, {}), "property"),
+    approve: async (id: string | number, fetchAmenities: boolean = false) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/approve`, { fetch_amenities: fetchAmenities }), "property"),
     reject: async (id: string | number, reason?: string) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/reject`, { reason }), "property"),
     feature: async (id: string | number, featured: boolean) => itemFrom<Property>(await apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/feature`, { featured }), "property"),
     checkFeaturedExpiry: async () => {
-    return await apiClient.post("/api/properties/check-featured-expiry");
+    return await apiClient.post("/api/properties/expire-featured");
   },
     trackView: async (id: string | number) => apiClient.patch(`${API_ENDPOINTS.ADMIN.PROPERTIES}/${id}/view`, {}),
   },
@@ -108,10 +112,21 @@ export const estateApi = {
     testimonials: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.PUBLIC.TESTIMONIALS), "testimonials"),
     categories: async <T = unknown>() => itemFrom<T>(await apiClient.get(API_ENDPOINTS.PUBLIC.CATEGORIES), "data"),
     subareas: {
-  list: async <T = unknown>() => listFrom<T>(await apiClient.get("/api/subareas"), "subareas"),
-  update: async <T = unknown>(id: string | number, payload: Partial<T>) => 
-    itemFrom<T>(await apiClient.patch(`/api/subareas/${id}`, payload), "subarea"),
-},
+      list: async <T = unknown>() => listFrom<T>(await apiClient.get("/api/subareas"), "subareas"),
+      create: async <T = unknown>(payload: Partial<T>) =>
+        itemFrom<T>(await apiClient.post("/api/subareas", payload), "subarea"),
+      update: async <T = unknown>(id: string | number, payload: Partial<T>) => 
+        itemFrom<T>(await apiClient.patch(`/api/subareas/${id}`, payload), "subarea"),
+    },
+    featuredPlans: {
+      list: async <T = unknown>() =>
+        listFrom<T>(await apiClient.get("/api/content/featured-plans"), "plans"),
+      create: async <T = unknown>(payload: T) =>
+        itemFrom<T>(await apiClient.post("/api/content/featured-plans", payload), "plan"),
+      update: async <T = unknown>(id: string | number, payload: Partial<T>) =>
+        itemFrom<T>(await apiClient.patch(`/api/content/featured-plans/${id}`, payload), "plan"),
+      remove: async (id: string | number) => apiClient.delete(`/api/content/featured-plans/${id}`),
+    },
   },
   enquiries: {
     list: async <T = unknown>() => listFrom<T>(await apiClient.get(API_ENDPOINTS.ENQUIRIES), "enquiries"),

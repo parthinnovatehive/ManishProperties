@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { estateApi } from "@/lib/api";
+import { toast } from "sonner";
 import { notificationService } from "@/lib/notifications";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
 
@@ -163,7 +164,6 @@ export default function AdminAgentsPage() {
 
   const fetchCities = () => {
     estateApi.cities.list<City>().then((data) => {
-      console.log("Cities loaded:", data);
       setCities(data);
     });
   };
@@ -233,14 +233,12 @@ export default function AdminAgentsPage() {
     setActiveTab("assigned");
 
     try {
-      console.log(`🔍 Viewing subareas for agent: ${agent.name} (${agent.id})`);
-
       // ✅ Get fresh subareas data
       let currentSubareas = subareas;
 
       // If subareas is empty or stale, fetch fresh data
       if (currentSubareas.length === 0 && adminCity) {
-const freshSubareas = await estateApi.content.subareas.list<Subarea>();
+        const freshSubareas = await estateApi.content.subareas.list<Subarea>();
 
         const citySubareas = freshSubareas.filter(s => s.city_id === adminCity.id);
         setSubareas(citySubareas);
@@ -262,13 +260,10 @@ const freshSubareas = await estateApi.content.subareas.list<Subarea>();
         (subarea) => !subarea.agent_ids?.includes(agent.id) && !agent.sub_area_ids?.includes(subarea.id)
       );
 
-      console.log(`✅ Found ${filteredSubareas.length} assigned subareas`);
-      console.log(`✅ Found ${requested.length} requested subareas`);
-      console.log(`✅ Found ${available.length} available subareas`);
-
       setAgentSubareas(filteredSubareas);
       setRequestedSubareas(requested);
       setAvailableSubareas(available);
+      toast.success("Subarea unassigned successfully!");
     } catch (error) {
       console.error("❌ Error fetching agent subareas:", error);
       setAgentSubareas([]);
@@ -281,21 +276,18 @@ const freshSubareas = await estateApi.content.subareas.list<Subarea>();
 
   const assignSubarea = async (subareaId: string, agentId: string) => {
     try {
-      console.log(`🔍 Assigning subarea ${subareaId} to agent ${agentId}`);
-
       // Get subarea and agent details
       const subarea = subareas.find(s => s.id === subareaId);
       const agent = agentsList.find(a => a.id === agentId);
 
       if (!subarea) {
-        alert("Subarea not found. Please refresh and try again.");
+        toast.error("Subarea not found. Please refresh and try again.");
         return;
       }
 
       // ✅ API call to assign subarea (add agent to agent_ids)
       const payload = { add_agent: agentId };
       await estateApi.content.subareas.update(subareaId, payload);
-      console.log(`✅ Subarea ${subareaId} assigned successfully`);
 
       // ✅ Update all three lists simultaneously
       // 1. Update subareas (global state) - add agent to agent_ids array
@@ -367,12 +359,12 @@ const freshSubareas = await estateApi.content.subareas.list<Subarea>();
       }
 
      // ✅ Check if all requested subareas are assigned
-const remainingRequests = (agent?.sub_area_ids || []).filter(id => id !== subareaId);
-if (remainingRequests.length === 0 && agent?.status === "pending") {
-  alert("✅ All requested subareas assigned! You can now approve this agent.");
-} else {
-  alert(`✅ Subarea assigned successfully! ${remainingRequests.length} subarea(s) remaining to assign.`);
-}
+      const remainingRequests = (agent?.sub_area_ids || []).filter(id => id !== subareaId);
+      if (remainingRequests.length === 0) {
+        toast.success("All requested subareas assigned! You can now approve this agent.");
+      } else {
+        toast.success(`Subarea assigned successfully! ${remainingRequests.length} subarea(s) remaining to assign.`);
+      }
 
       // ✅ Refresh data
       if (adminCity) {
@@ -398,21 +390,19 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
       } else {
         errorMessage += "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
-  }; // ← THIS CLOSING BRACE AND SEMICOLON IS CRITICAL!
+  };
 
   const unassignSubarea = async (subareaId: string) => {
     try {
-      console.log(`Unassigning subarea ${subareaId}`);
-
       // Get subarea and agent details
       const subarea = subareas.find(s => s.id === subareaId);
       const agentId = selectedAgent?.id;
       const agent = agentsList.find(a => a.id === agentId);
 
-      if (!agentId) {
-        alert("No agent selected.");
+      if (!selectedAgent) {
+        toast.error("No agent selected.");
         return;
       }
 
@@ -450,14 +440,14 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
         });
       }
 
-      alert("Subarea unassigned successfully!");
+      toast.success("Subarea unassigned successfully!");
 
       if (adminCity) {
         await fetchAgentsForCity(adminCity.id);
       }
     } catch (error) {
-      console.error("Error unassigning subarea:", error);
-      alert("Failed to unassign subarea");
+      console.error("Unassign error:", error);
+      toast.error("Failed to unassign subarea");
     }
   };
 
@@ -493,7 +483,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
           icon: "CheckCircle"
         });
 
-        alert("Agent approved successfully!");
+        toast.success("Agent approved successfully!");
 
         // Refresh data
         if (adminCity) {
@@ -549,7 +539,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
         icon: "CheckCircle"
       });
 
-      alert(`Agent approved and ${assignedCount} subarea(s) assigned successfully!`);
+      toast.success(`Agent approved and ${assignedCount} subarea(s) assigned successfully!`);
 
       // Refresh data
       if (adminCity) {
@@ -571,9 +561,9 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
       } else {
         errorMessage += "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
-  }; // ← THIS CLOSING BRACE AND SEMICOLON IS MISSING!
+  };
 
   const getCityName = (cityId: string): string => {
     const city = cities.find(c => c.id === cityId);
@@ -630,7 +620,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
 
     } catch (error) {
       console.error("Error updating agent status:", error);
-      alert("Failed to update agent status. Please try again.");
+      toast.error("Failed to update agent status. Please try again.");
     }
   };
 
@@ -650,26 +640,16 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
   const debugAgentData = async () => {
     try {
       const allAgents = await estateApi.agents.list<Agent>();
-      console.log("=== 🔍 DEBUG: All Agents Data ===");
-      console.log(JSON.stringify(allAgents, null, 2));
-
       let totalWithSubareas = 0;
       allAgents.forEach(agent => {
         const hasSubareas = agent.sub_area_ids && agent.sub_area_ids.length > 0;
         if (hasSubareas) totalWithSubareas++;
-
-        console.log(`📋 Agent: ${agent.name} (${agent.id})`);
-        console.log(`  Status: ${agent.status}`);
-        console.log(`  City: ${agent.city_id}`);
-        console.log(`  sub_area_ids:`, agent.sub_area_ids);
-        console.log(`  Has subareas: ${hasSubareas ? '✅ YES' : '❌ NO'}`);
-        console.log('---');
       });
 
-      alert(`✅ Total Agents: ${allAgents.length}\n✅ Agents with subareas: ${totalWithSubareas}\n✅ Pending agents: ${allAgents.filter(a => a.status === 'pending').length}\n\nCheck console for full details!`);
+      toast.info(`Total Agents: ${allAgents.length}, Pending: ${allAgents.filter(a => a.status === 'pending').length}`);
     } catch (error) {
       console.error("❌ Debug error:", error);
-      alert("Error debugging. Check console.");
+      toast.error("Error debugging. Check console.");
     }
   };
 
@@ -1001,7 +981,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                   : "border-transparent text-estate-muted hover:text-estate-text"
                   }`}
               >
-                Assigned ({agentSubareas.length})
+                {selectedAgent?.status?.toLowerCase() === "pending" ? "Requested Areas" : "Assigned"} ({agentSubareas.length})
               </button>
               {requestedSubareas.length > 0 && (
                 <button
@@ -1012,7 +992,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                     }`}
                 >
                   Requested ({requestedSubareas.length})
-                  {selectedAgent.status === "pending" && (
+                  {selectedAgent?.status === "pending" && (
                     <span className="ml-1 text-xs text-amber-600">⏳</span>
                   )}
                 </button>
@@ -1045,7 +1025,9 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                     <div>
                       {agentSubareas.length === 0 ? (
                         <div className="text-center py-8 bg-gray-50 rounded-xl">
-                          <p className="text-estate-text-sec text-sm">No subareas assigned</p>
+                          <p className="text-estate-text-sec text-sm">
+                            {selectedAgent?.status?.toLowerCase() === "pending" ? "No requested areas" : "No subareas assigned"}
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -1086,7 +1068,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                             ℹ️ This agent is already active. Assign additional subareas as needed.
                           </p>
                         </div>
-                      )}
+                      )}  
 
                       <div className="space-y-2 max-h-96 overflow-y-auto">
                         {requestedSubareas.map((subarea) => (
@@ -1101,7 +1083,7 @@ if (remainingRequests.length === 0 && agent?.status === "pending") {
                             </div>
                             <button
                               onClick={() => assignSubarea(subarea.id, selectedAgent.id)}
-                              className="px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
+                              className="hidden px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
                             >
                               Assign
                             </button>

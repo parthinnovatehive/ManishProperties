@@ -5,6 +5,7 @@ import { estateApi } from "@/lib/api";
 import { notificationService } from "@/lib/notifications";
 import { AgentRatingDisplay } from "@/components/ui/AgentRatingDisplay";
 import type { Property } from "@/types";
+import { toast } from "sonner";
 
 interface Appointment {
   id: string;
@@ -295,13 +296,13 @@ export default function AdminAppointmentsPage() {
       setSelectedAgent(subareaAgent);
       setSelectedSubarea("");
       // Optionally show a success message
-      alert("Subarea agent selected. Click Assign Agent to confirm.");
+      toast.info("Subarea agent selected. Click Assign Agent to confirm.");
     }
   };
 
   const handleAssignAgent = async () => {
     if (!selectedAppointment || !selectedAgent) {
-      alert("Please select an agent");
+      toast.error("Please select an agent");
       return;
     }
 
@@ -355,12 +356,12 @@ export default function AdminAppointmentsPage() {
         icon: "Calendar"
       });
 
-      alert("Agent assigned successfully!");
+      toast.success("Agent assigned successfully!");
       setIsAssignModalOpen(false);
       fetchData();
     } catch (error) {
       console.error("Error assigning agent:", error);
-      alert("Failed to assign agent");
+      toast.error("Failed to assign agent");
     } finally {
       setIsSubmitting(false);
     }

@@ -15,6 +15,9 @@ import sqlite3
 import os
 from flask import current_app
 
+def _safe_fk(val):
+    return val if val and str(val).strip() != "" else None
+
 def _get_otp_db_path():
     data_dir = current_app.config.get("JSON_DATA_DIR")
     if not data_dir:
@@ -43,6 +46,15 @@ SUSPENDED_STATUS_VALUES = {"SUSPENDED", "INACTIVE", "DISABLED", "DEACTIVATED", "
 
 def _public_account(account):
     email = account.get("email") or account.get("username")
+    
+    sub_area_ids = account.get("sub_area_ids", [])
+    if normalize_role(account.get("role")) == "AGENT":
+        from services.json_service import load_json
+        sub_area_agents = load_json("sub_area_agents") or []
+        db_sub_area_ids = [str(saa["sub_area_id"]) for saa in sub_area_agents if str(saa.get("agent_id")) == str(account["id"])]
+        if db_sub_area_ids:
+            sub_area_ids = db_sub_area_ids
+            
     return {
         "id": account["id"],
         "username": account["username"],
@@ -52,7 +64,7 @@ def _public_account(account):
         "phone": account.get("phone"),
         "status": normalize_status(account.get("status")),
         "city_id": account.get("city_id"),
-        "sub_area_ids": account.get("sub_area_ids", []),  # Changed to array
+        "sub_area_ids": sub_area_ids,
     }
 
 
@@ -172,13 +184,20 @@ def register_account(payload, default_role="USER"):
             # Filter out empty values and ensure strings
             sub_area_ids = [str(sid) for sid in sub_area_ids if sid]
         
-        if city_id:
-            account["city_id"] = str(city_id)
-        
-        if sub_area_ids:
-            account["sub_area_ids"] = sub_area_ids
+        if _safe_fk(city_id):
+            account["city_id"] = _safe_fk(city_id)
 
     append_json(collection, account)
+    
+    if role == "AGENT" and sub_area_ids:
+        for aid in sub_area_ids:
+            if aid:
+                append_json("sub_area_agents", {
+                    "id": generate_id("saa_"),
+                    "agent_id": account["id"], 
+                    "sub_area_id": aid,
+                    "createdAt": __import__('datetime').datetime.now().isoformat()
+                })
     
     return issue_tokens(account), None
 
@@ -285,12 +304,21 @@ def google_register(payload):
             sub_area_ids = []
         else:
             sub_area_ids = [str(sid) for sid in sub_area_ids if sid]
-        if city_id:
-            account["city_id"] = str(city_id)
-        if sub_area_ids:
-            account["sub_area_ids"] = sub_area_ids
+        if _safe_fk(city_id):
+            account["city_id"] = _safe_fk(city_id)
 
     append_json(collection, account)
+    
+    if role == "AGENT" and sub_area_ids:
+        for aid in sub_area_ids:
+            if aid:
+                append_json("sub_area_agents", {
+                    "id": generate_id("saa_"),
+                    "agent_id": account["id"], 
+                    "sub_area_id": aid,
+                    "createdAt": __import__('datetime').datetime.now().isoformat()
+                })
+                
     return issue_tokens(account), None
 
 

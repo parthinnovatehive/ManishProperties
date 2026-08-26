@@ -34,6 +34,7 @@ def get_properties():
     status = request.args.get("status")
     if status and status.upper() not in MODERATION_STATUSES:
         return error_response("Invalid property status", 400)
+    print(".", flush=True)
     properties = list_properties(status=status, public_only=_is_public_request())
     return success_response("Properties fetched", data=properties, properties=properties)
 
@@ -99,27 +100,10 @@ def create_property_route():
     if current_user_id:
         claims = get_jwt()
         role = (claims.get("role") or "").lower()
-        payload.setdefault("lister_id", str(current_user_id))
-        payload.setdefault("lister_type", "agent" if role == "agent" else "user")
 
     property_item, error = create_property(payload, status=status)
     if error:
         return error_response(error, 400)
-
-    # Auto-fetch nearby amenities from Google Places API if coordinates exist
-    coords = payload.get("coordinates") or property_item.get("coordinates")
-    if coords and isinstance(coords, dict):
-        lat = coords.get("lat")
-        lng = coords.get("lng")
-        if lat and lng:
-            try:
-                amenities = get_nearby_amenities(float(lat), float(lng))
-                if amenities:
-                    from services.json_service import update_json
-                    property_item["nearbyAmenities"] = amenities
-                    update_json("properties", property_item["id"], {"nearbyAmenities": amenities})
-            except Exception as e:
-                print(f"Error fetching nearby amenities: {e}")
 
     return success_response("Property created", data=property_item, property=property_item, status_code=201)
 
@@ -134,13 +118,9 @@ def update_property_route(property_id):
     claims = get_jwt()
     user_role = (claims.get("role") or "").upper()
 
-    # Allow AGENT, ADMIN, SUPER_ADMIN, or the property owner (USER)
+    # Allow AGENT, ADMIN, SUPER_ADMIN
     if user_role not in {"AGENT", "ADMIN", "SUPER_ADMIN"}:
-        prop = get_property(property_id)
-        if not prop:
-            return error_response("Property not found", 404)
-        if str(prop.get("lister_id")) != current_user_id:
-            return error_response("Insufficient permissions!", 403)
+        return error_response("Insufficient permissions!", 403)
 
     property_item = update_property(property_id, request.get_json(silent=True) or {})
     if not property_item:
@@ -170,6 +150,34 @@ def approve_property(property_id):
     property_item = set_property_status(property_id, "APPROVED")
     if not property_item:
         return error_response("Property not found", 404)
+
+    # Optionally fetch nearby amenities on approval
+    # Frontend sends fetch_amenities=true when admin chooses "Approve with Facilities"
+    payload = request.get_json(silent=True) or {}
+    should_fetch = payload.get("fetch_amenities", False)
+
+    if should_fetch:
+        coords = property_item.get("coordinates")
+        if coords and isinstance(coords, dict):
+            lat = coords.get("lat")
+            lng = coords.get("lng")
+            if lat and lng:
+                try:
+                    print(f"Fetching nearby amenities for property {property_id}...")
+                    amenities = get_nearby_amenities(float(lat), float(lng))
+                    if amenities:
+                        from services.json_service import update_json
+                        property_item["nearbyAmenities"] = amenities
+                        update_json("properties", property_id, {"nearbyAmenities": amenities})
+                        print(f"Nearby amenities saved for property {property_id}")
+                except Exception as e:
+                    print(f"Error fetching nearby amenities for {property_id}: {e}")
+                    # Approval succeeds even if amenities fetch fails
+            else:
+                print(f"Property {property_id} has no valid lat/lng in coordinates, skipping amenities fetch")
+        else:
+            print(f"Property {property_id} has no coordinates, skipping amenities fetch")
+
     return success_response("Property approved", data=property_item, property=property_item)
 
 
@@ -366,4 +374,3 @@ def compare_properties():
         data=compare_properties,
         properties=compare_properties
     )
-

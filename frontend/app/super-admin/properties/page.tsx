@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { estateApi } from "@/lib/api";
 import type { PropertyId } from "@/types";
 import PropertyPreviewModal from "@/components/PropertyPreviewModal";
+import ApprovalModal from "@/components/ApprovalModal";
 
 // Define local state interface matching property entries
 interface PropertyListItem {
@@ -28,7 +29,9 @@ export default function AdminPropertiesPage() {
   const [propertiesList, setPropertiesList] = useState<PropertyListItem[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<PropertyListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
+  const [approvalTarget, setApprovalTarget] = useState<{ id: PropertyId; title: string } | null>(null);
   const rawPropertiesRef = useRef<Map<PropertyId, any>>(new Map());
 
   // Filter & Sort States
@@ -151,18 +154,32 @@ export default function AdminPropertiesPage() {
     setSortOrder("desc");
   };
 
-  const handleApprove = async (id: PropertyId) => {
-    await estateApi.adminProperties.approve(id);
-    setPropertiesList(prev =>
-      prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Approved' } : p))
-    );
+  const handleApprove = async (id: PropertyId, fetchAmenities: boolean = false) => {
+    setActionLoading(`approve-${id}`);
+    try {
+      await estateApi.adminProperties.approve(id, fetchAmenities);
+      setPropertiesList(prev =>
+        prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Approved' } : p))
+      );
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const openApprovalModal = (id: PropertyId, title: string) => {
+    setApprovalTarget({ id, title });
   };
 
   const handleReject = async (id: PropertyId) => {
-    await estateApi.adminProperties.reject(id);
-    setPropertiesList(prev =>
-      prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Rejected' } : p))
-    );
+    setActionLoading(`reject-${id}`);
+    try {
+      await estateApi.adminProperties.reject(id);
+      setPropertiesList(prev =>
+        prev.map(p => (p.id === id ? { ...p, approvalStatus: 'Rejected' } : p))
+      );
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const uniqueTypes = [...new Set(propertiesList.map(p => p.type))];
@@ -378,7 +395,55 @@ export default function AdminPropertiesPage() {
       </div>
 
       {/* Properties Table */}
-      {loading && <div className="rounded-xl border border-estate-border bg-white p-6 text-center text-estate-muted">Loading properties...</div>}
+      {loading ? (
+        <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-estate-border bg-estate-bg">
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div></th>
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div></th>
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-32"></div></th>
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-20"></div></th>
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div></th>
+                  <th className="py-4 px-4"><div className="h-4 bg-gray-200 rounded animate-pulse w-20 float-right"></div></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-estate-border">
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="py-4 px-4">
+                      <div className="h-5 bg-gray-100 rounded animate-pulse w-48 mb-2"></div>
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-32 mb-1"></div>
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-24"></div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-5 bg-gray-100 rounded animate-pulse w-24 mb-2"></div>
+                      <div className="h-4 bg-gray-100 rounded-full animate-pulse w-16"></div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-4 bg-gray-100 rounded animate-pulse w-32 mb-1"></div>
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-40"></div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-6 bg-gray-100 rounded-full animate-pulse w-20"></div>
+                    </td>
+                    <td className="py-4 px-4 text-center">
+                      <div className="h-8 w-8 bg-gray-100 rounded-lg animate-pulse mx-auto"></div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex justify-end gap-2">
+                        <div className="h-9 w-16 bg-gray-100 rounded-lg animate-pulse"></div>
+                        <div className="h-9 w-16 bg-gray-100 rounded-lg animate-pulse"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
       <div className="bg-white rounded-2xl border border-estate-border shadow-estate overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -466,18 +531,20 @@ export default function AdminPropertiesPage() {
                       <div className="flex justify-end gap-2 flex-wrap">
                         {property.approvalStatus !== 'Approved' && (
                           <button
-                            onClick={() => handleApprove(property.id)}
-                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition min-h-[44px]"
+                            onClick={() => openApprovalModal(property.id, property.title)}
+                            disabled={actionLoading === `approve-${property.id}` || actionLoading === `reject-${property.id}`}
+                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-lg text-xs font-semibold transition min-h-[44px] disabled:opacity-50"
                           >
-                            Approve
+                            {actionLoading === `approve-${property.id}` ? "..." : "Approve"}
                           </button>
                         )}
                         {property.approvalStatus !== 'Rejected' && (
                           <button
                             onClick={() => handleReject(property.id)}
-                            className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition min-h-[44px]"
+                            disabled={actionLoading === `approve-${property.id}` || actionLoading === `reject-${property.id}`}
+                            className="px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-lg text-xs font-semibold transition min-h-[44px] disabled:opacity-50"
                           >
-                            Reject
+                            {actionLoading === `reject-${property.id}` ? "..." : "Reject"}
                           </button>
                         )}
                       </div>
@@ -499,6 +566,7 @@ export default function AdminPropertiesPage() {
           )}
         </div>
       </div>
+      )}
       {/* Property Detail Modal */}
       {selectedProperty && (
         <PropertyPreviewModal
@@ -512,9 +580,11 @@ export default function AdminPropertiesPage() {
             : "Approved"
           }
           onApprove={async (id: PropertyId) => {
-            await handleApprove(id);
+            // Close the preview modal and open the approval modal
             const raw = rawPropertiesRef.current.get(id);
-            if (raw) raw.moderationStatus = "APPROVED";
+            const title = raw?.title || selectedProperty?.title || "Property";
+            setSelectedProperty(null);
+            openApprovalModal(id, title);
           }}
           onReject={async (id: PropertyId) => {
             await handleReject(id);
@@ -524,6 +594,22 @@ export default function AdminPropertiesPage() {
           listerName={selectedProperty.lister_name || "Not Assigned"}
           listerType={selectedProperty.lister_type ? selectedProperty.lister_type.charAt(0).toUpperCase() + selectedProperty.lister_type.slice(1) : "N/A"}
           listerPhone={selectedProperty.lister_phone || "N/A"}
+        />
+      )}
+
+      {/* Approval Modal */}
+      {approvalTarget && (
+        <ApprovalModal
+          open={!!approvalTarget}
+          onClose={() => setApprovalTarget(null)}
+          propertyId={approvalTarget.id}
+          propertyTitle={approvalTarget.title}
+          onApprove={async (id, fetchAmenities) => {
+            await handleApprove(id, fetchAmenities);
+            // Update raw data too
+            const raw = rawPropertiesRef.current.get(id);
+            if (raw) raw.moderationStatus = "APPROVED";
+          }}
         />
       )}
     </div>

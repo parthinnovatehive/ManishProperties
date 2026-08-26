@@ -6,6 +6,7 @@ import { Plus, X, Calendar as CalendarIcon, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { notificationService } from "@/lib/notifications";
 import { getAdminData } from "@/lib/utils/token";
+import { toast } from "sonner";
 
 interface Appointment {
   id: string;
@@ -380,7 +381,7 @@ export default function AgentAppointmentsPage() {
     }
   } catch (error) {
     console.error("Error updating appointment status:", error);
-    alert("Failed to update appointment status");
+    toast.error("Failed to update appointment status");
   }
 };
 
@@ -446,7 +447,7 @@ export default function AgentAppointmentsPage() {
     });
   } catch (error) {
     console.error("Error creating appointment:", error);
-    alert("Failed to create appointment");
+    toast.error("Failed to create appointment");
   }
 };
 
@@ -465,14 +466,9 @@ export default function AgentAppointmentsPage() {
   const dayStr = day.toString().padStart(2, "0");
   const targetDateStr = `${dayStr} ${monthName} ${year}`;
   
-  console.log(`Looking for appointments on: ${targetDateStr}`);
-  
   return appointments.filter((a) => {
     if (a.status === "Pending") return false;
     const isMatch = a.date === targetDateStr;
-    if (isMatch) {
-      console.log(`Found appointment: ${a.id} on ${a.date}`);
-    }
     return isMatch;
   });
 };

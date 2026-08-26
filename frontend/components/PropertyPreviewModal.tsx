@@ -48,11 +48,12 @@ export default function PropertyPreviewModal({
   listerPhone,
 }: PropertyPreviewModalProps) {
   const [actionLoading, setActionLoading] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   if (!open || !property) return null;
 
   const isPending = approvalStatus === "Pending";
-  const firstImage = property.images?.[0] || property.image || null;
+  const images = property.images?.length > 0 ? property.images : (property.image ? [property.image] : []);
 
   const handleApprove = async () => {
     if (!onApprove) return;
@@ -113,14 +114,29 @@ export default function PropertyPreviewModal({
         </div>
 
         <div className="p-6 space-y-8">
-          {/* Image */}
-          {firstImage && (
-            <div className="rounded-2xl overflow-hidden bg-gray-100 max-h-80 shadow-inner">
-              <img
-                src={firstImage}
-                alt={property.title}
-                className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500"
-              />
+          {/* Images Gallery */}
+          {images.length > 0 && (
+            <div className="space-y-3">
+              <div className="rounded-2xl overflow-hidden bg-gray-100 h-[24rem] shadow-inner relative group">
+                <img
+                  src={images[activeImageIndex]}
+                  alt={property.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              {images.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+                  {images.map((img: string, idx: number) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`flex-none w-32 h-24 rounded-xl overflow-hidden bg-gray-100 snap-start shadow-sm border-2 transition-all ${activeImageIndex === idx ? 'border-estate-navy' : 'border-transparent hover:border-gray-300'}`}
+                    >
+                      <img src={img} alt={`${property.title} ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -184,8 +200,14 @@ export default function PropertyPreviewModal({
           {property.nearbyAmenities && typeof property.nearbyAmenities === 'object' && Object.keys(property.nearbyAmenities).length > 0 && (
             (() => {
               const validEntries = Object.entries(property.nearbyAmenities).filter(([key, val]) => {
-                const distance = val && typeof val === "object" && val !== null ? (val as any).distance : null;
-                const name = val && typeof val === "object" && val !== null ? (val as any).name : null;
+                let firstItem = null;
+                if (Array.isArray(val) && val.length > 0) {
+                  firstItem = val[0];
+                } else if (val && typeof val === "object" && !Array.isArray(val)) {
+                  firstItem = val;
+                }
+                const distance = firstItem ? firstItem.distance : null;
+                const name = firstItem ? firstItem.name : null;
                 return (
                   distance !== null &&
                   distance !== undefined &&
@@ -203,8 +225,14 @@ export default function PropertyPreviewModal({
                     {validEntries.map(([key, val]) => {
                       const emoji = NEARBY_ICONS[key] || "📍";
                       const label = key.replace(/([A-Z])/g, " $1").replace(/^./, s => s.toUpperCase());
-                      const distance = (val as any).distance;
-                      const unit = (val as any).unit;
+                      
+                      let firstItem = val;
+                      if (Array.isArray(val) && val.length > 0) {
+                        firstItem = val[0];
+                      }
+                      
+                      const distance = (firstItem as any).distance;
+                      const unit = (firstItem as any).unit;
                       const distanceStr = unit ? `${distance} ${unit}` : /[a-z]/i.test(String(distance)) ? distance : `${distance} km`;
                       return (
                         <div
